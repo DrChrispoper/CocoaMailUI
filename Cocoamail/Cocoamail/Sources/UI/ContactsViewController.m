@@ -10,7 +10,6 @@
 
 #import "WhiteBlurNavBar.h"
 #import "Persons.h"
-#import "ViewController.h"
 
 
 @interface ContactsViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -71,11 +70,11 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void) _back
+
+-(void) cleanBeforeGoingBack
 {
     self.table.delegate = nil;
-    self.table.dataSource = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    self.table.dataSource = nil;    
 }
 
 

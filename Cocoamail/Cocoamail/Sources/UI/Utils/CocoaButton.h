@@ -28,6 +28,7 @@
 -(void) updateColor;
 -(void) openHorizontal;
 
+-(void) forceCloseHorizontal;
 -(void) forceOpenHorizontal;
 
 -(void) replaceMainButton:(UIButton*)button;

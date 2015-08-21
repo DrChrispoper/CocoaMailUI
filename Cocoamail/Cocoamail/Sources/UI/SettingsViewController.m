@@ -8,7 +8,6 @@
 
 #import "SettingsViewController.h"
 
-#import "ViewController.h"
 #import "UIGlobal.h"
 #import "Accounts.h"
 #import "WhiteBlurNavBar.h"
@@ -72,11 +71,10 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void) _back
+-(void) cleanBeforeGoingBack
 {
     self.table.delegate = nil;
     self.table.dataSource = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
 }
 
 

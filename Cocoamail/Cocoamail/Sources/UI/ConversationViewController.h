@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ViewController.h"
 #import "Mail.h"
 #import "CocoaButton.h"
 
-@interface ConversationViewController : UIViewController <CocoaButtonDatasource>
+@interface ConversationViewController : InViewController <CocoaButtonDatasource>
 
 @property (nonatomic, strong) Conversation* conversation;
 

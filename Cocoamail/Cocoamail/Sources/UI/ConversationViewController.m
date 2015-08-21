@@ -8,10 +8,8 @@
 
 #import "ConversationViewController.h"
 
-#import "ViewController.h"
 #import "UIGlobal.h"
 #import "WhiteBlurNavBar.h"
-
 #import "Persons.h"
 
 
@@ -95,12 +93,11 @@
     self.navBar = navBar;
 
     [navBar createWhiteMaskOverView:self.scrollView withOffset:0.f];
-    
+    /*
     UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_backSwipe:)];
     sgr.direction = UISwipeGestureRecognizerDirectionRight;
-    
     [self.view addGestureRecognizer:sgr];
-    
+    */
 }
 
 - (void)didReceiveMemoryWarning {
@@ -108,7 +105,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-
+/*
 -(void) _backSwipe:(UISwipeGestureRecognizer*)sgr
 {
     if (sgr.state == UIGestureRecognizerStateEnded && sgr.enabled) {
@@ -116,12 +113,11 @@
     }
     
 }
+*/
 
-
--(void) _back
+-(void) cleanBeforeGoingBack
 {
-    self.scrollView.delegate = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    self.scrollView.delegate = nil;    
 }
 
 

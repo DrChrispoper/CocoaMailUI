@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ViewController.h"
 #import "Mail.h"
 
-@interface AttachmentsViewController : UIViewController
+@interface AttachmentsViewController : InViewController
 
 @property (nonatomic, strong) Conversation* conversation;
 

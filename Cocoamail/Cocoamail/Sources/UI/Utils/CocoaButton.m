@@ -114,6 +114,17 @@
     
 }
 
+-(void) forceCloseHorizontal
+{
+    if (self.openState == 2) {
+        [self replaceMainButton:nil];
+        [self _closeHorizontal];
+        self.openState = 0;
+    }
+    
+}
+
+
 
 -(void) closeHorizontalButton:(UIButton*)button refreshCocoaButtonAndDo:(void (^)())action
 {

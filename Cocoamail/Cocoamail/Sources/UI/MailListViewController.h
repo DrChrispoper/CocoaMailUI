@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ViewController.h"
 #import "CocoaButton.h"
 #import "Persons.h"
 
-@interface MailListViewController : UIViewController <CocoaButtonDatasource>
+@interface MailListViewController : InViewController <CocoaButtonDatasource>
 
 -(instancetype) initWithName:(NSString*)name;
 -(instancetype) initWithPerson:(Person*)person;

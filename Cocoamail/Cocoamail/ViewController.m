@@ -103,7 +103,27 @@ static ViewController* s_self;
 
     [self setupNavigation];
     
+    
+    UIView* border = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, self.view.frame.size.height)];
+    border.backgroundColor = [UIColor clearColor];
+    border.userInteractionEnabled = YES;
+    border.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    
+    UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_swipeBack:)];
+    sgr.direction = UISwipeGestureRecognizerDirectionRight;
+    [border addGestureRecognizer:sgr];
+    [self.view addSubview:border];
 }
+
+
+-(void) _swipeBack:(UISwipeGestureRecognizer*)sgr
+{
+    if (sgr.state == UIGestureRecognizerStateEnded) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    }
+}
+
+
 
 -(void) setupNavigation
 {
@@ -165,13 +185,18 @@ static ViewController* s_self;
     
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kBACK_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
+        if (self.viewControllers.count == 1) {
+            return;
+        }
 
-        UIViewController* vc = [self.viewControllers lastObject];
+        [app beginIgnoringInteractionEvents];
+        
+        InViewController* vc = [self.viewControllers lastObject];
+        [vc cleanBeforeGoingBack];
         UIView* lastView = vc.view;
         [self.viewControllers removeLastObject];
         
-        UIViewController* f = [self.viewControllers lastObject];
+        InViewController* f = [self.viewControllers lastObject];
         
         // tweak to realod nav bar after settings view
         if ([vc isKindOfClass:[SettingsViewController class]] && [f isKindOfClass:[FolderViewController class]]) {
@@ -211,7 +236,7 @@ static ViewController* s_self;
         
         BOOL noAnim = YES;
         
-        UIViewController* vc = [self.viewControllers lastObject];
+        InViewController* vc = [self.viewControllers lastObject];
         UIView* lastView = vc.view;
         
         FolderViewController* f = [[FolderViewController alloc] init];
@@ -253,11 +278,11 @@ static ViewController* s_self;
     
 }
 
--(void) _animatePushVC:(UIViewController*)nextVC
+-(void) _animatePushVC:(InViewController*)nextVC
 {
     UIApplication* app = [UIApplication sharedApplication];
     
-    UIViewController* currentVC = [self.viewControllers lastObject];
+    InViewController* currentVC = [self.viewControllers lastObject];
     UIView* currentView = currentVC.view;
     
     UIView* nextView = nextVC.view;
@@ -314,7 +339,7 @@ static ViewController* s_self;
 
 -(NSArray*) buttonsWideFor:(CocoaButton*)cocoabutton
 {
-    UIViewController* currentVC = [self.viewControllers lastObject];
+    InViewController* currentVC = [self.viewControllers lastObject];
     
     if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
         id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
@@ -412,7 +437,7 @@ static ViewController* s_self;
         return [self _accountsButtons];
     }
     
-    UIViewController* currentVC = [self.viewControllers lastObject];
+    InViewController* currentVC = [self.viewControllers lastObject];
     
     if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
         id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
@@ -426,3 +451,21 @@ static ViewController* s_self;
 
 
 @end
+
+
+
+
+@implementation InViewController
+
+-(void) cleanBeforeGoingBack
+{
+    // clean delegates
+}
+
+-(void) _back
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+}
+
+@end
+

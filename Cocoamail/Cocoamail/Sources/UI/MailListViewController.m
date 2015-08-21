@@ -8,7 +8,6 @@
 
 #import "MailListViewController.h"
 
-#import "ViewController.h"
 #import "ConversationTableViewCell.h"
 #import "Parser.h"
 #import "Mail.h"
@@ -183,11 +182,11 @@
                                                       userInfo:@{kPRESENT_CONVERSATION_KEY:c}];
 }
 
--(void) _back
+
+-(void) cleanBeforeGoingBack
 {
     self.table.delegate = nil;
-    self.table.dataSource = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    self.table.dataSource = nil;    
 }
 
 
@@ -334,7 +333,7 @@
     const NSInteger nbSelected = self.selectedCells.count;
     
     if (nbSelected==0) {
-        [cb forceCloseButton];
+        [cb forceCloseHorizontal];
         item.titleView =  [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
     }
     else {

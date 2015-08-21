@@ -41,3 +41,11 @@
 
 @end
 
+
+
+@interface InViewController : UIViewController
+
+-(void) _back;
+-(void) cleanBeforeGoingBack;
+
+@end

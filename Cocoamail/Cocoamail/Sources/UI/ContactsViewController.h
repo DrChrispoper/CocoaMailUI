@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ViewController.h"
 #import "Mail.h"
 
-@interface ContactsViewController : UIViewController
+@interface ContactsViewController : InViewController
 
 @property (nonatomic, strong) Mail* mail;
 

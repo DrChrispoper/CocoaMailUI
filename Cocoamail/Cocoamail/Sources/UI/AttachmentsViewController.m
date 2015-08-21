@@ -8,7 +8,6 @@
 
 #import "AttachmentsViewController.h"
 
-#import "ViewController.h"
 #import "WhiteBlurNavBar.h"
 #import "Persons.h"
 
@@ -128,11 +127,11 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void) _back
+
+-(void) cleanBeforeGoingBack
 {
     self.table.delegate = nil;
-    self.table.dataSource = nil;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    self.table.dataSource = nil;    
 }
 
 

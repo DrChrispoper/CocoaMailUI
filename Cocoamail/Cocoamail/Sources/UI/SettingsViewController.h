@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SettingsViewController : UIViewController
+#import "ViewController.h"
+
+
+@interface SettingsViewController : InViewController
 
 @end

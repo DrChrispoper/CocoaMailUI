@@ -401,12 +401,17 @@
                     pourc = 1.f;
                 }
                 
-                self.leftAction.hidden = pourc<1.f || (self.currentSwipedPosition < 0.f);
-                
-                if (pourc>0.85) {
-                    self.leftAction.hidden = NO;
-                    self.leftAction.alpha = pourc*pourc;
+                if (self.currentSwipedPosition == 0.f) {
                     
+                    self.leftAction.hidden = pourc<1.f;
+                    
+                    if (pourc>0.85) {
+                        self.leftAction.hidden = NO;
+                        self.leftAction.alpha = (pourc-0.85) / 0.15 /* pourc*pourc*/;
+                    }
+                }
+                else {
+                    self.leftAction.hidden = YES;
                 }
                 
                 self.backViewL.alpha = pourc;
