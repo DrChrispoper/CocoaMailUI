@@ -64,6 +64,7 @@
         l.backgroundColor = [UIColor whiteColor];
     }
     l.font = [UIFont boldSystemFontOfSize:16];
+    l.textAlignment = NSTextAlignmentCenter;
     [l sizeToFit];
     
     return l;

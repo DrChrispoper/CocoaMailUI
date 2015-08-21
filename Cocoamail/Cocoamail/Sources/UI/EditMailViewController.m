@@ -8,6 +8,7 @@
 
 #import "EditMailViewController.h"
 
+#import "Accounts.h"
 
 @interface EditMailViewController () <UIScrollViewDelegate>
 
@@ -38,7 +39,22 @@
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
-    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:@"account@mail.com"];
+    
+    Accounts* allAccounts = [Accounts sharedInstance];
+    
+    Account* ca = [allAccounts currentAccount];
+    if ([ca.userMail isEqualToString:@"all"]) {
+        ca = [allAccounts.accounts firstObject];
+    }
+    
+    UILabel* titleView = [WhiteBlurNavBar titleViewForItemTitle:ca.userMail];
+    
+    if (allAccounts.accounts.count>1) {
+        titleView.userInteractionEnabled = YES;
+        UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_tapTitle:)];
+        [titleView addGestureRecognizer:tgr];
+    }
+    item.titleView = titleView;
     
     [navBar pushNavigationItem:item animated:NO];
     
@@ -71,6 +87,45 @@
 -(void) cleanBeforeGoingBack
 {
     self.scrollView.delegate = nil;
+}
+
+
+-(void) _tapTitle:(UITapGestureRecognizer*)tgr
+{
+    if (tgr.enabled==NO || tgr.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    
+    UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    for (Account* a in [Accounts sharedInstance].accounts) {
+    
+        if ([a.userMail isEqualToString:@"all"]) {
+            continue;
+        }
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:a.userMail style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction* aa) {
+                                                                  
+                                                                  UINavigationItem* ni = self.navBar.items.firstObject;
+                                                                  
+                                                                  UILabel* lbl = (UILabel*)ni.titleView;
+                                                                  lbl.text = a.userMail;
+                                                                  [lbl sizeToFit];
+                                                                  [self.navBar setNeedsDisplay];
+                                                              }];
+        [ac addAction:defaultAction];
+    }
+
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel") style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [ac addAction:defaultAction];
+    
+    
+    ViewController* vc = [ViewController mainVC];
+    [vc presentViewController:ac animated:YES completion:nil];
+    
 }
 
 
