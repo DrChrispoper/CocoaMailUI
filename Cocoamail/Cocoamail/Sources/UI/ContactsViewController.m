@@ -137,10 +137,8 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    Person* person = [[Persons sharedInstance] getPersonID:[self.mail.toPersonID[indexPath.row] integerValue]];
-    
+    Person* person = [[Persons sharedInstance] getPersonID:[self.mail.toPersonID[indexPath.row] integerValue]];    
     [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_PERSON:person}];
-    //[ViewController presentAlertWIP:@"go to user view"];
 }
 
 

@@ -303,7 +303,16 @@
     
     
     if (swipetype==2) {
-        [ViewController presentAlertWIP:@"go to edit mail"];
+        NSIndexPath* indexPath = [self.table indexPathForCell:cell];
+        
+        NSDictionary* mailsDay = self.convByDay[indexPath.section];
+        NSArray* convs = mailsDay[@"list"];
+        Conversation* conv = convs[indexPath.row];
+        
+        Mail* m = [conv firstMail];
+        // TODO create a new mail (reply/reply all) from m
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:m}];
     }
     else if (swipetype == 3) {
         

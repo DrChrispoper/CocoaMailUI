@@ -496,8 +496,6 @@
                                 
                                 Person* person = [[Persons sharedInstance] getPersonID:[self mail].fromPersonID];
                                 [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_PERSON:person}];
-                                
-                                //                            [ViewController presentAlertWIP:@"go to user view"];
                                 return;
                             }
                             

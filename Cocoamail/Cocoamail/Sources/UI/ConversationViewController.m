@@ -297,7 +297,7 @@
 
 -(void) _editMail
 {
-    [ViewController presentAlertWIP:@"open edit mail"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil];
 }
 
 -(NSArray*) buttonsHorizontalFor:(CocoaButton*)cocoabutton
@@ -592,7 +592,10 @@
 
 -(void)_openEdit:(UIButton*)button
 {
-    [ViewController presentAlertWIP:@"open edit mail"];
+    
+    Mail* m = [self.delegate mailDisplayed:self];
+    // TODO create a new mail (reply/reply all) from m
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:m}];
 }
 
 -(void) _masr:(UIButton*)button
@@ -629,8 +632,6 @@
             Mail* mail = [self.delegate mailDisplayed:self];
             Person* person = [[Persons sharedInstance] getPersonID:mail.fromPersonID];
             [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_PERSON:person}];
-            
-//            [ViewController presentAlertWIP:@"Go to person view…"];
             return;
         }
         

@@ -335,7 +335,7 @@ static ViewController* s_self;
 
 -(void) _editMail
 {
-    [ViewController presentAlertWIP:@"open edit mail"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil];
 }
 
 -(void) _search

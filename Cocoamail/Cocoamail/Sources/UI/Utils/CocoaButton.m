@@ -463,8 +463,9 @@
         
         if (self.subviewsWide.count>0) {
             [self _closeWide];
-             [ViewController presentAlertWIP:@"open edit view"];
-             return;
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil];
+            return;
         }
         else {
             [self _openWide];
