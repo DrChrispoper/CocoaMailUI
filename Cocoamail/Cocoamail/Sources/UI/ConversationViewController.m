@@ -8,8 +8,6 @@
 
 #import "ConversationViewController.h"
 
-#import "UIGlobal.h"
-#import "WhiteBlurNavBar.h"
 #import "Persons.h"
 
 
@@ -639,7 +637,7 @@
         if (pos.x > self.posXtoUsers) {
             
             if (self.bounds.size.height>50) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_CONTACTS_NOTIFICATION object:nil userInfo:@{kPRESENT_CONTACTS_MAIL_KEY:[self.delegate mailDisplayed:self]}];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_CONTACTS_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:[self.delegate mailDisplayed:self]}];
             }
             else {
                 Mail* mail = [self.delegate mailDisplayed:self];

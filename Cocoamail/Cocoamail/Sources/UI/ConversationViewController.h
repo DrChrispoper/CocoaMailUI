@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 cocoasoft. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "ViewController.h"
 #import "Mail.h"
 #import "CocoaButton.h"

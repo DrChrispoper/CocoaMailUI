@@ -8,10 +8,7 @@
 
 #import "FolderViewController.h"
 
-#import "ViewController.h"
-#import "UIGlobal.h"
 #import "Accounts.h"
-#import "WhiteBlurNavBar.h"
 #import "PullToRefresh.h"
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>

@@ -11,8 +11,6 @@
 #import "ConversationTableViewCell.h"
 #import "Parser.h"
 #import "Mail.h"
-#import "WhiteBlurNavBar.h"
-#import "UIGlobal.h"
 #import "Accounts.h"
 #import "PullToRefresh.h"
 

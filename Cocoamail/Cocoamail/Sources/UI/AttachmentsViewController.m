@@ -8,7 +8,6 @@
 
 #import "AttachmentsViewController.h"
 
-#import "WhiteBlurNavBar.h"
 #import "Persons.h"
 
 

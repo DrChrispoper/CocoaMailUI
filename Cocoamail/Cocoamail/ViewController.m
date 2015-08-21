@@ -16,6 +16,7 @@
 #import "ContactsViewController.h"
 #import "AttachmentsViewController.h"
 #import "SettingsViewController.h"
+#import "EditMailViewController.h"
 #import "Parser.h"
 
 
@@ -154,7 +155,6 @@ static ViewController* s_self;
         
     }];
     
-    
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         [app beginIgnoringInteractionEvents];
         
@@ -173,14 +173,21 @@ static ViewController* s_self;
         
     }];
     
-    
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONTACTS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         [app beginIgnoringInteractionEvents];
         
         ContactsViewController* f = [[ContactsViewController alloc] init];
-        f.mail = [notif.userInfo objectForKey:kPRESENT_CONTACTS_MAIL_KEY];
+        f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
         [self _animatePushVC:f];
         
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_EDITMAIL_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        [app beginIgnoringInteractionEvents];
+        
+        EditMailViewController* f = [[EditMailViewController alloc] init];
+        f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
+        [self _animatePushVC:f];
     }];
     
     
@@ -446,8 +453,6 @@ static ViewController* s_self;
     
     return nil;
 }
-
-
 
 
 @end

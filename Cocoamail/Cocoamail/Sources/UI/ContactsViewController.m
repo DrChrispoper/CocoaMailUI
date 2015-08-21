@@ -8,7 +8,6 @@
 
 #import "ContactsViewController.h"
 
-#import "WhiteBlurNavBar.h"
 #import "Persons.h"
 
 

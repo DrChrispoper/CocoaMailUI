@@ -22,6 +22,7 @@
 		82E62BF61B81E37C00DF71FC /* Attachments.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E62BF51B81E37C00DF71FC /* Attachments.m */; };
 		82E62BF91B82377100DF71FC /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E62BF81B82377100DF71FC /* SettingsViewController.m */; };
 		82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E862571B84AC4600DD5C74 /* PullToRefresh.m */; };
+		82E935961B873FDF008FD372 /* EditMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E935951B873FDF008FD372 /* EditMailViewController.m */; };
 		82E969461B554745004AB846 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E969451B554745004AB846 /* main.m */; };
 		82E969491B554745004AB846 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E969481B554745004AB846 /* AppDelegate.m */; };
 		82E9694C1B554745004AB846 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E9694B1B554745004AB846 /* ViewController.m */; };
@@ -74,6 +75,8 @@
 		82E62BF81B82377100DF71FC /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		82E862561B84AC4600DD5C74 /* PullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefresh.h; sourceTree = "<group>"; };
 		82E862571B84AC4600DD5C74 /* PullToRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullToRefresh.m; sourceTree = "<group>"; };
+		82E935941B873FDF008FD372 /* EditMailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditMailViewController.h; sourceTree = "<group>"; };
+		82E935951B873FDF008FD372 /* EditMailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditMailViewController.m; sourceTree = "<group>"; };
 		82E969401B554745004AB846 /* Cocoamail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cocoamail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82E969441B554745004AB846 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82E969451B554745004AB846 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -259,6 +262,8 @@
 				82E62BF21B81E07E00DF71FC /* AttachmentsViewController.m */,
 				82E62BF71B82377100DF71FC /* SettingsViewController.h */,
 				82E62BF81B82377100DF71FC /* SettingsViewController.m */,
+				82E935941B873FDF008FD372 /* EditMailViewController.h */,
+				82E935951B873FDF008FD372 /* EditMailViewController.m */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -368,6 +373,7 @@
 				82E264D51B57E76A00E76B92 /* Mail.m in Sources */,
 				82E0E4AB1B80C7FD008A2F16 /* ContactsViewController.m in Sources */,
 				82E969701B555566004AB846 /* FolderViewController.m in Sources */,
+				82E935961B873FDF008FD372 /* EditMailViewController.m in Sources */,
 				82E62BF31B81E07E00DF71FC /* AttachmentsViewController.m in Sources */,
 				82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */,
 				82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */,
