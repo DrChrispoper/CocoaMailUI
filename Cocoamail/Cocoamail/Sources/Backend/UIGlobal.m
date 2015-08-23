@@ -26,5 +26,9 @@
     return [UIColor colorWithWhite:120./255. alpha:1.0];
 }
 
++(UIColor*) standardTableLineColor
+{
+    return [UIColor colorWithRed:200./255. green:199./255. blue:204./255. alpha:1.];
+}
 
 @end

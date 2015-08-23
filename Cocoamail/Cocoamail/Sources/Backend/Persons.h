@@ -22,6 +22,8 @@
 
 -(void) registerPersonWithNegativeID:(Person*)p;
 
+-(NSInteger) addPerson:(Person*)person;
+
 @end
 
 
@@ -33,6 +35,6 @@
 
 -(UIView*) badgeView;
 
-+(Person*) createWithName:(NSString*)name icon:(NSString*)icon codeName:(NSString*)codeName;
++(Person*) createWithName:(NSString*)name email:(NSString*)mail icon:(NSString*)icon codeName:(NSString*)codeName;
 
 @end

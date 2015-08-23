@@ -14,4 +14,6 @@
 +(UIColor*) standardLightGrey;
 +(UIColor*) noImageBadgeColor;
 
++(UIColor*) standardTableLineColor;
+
 @end

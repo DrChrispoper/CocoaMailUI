@@ -37,8 +37,7 @@
     
     ac.systemFolders = @[@(394),@(48),@(0),@(3),@(0),@(0),@(0)];
     ac.userFolders = @[@"Bills", @"Mun & Dad", @"Bill Murray", @"Owen Wilson", @"Marty McFly", @"Doc Brown", @"Biff Tannen"];
-    ac.person = [Person createWithName:mail icon:nil codeName:code];
-    ac.person.email = ac.userMail;
+    ac.person = [Person createWithName:mail email:ac.userMail icon:nil codeName:code];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;
@@ -70,8 +69,7 @@
     }
     
     ac.userFolders = userfolders;
-    ac.person = [Person createWithName:ac.userMail icon:nil codeName:ac.codeName];
-    ac.person.email = ac.userMail;
+    ac.person = [Person createWithName:ac.userMail email:ac.userMail icon:nil codeName:ac.codeName];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;

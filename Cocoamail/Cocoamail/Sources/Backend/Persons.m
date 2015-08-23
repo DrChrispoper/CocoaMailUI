@@ -14,7 +14,7 @@
 
 @interface Persons ()
 
-@property (nonatomic, strong) NSArray* alls;
+@property (nonatomic, strong) NSMutableArray* alls;
 @property (nonatomic, strong) NSMutableArray* allsNeg;
 
 @end
@@ -77,8 +77,7 @@
     
     NSInteger idx = 0;
     for (NSString* image in images) {
-        Person* p = [Person createWithName:names[idx] icon:image codeName:codeNames[idx]];
-        p.email = mails[idx];
+        Person* p = [Person createWithName:names[idx] email:mails[idx] icon:image codeName:codeNames[idx]];
         [tmp addObject:p];
         idx++;
     }
@@ -108,6 +107,13 @@
 }
 
 
+-(NSInteger) addPerson:(Person*)person
+{
+    [self.alls addObject:person];
+    return (self.alls.count - 1);
+}
+
+
 -(void) registerPersonWithNegativeID:(Person*)p
 {
     p.isTheUser = YES;
@@ -122,13 +128,14 @@
 
 @implementation Person
 
-+(Person*) createWithName:(NSString*)name icon:(NSString*)icon codeName:(NSString*)codeName
++(Person*) createWithName:(NSString*)name email:(NSString*)mail icon:(NSString*)icon codeName:(NSString*)codeName
 {
     Person* p = [[Person alloc] init];
     
     p.name = name;
     p.imageName = (icon.length>0) ? icon : nil;
     p.codeName = codeName;
+    p.email = mail;
     
     return p;
 }
