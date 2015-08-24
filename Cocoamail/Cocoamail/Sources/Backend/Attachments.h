@@ -30,3 +30,25 @@
 
 
 @end
+
+
+
+typedef enum : NSUInteger {
+    AttachmentViewActionNone,
+    AttachmentViewActionDonwload,
+    AttachmentViewActionDelete,
+    AttachmentViewActionGlobalTap
+} AttachmentViewAction;
+
+
+@interface AttachmentView : UIView
+
+-(instancetype) initWithWidth:(CGFloat)width leftMarg:(CGFloat)margin;
+
+-(void) fillWith:(Attachment*)attach;
+-(void) addActionTarget:(id)target selector:(SEL)selector andTag:(NSInteger)tag;
+
+-(void) buttonActionType:(AttachmentViewAction)type;
+
+
+@end

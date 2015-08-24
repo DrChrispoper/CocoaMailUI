@@ -24,10 +24,7 @@
 
 @interface AttachmentsCell : UITableViewCell
 
-@property (nonatomic, weak) UILabel* name;
-@property (nonatomic, weak) UILabel* size;
-@property (nonatomic, weak) UIImageView* mini;
-
+@property (nonatomic, weak) AttachmentView* attachView;
 
 @end
 
@@ -165,9 +162,7 @@
         cell = [[AttachmentsCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID];
     }
     
-    cell.name.text = at.name;
-    cell.size.text = at.size;
-    cell.mini.image = [at miniature];
+    [cell.attachView fillWith:at];
 
     return cell;
 }
@@ -282,41 +277,14 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
     self.contentView.backgroundColor = [UIColor whiteColor];
-    const CGFloat WIDTH = self.contentView.frame.size.width;
     
-    UILabel* n = [[UILabel alloc] initWithFrame:CGRectMake(90, 17, WIDTH - 90 - 44, 20)];
-    n.font = [UIFont systemFontOfSize:16];
-    n.textColor = [UIColor blackColor];
-    n.backgroundColor = self.contentView.backgroundColor;
-    [self.contentView addSubview:n];
-    n.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.name = n;
-    
-    UILabel* s = [[UILabel alloc] initWithFrame:CGRectMake(90, 38, WIDTH - 90 - 44, 20)];
-    s.font = [UIFont systemFontOfSize:12];
-    s.textColor = [UIColor colorWithWhite:0.47 alpha:1.0];
-    s.backgroundColor = self.contentView.backgroundColor;
-    [self.contentView addSubview:s];
-    s.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.size = s;
-    
-    UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(90-50-15, 11, 50, 50)];
-    iv.backgroundColor = self.contentView.backgroundColor;
-    iv.contentMode = UIViewContentModeScaleAspectFit;
-    [self.contentView addSubview:iv];
-    iv.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
-    self.mini = iv;
+    AttachmentView* av = [[AttachmentView alloc] initWithWidth:self.contentView.frame.size.width leftMarg:25];
+    [self.contentView addSubview:av];
+    av.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [av buttonActionType:AttachmentViewActionDonwload];
+    self.attachView = av;
     
     self.separatorInset = UIEdgeInsetsMake(0, 91, 0, 0);
-    
-    
-    UIButton* d = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-33.f-10.f, 20.f, 33.f, 33.f)];
-    [d setImage:[UIImage imageNamed:@"forward_off"] forState:UIControlStateNormal];
-    [d setImage:[UIImage imageNamed:@"forward_on"] forState:UIControlStateHighlighted];
-    d.backgroundColor = self.contentView.backgroundColor;
-    [self.contentView addSubview:d];
-    d.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    d.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     return self;
 }

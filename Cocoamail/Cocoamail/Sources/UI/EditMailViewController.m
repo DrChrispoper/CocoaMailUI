@@ -507,7 +507,7 @@ typedef enum : NSUInteger {
     
 }
 
-// TODO this method is in ConversationViewController too (and partially in AttachmentsViewController) : factorize it !!!
+
 -(UIView*) _createAttachmentsView
 {
     NSArray* attachs = self.mail.attachments;
@@ -528,38 +528,18 @@ typedef enum : NSUInteger {
     
     for (Attachment* a in attachs) {
         
-        UILabel* n = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 17, WIDTH - 65 - 44, 20)];
-        n.font = [UIFont systemFontOfSize:16];
-        n.textColor = [UIColor blackColor];
-        n.backgroundColor = v.backgroundColor;
-        [v addSubview:n];
-        n.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         
-        UILabel* s = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 38, WIDTH - 65 - 44, 20)];
-        s.font = [UIFont systemFontOfSize:12];
-        s.textColor = [UIColor colorWithWhite:0.47 alpha:1.0];
-        s.backgroundColor = v.backgroundColor;
-        [v addSubview:s];
-        s.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        AttachmentView* av = [[AttachmentView alloc] initWithWidth:WIDTH leftMarg:2];
+        CGRect f = av.frame;
+        f.origin.y = posY;
+        av.frame = f;
         
-        UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(6, posY + 11, 50, 50)];
-        iv.backgroundColor = v.backgroundColor;
-        iv.contentMode = UIViewContentModeScaleAspectFit;
-        [v addSubview:iv];
-        iv.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+        [av fillWith:a];
+        [av buttonActionType:AttachmentViewActionDelete];
+        [av addActionTarget:self selector:@selector(_delAttach:) andTag:idx];
         
-        n.text = a.name;
-        s.text = a.size;
-        iv.image = [a miniature];
-        
-        UIButton* del = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH - 51, posY + 10, 53.f, 50.f)];
-        del.tag = idx;
-        UIImage* img = [[UIImage imageNamed:@"delete_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [del addTarget:self action:@selector(_delAttach:) forControlEvents:UIControlEventTouchUpInside];
-        [del setImage:img forState:UIControlStateNormal];
-        del.tintColor = [[Accounts sharedInstance] currentAccount].userColor;
-        [v addSubview:del];
-        
+        [v addSubview:av];
+       
         idx++;
         posY += stepY;
     }

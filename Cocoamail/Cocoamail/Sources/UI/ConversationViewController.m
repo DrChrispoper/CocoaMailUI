@@ -541,47 +541,21 @@
     v.backgroundColor = [UIColor whiteColor];
     CGFloat posY = 0.f;
     
+    NSInteger idx = 0;
     for (Attachment* a in attachs) {
         
-        UILabel* n = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 17, WIDTH - 65 - 44, 20)];
-        n.font = [UIFont systemFontOfSize:16];
-        n.textColor = [UIColor blackColor];
-        n.backgroundColor = v.backgroundColor;
-        [v addSubview:n];
-        n.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        AttachmentView* av = [[AttachmentView alloc] initWithWidth:WIDTH leftMarg:0];
+        CGRect f = av.frame;
+        f.origin.y = posY;
+        av.frame = f;
         
-        UILabel* s = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 38, WIDTH - 65 - 44, 20)];
-        s.font = [UIFont systemFontOfSize:12];
-        s.textColor = [UIColor colorWithWhite:0.47 alpha:1.0];
-        s.backgroundColor = v.backgroundColor;
-        [v addSubview:s];
-        s.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [av fillWith:a];
+        [av buttonActionType:AttachmentViewActionGlobalTap];
+        [av addActionTarget:self selector:@selector(_applyButton:) andTag:idx];
         
-        UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(6, posY + 11, 50, 50)];
-        iv.backgroundColor = v.backgroundColor;
-        iv.contentMode = UIViewContentModeScaleAspectFit;
-        [v addSubview:iv];
-        iv.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+        [v addSubview:av];
         
-        n.text = a.name;
-        s.text = a.size;
-        iv.image = [a miniature];
-        
-        
-        UIButton* tapAttach = [[UIButton alloc] initWithFrame:CGRectMake(0, posY + 1.f, WIDTH - 32, stepY - 2.f)];
-        tapAttach.layer.cornerRadius = 8.f;
-        tapAttach.backgroundColor = [UIColor clearColor];
-        tapAttach.layer.masksToBounds = YES;
-        
-        
-        [tapAttach addTarget:self action:@selector(_touchButton:) forControlEvents:UIControlEventTouchDown];
-        [tapAttach addTarget:self action:@selector(_touchButton:) forControlEvents:UIControlEventTouchDragEnter];
-        [tapAttach addTarget:self action:@selector(_cancelTouchButton:) forControlEvents:UIControlEventTouchDragExit];
-        [tapAttach addTarget:self action:@selector(_cancelTouchButton:) forControlEvents:UIControlEventTouchCancel];
-        [tapAttach addTarget:self action:@selector(_applyButton:) forControlEvents:UIControlEventTouchUpInside];
-        
-        [v addSubview:tapAttach];
-        
+        idx++;
         posY += stepY;
     }
     
@@ -589,20 +563,8 @@
     
 }
 
--(void)_touchButton:(UIButton*)button
-{
-    button.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.25];
-}
-
--(void)_cancelTouchButton:(UIButton*)button
-{
-    button.backgroundColor = [UIColor clearColor];
-}
-
 -(void)_applyButton:(UIButton*)button
 {
-    [self _cancelTouchButton:button];
-    
     [ViewController presentAlertWIP:@"open attachment…"];
 }
 
