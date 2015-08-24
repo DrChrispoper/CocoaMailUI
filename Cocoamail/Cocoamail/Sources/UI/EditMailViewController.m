@@ -288,6 +288,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     tf.tag = 1;
     tf.delegate = self;
     tf.keyboardType = UIKeyboardTypeEmailAddress;
+    tf.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    tf.autocorrectionType = UITextAutocorrectionTypeNo;
     [toView addSubview:tf];
     self.toTextField = tf;
     
@@ -876,6 +878,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     UITableView* tv = [[UITableView alloc] initWithFrame:ftv style:UITableViewStyleGrouped];
     tv.delegate = self;
     tv.dataSource = self;
+    tv.backgroundColor = [UIGlobal standardLightGrey];
     
     [searchUI addSubview:tv];
     [searchUI addSubview:iv];
@@ -992,6 +995,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     if (newText.length>0) {
         
         NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.currentSearchPersonList.count];
+        
+        newText = [newText lowercaseString];
         
         for (Person* p in self.currentSearchPersonList) {
             if ([p.name rangeOfString:newText].location != NSNotFound) {

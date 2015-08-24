@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong) NSString* codeName;
 @property (nonatomic, strong) NSString* imageName;
-@property (nonatomic) BOOL isTheUser;
+@property (nonatomic) NSInteger userAccountID;
 
 @end
 
@@ -117,7 +117,7 @@
 
 -(void) registerPersonWithNegativeID:(Person*)p
 {
-    p.isTheUser = YES;
+    p.userAccountID = self.allsNeg.count;
     [self.allsNeg addObject:p];
 }
 
@@ -144,7 +144,7 @@
 {
     NSInteger idx = [self.alls indexOfObject:p];
     if (idx == NSNotFound) {
-        idx = [self.allsNeg indexOfObject:p];
+        idx = -[self.allsNeg indexOfObject:p];
     }
     return idx;
 }
@@ -177,8 +177,9 @@
         UILabel* perso = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 33, 33)];
         perso.backgroundColor = [UIGlobal noImageBadgeColor];
         
-        if (self.isTheUser) {
-            perso.backgroundColor = [[Accounts sharedInstance] currentAccount].userColor;
+        if (self.userAccountID>0) {
+            Account* a = [[Accounts sharedInstance] accounts][self.userAccountID-1];
+            perso.backgroundColor = a.userColor;
         }
         
         perso.text = self.codeName;
