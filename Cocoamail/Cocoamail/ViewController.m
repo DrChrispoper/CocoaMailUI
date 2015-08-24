@@ -70,7 +70,7 @@ static ViewController* s_self;
     
     self.contentView.clipsToBounds = YES;
     
-    // to init accounts creation
+    // FAKE: to init accounts creation
     [Accounts sharedInstance];
     
     [self setup];
@@ -109,13 +109,89 @@ static ViewController* s_self;
     border.backgroundColor = [UIColor clearColor];
     border.userInteractionEnabled = YES;
     border.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    
+    /*
     UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_swipeBack:)];
     sgr.direction = UISwipeGestureRecognizerDirectionRight;
     [border addGestureRecognizer:sgr];
+     */
+    
+    UIPanGestureRecognizer* pgr = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_panBack:)];
+    [border addGestureRecognizer:pgr];
+    
     [self.view addSubview:border];
 }
 
+-(void) _panBack:(UIPanGestureRecognizer*)pgr
+{
+    static UIView* nextView = nil;
+    static UIView* currentView = nil;
+    
+    if (pgr.enabled==NO) {
+        return;
+    }
+    
+    if (pgr.state == UIGestureRecognizerStateBegan) {
+        
+        if (self.viewControllers.count>1) {
+        
+            InViewController* vc = [self.viewControllers objectAtIndex:self.viewControllers.count-2];
+            nextView = vc.view;
+        
+            InViewController* f = [self.viewControllers lastObject];
+            currentView = f.view;
+            
+            nextView.userInteractionEnabled = NO;
+            currentView.userInteractionEnabled = NO;
+            
+            [self.contentView insertSubview:nextView belowSubview:currentView];
+        }
+        return;
+    }
+    
+    if (pgr.state == UIGestureRecognizerStateChanged) {
+        CGPoint p = [pgr translationInView:pgr.view];
+        currentView.transform = CGAffineTransformMakeTranslation(MAX(0, p.x), 0);
+        return;
+    }
+    
+    if (pgr.state == UIGestureRecognizerStateEnded) {
+
+        CGPoint v = [pgr velocityInView:pgr.view];
+        
+        if (v.x>0) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+            nextView.userInteractionEnabled = YES;
+            nextView = nil;
+            currentView = nil;
+        }
+        else {
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            
+            [UIView animateWithDuration:0.3
+                                  delay:0.0
+                 usingSpringWithDamping:0.8
+                  initialSpringVelocity:0.25
+                                options:UIViewAnimationOptionCurveEaseOut
+                             animations:^{
+                                 currentView.transform = CGAffineTransformIdentity;
+                             }
+                             completion:^(BOOL fini) {
+                                 [nextView removeFromSuperview];
+                                 currentView.userInteractionEnabled = YES;
+                                 nextView = nil;
+                                 currentView = nil;
+                                 [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                             }];
+        }
+        
+        return;
+    }
+    /*
+    CGPoint v = [pgr velocityInView:pgr.view];
+    CGPoint p = [pgr translationInView:pgr.view];
+    NSLog(@"%d| %@ --> %@", pgr.state,  NSStringFromCGPoint(p), NSStringFromCGPoint(v));
+    */
+}
 
 -(void) _swipeBack:(UISwipeGestureRecognizer*)sgr
 {
