@@ -31,9 +31,14 @@
 
 @property (nonatomic) BOOL isRead;
 
+@property (nonatomic, strong) Mail* fromMail;
+
 +(NSArray*) mailsWithInfos:(NSDictionary*)infos when:(NSDate*)date;
 
 -(BOOL) haveAttachment;
+
+-(Mail*) replyMail:(BOOL)replyAll;
+-(Mail*) transfertMail;
 
 @end
 

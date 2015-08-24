@@ -25,6 +25,8 @@
 
 - (void)animatedClose;
 
+-(BOOL) isReplyAll;
+
 @end
 
 

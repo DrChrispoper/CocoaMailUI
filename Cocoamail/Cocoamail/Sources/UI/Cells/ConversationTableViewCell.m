@@ -668,6 +668,10 @@
                      completion:nil];
 }
 
+-(BOOL) isReplyAll
+{
+    return self.leftAction.highlighted;
+}
 
 
 @end

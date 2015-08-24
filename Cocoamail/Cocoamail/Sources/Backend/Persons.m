@@ -85,6 +85,7 @@
     self.alls = tmp;
     self.allsNeg = [NSMutableArray arrayWithCapacity:6];
     [self.allsNeg addObject:[[Person alloc] init]];
+        
     return self;
 }
 
@@ -164,7 +165,17 @@
     else {
         
         UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 33, 33)];
-        iv.image = [UIImage imageNamed:self.imageName];
+        
+        if (self.codeName==nil && self.email==nil && self.name==nil) {
+            // "…" icon
+            iv.image = [[UIImage imageNamed:self.imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            iv.tintColor = [UIGlobal noImageBadgeColor];
+        }
+        else {
+            iv.image = [UIImage imageNamed:self.imageName];
+        }
+        
+        
         iv.contentMode = UIViewContentModeScaleAspectFill;
         iv.layer.cornerRadius = 16.5;
         iv.layer.masksToBounds = YES;

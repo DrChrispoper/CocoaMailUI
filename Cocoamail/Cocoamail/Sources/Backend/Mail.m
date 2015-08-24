@@ -183,6 +183,53 @@ static NSDateFormatter* s_df_hour = nil;
 }
 
 
+-(Mail*) replyMail:(BOOL)replyAll
+{
+    Mail* mail = [[Mail alloc] init];
+    
+    mail.title = self.title;
+    mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);
+  
+    if (replyAll) {
+        
+        NSMutableArray* currents = [self.toPersonID mutableCopy];
+        
+        [currents addObject:@(self.fromPersonID)];
+        [currents removeObject:@(mail.fromPersonID)];
+        
+        mail.toPersonID = currents;
+        
+    }
+    else {
+        mail.toPersonID = @[@(self.fromPersonID)];
+    }
+  
+    mail.content = @"";
+    mail.date = [NSDate date];
+    mail.day = [s_df_day stringFromDate:mail.date];
+    mail.hour = [s_df_hour stringFromDate:mail.date];
+    mail.attachments = nil;
+    mail.isFav = false;
+    mail.isRead = false;
+    
+    mail.fromMail = self;
+    
+    // fake but stable
+    mail.mailID = [NSString stringWithFormat:@"%ld", (long)s_nextMailID++];
+    //
+    
+    return mail;
+}
+
+-(Mail*) transfertMail
+{
+    
+    Mail* mail = [self replyMail:NO];
+    mail.toPersonID = nil;
+    
+    return mail;
+}
+
 @end
 
 

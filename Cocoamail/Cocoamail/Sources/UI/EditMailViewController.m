@@ -43,6 +43,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL personsAreHidden;
 
+@property (nonatomic, weak) UIButton* sendButton;
 
 @end
 
@@ -64,6 +65,11 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    if (self.mail == nil) {
+        self.mail = [[Mail alloc] init];
+    }
+    
+    
     self.view.backgroundColor = [UIGlobal standardLightGrey];
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
@@ -73,10 +79,18 @@ typedef enum : NSUInteger {
     
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil/*mail.title*/];
     
-    UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
+    UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"editmail_cancel_off" andHighlighted:@"editmail_cancel_on"];
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
+
+    UIButton* send = [WhiteBlurNavBar navBarButtonWithImage:@"editmail_send_off" andHighlighted:@"editmail_send_on"];
+    UIImage* imgNo = [[UIImage imageNamed:@"editmail_send_no"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [send setImage:imgNo forState:UIControlStateDisabled];
+    [send addTarget:self action:@selector(_send) forControlEvents:UIControlEventTouchUpInside];
+    item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:send];
+    
+    self.sendButton = send;
     
     Accounts* allAccounts = [Accounts sharedInstance];
     
@@ -84,6 +98,10 @@ typedef enum : NSUInteger {
     if ([ca.userMail isEqualToString:@"all"]) {
         ca = [allAccounts.accounts firstObject];
     }
+    
+    back.tintColor = [ca userColor];
+    send.tintColor = [ca userColor];
+    
     
     UILabel* titleView = [WhiteBlurNavBar titleViewForItemTitle:ca.userMail];
     
@@ -108,6 +126,8 @@ typedef enum : NSUInteger {
     self.navBar = navBar;
     
     [navBar createWhiteMaskOverView:self.scrollView withOffset:0.f];
+    
+    [self _manageSendButton];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -140,6 +160,20 @@ typedef enum : NSUInteger {
 
 
 #pragma mark - UI
+
+-(void) _send
+{
+    self.mail.title = self.subjectTextView.text;
+    self.mail.content = self.bodyTextView.text;
+    // TODO : everything else
+    
+    [self _back];
+}
+
+-(void) _manageSendButton
+{
+    self.sendButton.enabled = self.subjectTextView.text.length>0 && self.mail.toPersonID.count>0;
+}
 
 -(void) _keyboardNotification:(BOOL)listen
 {
@@ -216,9 +250,11 @@ typedef enum : NSUInteger {
     [toView addSubview:label];
     
     UIButton* addButton = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-45, 0, 45, 45)];
-    [addButton setTitleColor:[ca userColor] forState:UIControlStateNormal];
-    [addButton setTitle:@"+" forState:UIControlStateNormal];
-    addButton.backgroundColor = [UIColor whiteColor];
+    UIImage* plusOff = [[UIImage imageNamed:@"editmail_contact_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* plusOn = [[UIImage imageNamed:@"editmail_contact_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [addButton setImage:plusOff forState:UIControlStateNormal];
+    [addButton setImage:plusOn forState:UIControlStateHighlighted];
+    
     addButton.tintColor = [ca userColor];
     [addButton addTarget:self action:@selector(_addPerson) forControlEvents:UIControlEventTouchUpInside];
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -351,16 +387,24 @@ typedef enum : NSUInteger {
     CGFloat lastH = self.subjectTextView.frame.size.height;
 
     self.subjectTextView.text = self.mail.title;
+    
+    CGRect oneLineFrame = self.subjectTextView.frame;
+    
     [self.subjectTextView sizeToFit];
     
     CGFloat delta = self.subjectTextView.frame.size.height - lastH;
     
-    UIView* subject = [self.contentView viewWithTag:ContentSubject];
-    CGRect r = subject.frame;
-    r.size.height += delta;
-    subject.frame = r;
+    if (delta == 0.) {
+        self.subjectTextView.frame = oneLineFrame;
+    }
+    else {
+        UIView* subject = [self.contentView viewWithTag:ContentSubject];
+        CGRect r = subject.frame;
+        r.size.height += delta;
+        subject.frame = r;
+        [self _subjectChangeSize:delta];
+    }
     
-    [self _subjectChangeSize:delta];
 }
 
 #pragma mark - cc view
@@ -400,15 +444,15 @@ typedef enum : NSUInteger {
         ccButton.layer.borderColor = currentAccountColor.CGColor;
         ccButton.layer.borderWidth = 1.f;
         [ccButton addTarget:self action:@selector(_ccButton:) forControlEvents:UIControlEventTouchUpInside];
-        [ccButton setTitle:@"cc:" forState:UIControlStateNormal];
-        [ccButton setTitle:@"cci:" forState:UIControlStateSelected];
-        [ccButton setTitleColor:currentAccountColor forState:UIControlStateNormal];
-        [ccButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+        
+        UIImage* ccoff = [[UIImage imageNamed:@"editmail_cc"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage* ccon = [[UIImage imageNamed:@"editmail_cci"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [ccButton setImage:ccoff forState:UIControlStateNormal];
+        [ccButton setImage:ccon forState:UIControlStateSelected];
+        ccButton.tintColor = currentAccountColor;
         [ccView addSubview:ccButton];
         
         ccButton.selected = self.personsAreHidden;
-        ccButton.backgroundColor = (self.personsAreHidden) ? currentAccountColor : [UIColor whiteColor];
-        
         
         nextPosX += stepX;
         
@@ -470,20 +514,13 @@ typedef enum : NSUInteger {
         [self _ccChangeSize:delta];
     }
     
+    [self _manageSendButton];
 }
 
 -(void) _ccButton:(UIButton*)b
 {
-    
     self.personsAreHidden = ! self.personsAreHidden;
     [self _createCCcontent];
-    
-    /*
-    b.selected = !b.selected;
-    
-    UIColor* currentAccountColor = [[Accounts sharedInstance] currentAccount].userColor;
-    b.backgroundColor = (b.selected) ?currentAccountColor : [UIColor whiteColor];
-    */
 }
 
 -(void) removePersonAtIndex:(NSInteger)idx
@@ -574,9 +611,10 @@ typedef enum : NSUInteger {
             [self _fixContentSize];
             
         }
-        
-        
     }
+    
+    [self _manageSendButton];
+    
 }
 
 -(BOOL) textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -603,22 +641,42 @@ typedef enum : NSUInteger {
 {
     [textField resignFirstResponder];
 
-    NSString* mail = textField.text;
+    NSString* mailText = textField.text;
     
-    if ([mail rangeOfString:@"@"].location > 2) {
+    NSArray* alls = [mailText componentsSeparatedByString:@" "];
+    
+    BOOL added = NO;
+    
+    for (NSString* mail in alls) {
         
-        NSString* code = [[mail substringToIndex:3] uppercaseString];
+        NSUInteger loc = [mail rangeOfString:@"@"].location;
+        NSUInteger locDot = [mail rangeOfString:@"." options:NSBackwardsSearch].location;
         
-        Person* p = [Person createWithName:mail email:mail icon:nil codeName:code];
-        NSInteger idxPerson = [[Persons sharedInstance] addPerson:p];
-        
-        NSMutableArray* olds = [self.mail.toPersonID mutableCopy];
-        [olds addObject:@(idxPerson)];
-        self.mail.toPersonID = olds;
-        
+        if (loc != NSNotFound && loc > 2 &&  locDot != NSNotFound && loc < locDot) {
+            
+            NSString* code = [[mail substringToIndex:3] uppercaseString];
+            
+            Person* p = [Person createWithName:mail email:mail icon:nil codeName:code];
+            NSInteger idxPerson = [[Persons sharedInstance] addPerson:p];
+            
+            if (self.mail.toPersonID.count<1) {
+                self.mail.toPersonID = @[@(idxPerson)];
+            }
+            else {
+                NSMutableArray* olds = [self.mail.toPersonID mutableCopy];
+                [olds addObject:@(idxPerson)];
+                self.mail.toPersonID = olds;
+            }
+            
+            added = YES;
+            
+        }
+    }
+    
+    if (added) {
         [self _createCCcontent];
     }
-
+    
     textField.text = nil;
     
     return NO;
@@ -749,9 +807,9 @@ typedef enum : NSUInteger {
     mail.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     mail.text = p.email;
     
-    UIButton* remove = [[UIButton alloc] initWithFrame:CGRectMake(2, 0, 31.f, 33.f)];
-    [remove setTitle:@"x" forState:UIControlStateNormal];
-    [remove setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    UIButton* remove = [[UIButton alloc] initWithFrame:CGRectMake(2, 0, 31.f, 33.f)];    
+    [remove setImage:[UIImage imageNamed:@"editmail_close_bubble_off"] forState:UIControlStateNormal];
+    [remove setImage:[UIImage imageNamed:@"editmail_close_bubble_on"] forState:UIControlStateHighlighted];
     [remove addTarget:self action:@selector(_remove) forControlEvents:UIControlEventTouchUpInside];
     [back addSubview:remove];
     remove.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;

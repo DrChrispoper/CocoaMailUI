@@ -24,6 +24,8 @@
 
 -(NSInteger) addPerson:(Person*)person;
 
+@property (nonatomic) NSInteger idxMorePerson;
+
 @end
 
 

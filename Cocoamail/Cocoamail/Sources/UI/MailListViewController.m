@@ -310,9 +310,8 @@
         Conversation* conv = convs[indexPath.row];
         
         Mail* m = [conv firstMail];
-        // TODO create a new mail (reply/reply all) from m
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:m}];
+        Mail* repm = [m replyMail:[cell isReplyAll]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:repm}];
     }
     else if (swipetype == 3) {
         

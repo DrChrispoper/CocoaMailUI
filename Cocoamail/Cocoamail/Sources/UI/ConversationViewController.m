@@ -59,6 +59,16 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+
+    //
+    Persons* p = [Persons sharedInstance];
+    if (p.idxMorePerson == 0) {
+        Person* more = [Person createWithName:nil email:nil icon:@"recipients_on" codeName:nil];
+        p.idxMorePerson = [p addPerson:more];
+    }
+    // TODO put it elsewhere
+    
+    
     self.view.backgroundColor = [UIGlobal standardLightGrey];
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
@@ -356,9 +366,13 @@
         NSArray* subarray = mail.toPersonID;
         if (mail.toPersonID.count>3) {
             NSRange r;
-            r.length = 3;
-            r.location = mail.toPersonID.count - 3;
-            subarray = [mail.toPersonID subarrayWithRange:r];
+            r.length = 2;
+            r.location = mail.toPersonID.count - 2;
+            
+            NSMutableArray* tmp = [[mail.toPersonID subarrayWithRange:r] mutableCopy];
+            
+            [tmp insertObject:@([Persons sharedInstance].idxMorePerson) atIndex:0];
+            subarray = tmp;
         }
         
         for (NSNumber* userID in subarray) {
@@ -473,6 +487,8 @@
         
         CGFloat stepX = ((inIV.frame.size.width - 33.f - 5.5f) - baseFrame.origin.x ) / 4.f;
         
+        NSInteger idxTag = 1;
+        
         for (NSString* name in btns) {
             
             UIButton* b = [[UIButton alloc] initWithFrame:baseFrame];
@@ -496,6 +512,8 @@
                 b.selected = mail.isRead;
             }
             else {
+                b.tag = idxTag++;
+                
                 [b addTarget:self action:@selector(_openEdit:) forControlEvents:UIControlEventTouchUpInside];
             }
             
@@ -592,10 +610,21 @@
 
 -(void)_openEdit:(UIButton*)button
 {
-    
     Mail* m = [self.delegate mailDisplayed:self];
-    // TODO create a new mail (reply/reply all) from m
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:m}];
+    
+    Mail* repm = nil;
+    
+    if (button.tag==1) {
+        repm = [m transfertMail];
+    }
+    else if (button.tag==2) {
+        repm = [m replyMail:NO];
+    }
+    else {
+        repm = [m replyMail:YES];
+    }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:repm}];
 }
 
 -(void) _masr:(UIButton*)button
