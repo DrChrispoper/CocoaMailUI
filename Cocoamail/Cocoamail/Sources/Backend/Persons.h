@@ -26,6 +26,10 @@
 
 @property (nonatomic) NSInteger idxMorePerson;
 
+-(NSArray*) allPersons;
+-(NSInteger) indexForPerson:(Person*)p;
+
+
 @end
 
 

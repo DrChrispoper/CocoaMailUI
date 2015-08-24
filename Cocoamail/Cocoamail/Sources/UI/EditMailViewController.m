@@ -32,7 +32,8 @@ typedef enum : NSUInteger {
 
 
 
-@interface EditMailViewController () <UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, ExpendableBadgeDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface EditMailViewController () <UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, ExpendableBadgeDelegate,
+UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UIView* contentView;
 @property (nonatomic, weak) UIScrollView* scrollView;
@@ -47,6 +48,14 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, weak) UIButton* sendButton;
 @property (nonatomic, weak) UIButton* attachButton;
+
+@property (nonatomic, weak) UIView* searchUI;
+@property (nonatomic, weak) UITableView* searchTableView;
+@property (nonatomic, strong) NSArray* currentSearchPersonList;
+@property (nonatomic, weak) UITextField* toTextField;
+@property (nonatomic, weak) UIButton* toButton;
+
+@property (nonatomic, weak) UITapGestureRecognizer* tapContentGesture;
 
 @end
 
@@ -122,6 +131,7 @@ typedef enum : NSUInteger {
     
     UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_tapContent:)];
     [self.view addGestureRecognizer:tgr];
+    self.tapContentGesture = tgr;
     
     [self _keyboardNotification:YES];
     
@@ -269,7 +279,7 @@ typedef enum : NSUInteger {
     [addButton addTarget:self action:@selector(_addPerson) forControlEvents:UIControlEventTouchUpInside];
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [toView addSubview:addButton];
-    
+    self.toButton = addButton;
     
     UITextField* tf = [[UITextField alloc] initWithFrame:CGRectMake(label.frame.size.width + 10, 1.5, WIDTH - 32 - (label.frame.size.width + 10), 43)];
     tf.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -279,7 +289,7 @@ typedef enum : NSUInteger {
     tf.delegate = self;
     tf.keyboardType = UIKeyboardTypeEmailAddress;
     [toView addSubview:tf];
-    
+    self.toTextField = tf;
     
     UIView* line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 0.5)];
     line.backgroundColor = [UIGlobal standardTableLineColor];
@@ -589,13 +599,7 @@ typedef enum : NSUInteger {
         const CGFloat stepX = 33 + 5;
         
         UIButton* ccButton = [[UIButton alloc] initWithFrame:CGRectMake(nextPosX, currentPosY, 33, 33)];
-        //ccButton.backgroundColor = [UIColor whiteColor];
-        ccButton.layer.cornerRadius = 16.5;
-        ccButton.layer.masksToBounds = YES;
-        ccButton.layer.borderColor = currentAccountColor.CGColor;
-        ccButton.layer.borderWidth = 1.f;
         [ccButton addTarget:self action:@selector(_ccButton:) forControlEvents:UIControlEventTouchUpInside];
-        
         UIImage* ccoff = [[UIImage imageNamed:@"editmail_cc"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         UIImage* ccon = [[UIImage imageNamed:@"editmail_cci"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [ccButton setImage:ccoff forState:UIControlStateNormal];
@@ -843,12 +847,180 @@ typedef enum : NSUInteger {
     return YES;
 }
 
+#pragma mark - SearchUI
+
+-(void) _presentSearchUI
+{
+    self.tapContentGesture.enabled = NO;
+    
+    UIImage* plusOff = [[UIImage imageNamed:@"editmail_close_bubble_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* plusOn = [[UIImage imageNamed:@"editmail_close_bubble_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.toButton setImage:plusOff forState:UIControlStateNormal];
+    [self.toButton setImage:plusOn forState:UIControlStateHighlighted];
+    self.toButton.tintColor = [UIGlobal noImageBadgeColor];
+    
+    
+    UIView* toView = [self.contentView viewWithTag:ContentTo];
+    CGFloat posY = toView.frame.origin.y + toView.frame.size.height;
+    
+    UIView* searchUI = [[UIView alloc] initWithFrame:CGRectMake(0, posY, self.scrollView.frame.size.width, self.scrollView.frame.size.height - posY + 50)];
+    searchUI.backgroundColor = [UIColor whiteColor];
+    
+    UIImage* shadow = [UIImage imageNamed:@"editmail_shadow_stretch"];
+    UIImageView* iv = [[UIImageView alloc] initWithImage:shadow];
+    iv.frame = CGRectMake(0, 0, toView.frame.size.width, 3);
+    iv.contentMode = UIViewContentModeScaleToFill;
+    
+    CGRect ftv = searchUI.bounds;
+    ftv.size.height -= 50;
+    UITableView* tv = [[UITableView alloc] initWithFrame:ftv style:UITableViewStyleGrouped];
+    tv.delegate = self;
+    tv.dataSource = self;
+    
+    [searchUI addSubview:tv];
+    [searchUI addSubview:iv];
+    
+    self.searchTableView = tv;
+    
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, self.scrollView.frame.size.height);
+    
+    [self.contentView addSubview:searchUI];
+    self.searchUI = searchUI;
+}
+
+-(void) _removeSearchUI
+{
+    self.currentSearchPersonList = nil;
+    
+    UIImage* plusOff = [[UIImage imageNamed:@"editmail_contact_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* plusOn = [[UIImage imageNamed:@"editmail_contact_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.toButton setImage:plusOff forState:UIControlStateNormal];
+    [self.toButton setImage:plusOn forState:UIControlStateHighlighted];
+    self.toButton.tintColor = [[[Accounts sharedInstance] currentAccount] userColor];
+    
+    
+    self.tapContentGesture.enabled = YES;
+    
+    [self.searchUI removeFromSuperview];
+    self.searchUI = nil;
+    
+    [self _fixContentSize];
+}
+
+
+-(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Person* p = self.currentSearchPersonList[indexPath.row];
+    
+    NSString* reuseID = @"kPersonCellID";
+    
+    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:reuseID];
+    
+    if (cell==nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseID];
+    }
+    
+    cell.detailTextLabel.text = p.email;
+    cell.textLabel.text = p.name;
+    
+    return cell;
+}
+
+-(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return CGFLOAT_MIN;
+}
+
+-(CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return CGFLOAT_MIN;    
+}
+
+
+-(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Person* p = self.currentSearchPersonList[indexPath.row];
+    
+    NSInteger idxPerson = [[Persons sharedInstance] indexForPerson:p];
+    
+    if (self.mail.toPersonID.count<1) {
+        self.mail.toPersonID = @[@(idxPerson)];
+    }
+    else {
+        NSMutableArray* olds = [self.mail.toPersonID mutableCopy];
+        [olds addObject:@(idxPerson)];
+        self.mail.toPersonID = olds;
+    }
+    
+    [self _createCCcontent];
+    
+    self.toTextField.text = nil;
+    [self.toTextField resignFirstResponder];
+    
+    return nil;
+}
+
+
+
+-(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (self.currentSearchPersonList==nil) {
+        self.currentSearchPersonList = [[Persons sharedInstance] allPersons];
+    }
+    
+    return self.currentSearchPersonList.count;
+}
+
 
 #pragma mark - TextField Delegate
 
+-(BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if ([string rangeOfString:@" "].location!=NSNotFound) {
+        [self textFieldShouldReturn:textField];
+        [textField becomeFirstResponder];
+        return NO;
+    }
+    
+    // TODO a real incremental search
+    NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+
+    if (string.length<1) {
+        self.currentSearchPersonList = [[Persons sharedInstance] allPersons];
+    }
+
+    if (newText.length>0) {
+        
+        NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.currentSearchPersonList.count];
+        
+        for (Person* p in self.currentSearchPersonList) {
+            if ([p.name rangeOfString:newText].location != NSNotFound) {
+                [res addObject:p];
+            }
+            else if ([p.email rangeOfString:newText].location != NSNotFound) {
+                [res addObject:p];
+            }
+        }
+        
+        self.currentSearchPersonList = res;
+    }
+    
+    [self.searchTableView reloadData];
+    
+    return YES;
+}
+
 -(void) textFieldDidBeginEditing:(UITextField *)textField
 {
-    //[ViewController presentAlertWIP:@"search UI"];
+    [self.scrollView setContentOffset:CGPointZero animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _presentSearchUI];
+    });
+}
+
+-(void) textFieldDidEndEditing:(UITextField *)textField
+{
+    [self _removeSearchUI];
 }
 
 -(BOOL) textFieldShouldReturn:(UITextField *)textField
@@ -892,6 +1064,7 @@ typedef enum : NSUInteger {
     }
     
     textField.text = nil;
+    self.currentSearchPersonList = nil;
     
     return NO;
 }
@@ -989,6 +1162,12 @@ typedef enum : NSUInteger {
 
 -(void) _addPerson
 {
+    if (self.searchUI != nil) {
+        self.toTextField.text = nil;
+        [self.toTextField resignFirstResponder];
+        return;
+    }
+    
     [ViewController presentAlertWIP:@"go to list view…"];
 }
 

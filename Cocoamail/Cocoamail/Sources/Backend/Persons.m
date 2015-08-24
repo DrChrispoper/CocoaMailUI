@@ -55,7 +55,7 @@
                         @"vince-vaughn", @"will-ferrell", @"zach-galifianakis",
                         @"", @"", @"" ];
 
-    NSArray* mails = @[@"adam.sandler@gmail.com", @"bstiller@gmail.Com", @"bill@murray.com",
+    NSArray* mails = @[@"adam.sandler@gmail.com", @"bstiller@gmail.com", @"bill@murray.com",
                        @"helmet.brown@futur.com", @"hill@benny.com", @"marty@futur.com",
                        @"owenwilson@gmail.com", @"robert@downey.jr", @"srogen@gmail.com",
                        @"vv@gmail.com", @"will.ferrell@yahoo.com", @"zgalifianakis@yahoo.com",
@@ -119,6 +119,34 @@
 {
     p.isTheUser = YES;
     [self.allsNeg addObject:p];
+}
+
+-(NSArray*) allPersons
+{
+    NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.alls.count + self.allsNeg.count];
+    
+    for (Person* p in self.alls) {
+        if (p.email.length>0 && [p.email rangeOfString:@"@"].location != NSNotFound) {
+            [res addObject:p];
+        }
+    }
+
+    for (Person* p in self.allsNeg) {
+        if (p.email.length>0 && [p.email rangeOfString:@"@"].location != NSNotFound) {
+            [res addObject:p];
+        }
+    }
+    
+    return res;
+}
+
+-(NSInteger) indexForPerson:(Person*)p
+{
+    NSInteger idx = [self.alls indexOfObject:p];
+    if (idx == NSNotFound) {
+        idx = [self.allsNeg indexOfObject:p];
+    }
+    return idx;
 }
 
 
