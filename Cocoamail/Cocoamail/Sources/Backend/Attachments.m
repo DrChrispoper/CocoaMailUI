@@ -118,5 +118,14 @@
 
 @implementation Attachment
 
+-(UIImage*) miniature
+{
+    if (self.image != nil) {
+        return self.image;
+    }
+    
+    return [UIImage imageNamed:self.imageName];
+}
+
 
 @end

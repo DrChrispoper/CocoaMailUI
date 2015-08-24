@@ -221,11 +221,12 @@ static NSDateFormatter* s_df_hour = nil;
     return mail;
 }
 
+
 -(Mail*) transfertMail
 {
-    
     Mail* mail = [self replyMail:NO];
     mail.toPersonID = nil;
+    mail.attachments = self.attachments;
     
     return mail;
 }

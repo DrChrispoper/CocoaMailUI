@@ -565,7 +565,7 @@
         
         n.text = a.name;
         s.text = a.size;
-        iv.image = [UIImage imageNamed:a.imageName];
+        iv.image = [a miniature];
         
         
         UIButton* tapAttach = [[UIButton alloc] initWithFrame:CGRectMake(0, posY + 1.f, WIDTH - 32, stepY - 2.f)];

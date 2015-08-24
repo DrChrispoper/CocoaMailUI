@@ -6,15 +6,16 @@
 //  Copyright (c) 2015 cocoasoft. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-
+#import <UIKit/UIKit.h>
 
 @interface Attachment : NSObject
 
 @property (nonatomic, strong) NSString* imageName;
 @property (nonatomic, strong) NSString* name;
 @property (nonatomic, strong) NSString* size;
+@property (nonatomic, strong) UIImage* image;
+
+-(UIImage*) miniature;
 
 @end
 

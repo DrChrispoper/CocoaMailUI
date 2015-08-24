@@ -167,12 +167,8 @@
     
     cell.name.text = at.name;
     cell.size.text = at.size;
-    cell.mini.image = [UIImage imageNamed:at.imageName];
-    /*
-    cell.imageView.image = [UIImage imageNamed:at.imageName];
-    cell.textLabel.text = at.name;
-    cell.detailTextLabel.text = at.size;
-    */
+    cell.mini.image = [at miniature];
+
     return cell;
 }
 

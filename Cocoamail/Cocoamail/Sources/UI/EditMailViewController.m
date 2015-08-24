@@ -17,7 +17,9 @@ typedef enum : NSUInteger {
     ContentTo,
     ContentCC,
     ContentSubject,
-    ContentBody
+    ContentBody,
+    ContentAttach,
+    ContentOld
 } ContentType;
 
 
@@ -30,7 +32,7 @@ typedef enum : NSUInteger {
 
 
 
-@interface EditMailViewController () <UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, ExpendableBadgeDelegate>
+@interface EditMailViewController () <UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, ExpendableBadgeDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, weak) UIView* contentView;
 @property (nonatomic, weak) UIScrollView* scrollView;
@@ -44,6 +46,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL personsAreHidden;
 
 @property (nonatomic, weak) UIButton* sendButton;
+@property (nonatomic, weak) UIButton* attachButton;
 
 @end
 
@@ -69,8 +72,8 @@ typedef enum : NSUInteger {
         self.mail = [[Mail alloc] init];
     }
     
-    
-    self.view.backgroundColor = [UIGlobal standardLightGrey];
+//    self.view.backgroundColor = [UIGlobal standardLightGrey];
+    self.view.backgroundColor = [UIColor whiteColor];
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
@@ -145,14 +148,21 @@ typedef enum : NSUInteger {
 
 -(void) _hideKeyboard
 {
-    [self.subjectTextView becomeFirstResponder];
-    [self.subjectTextView resignFirstResponder];
+    [self.contentView endEditing:YES];
 }
 
 -(void) _tapContent:(UITapGestureRecognizer*)tgr
 {
     if (!tgr.enabled || tgr.state != UIGestureRecognizerStateEnded) {
         return;
+    }
+    
+    if (![self.bodyTextView isFirstResponder]) {
+        CGPoint pos = [tgr locationInView:self.view];
+        if (pos.y > self.scrollView.contentSize.height) {
+            [self.bodyTextView becomeFirstResponder];
+            return;
+        }
     }
     
     [self _hideKeyboard];
@@ -213,7 +223,7 @@ typedef enum : NSUInteger {
     const CGFloat WIDTH = [UIScreen mainScreen].bounds.size.width;
     
     UIView* contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH, 1000)];
-    contentView.backgroundColor = [UIColor clearColor];
+    contentView.backgroundColor = [UIColor whiteColor];
     
     UIScrollView* sv = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     sv.contentSize = contentView.frame.size;
@@ -314,19 +324,13 @@ typedef enum : NSUInteger {
     [subView addSubview:label];
     
     addButton = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-45, 0, 45, 45)];
-    
-    UIImage* off = [[UIImage imageNamed:@"attachment_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIImage* on = [[UIImage imageNamed:@"attachment_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    
-    [addButton setImage:off forState:UIControlStateNormal];
-    [addButton setImage:on forState:UIControlStateSelected];
-    [addButton setImage:on forState:UIControlStateHighlighted];
-    [addButton setImage:on forState:UIControlStateSelected|UIControlStateHighlighted];
     addButton.backgroundColor = [UIColor whiteColor];
     addButton.tintColor = [ca userColor];
     [addButton addTarget:self action:@selector(_addAttach) forControlEvents:UIControlEventTouchUpInside];
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [subView addSubview:addButton];
+    
+    self.attachButton = addButton;
     
     UITextView* tvS = [[UITextView alloc] initWithFrame:CGRectMake(label.frame.size.width + 10, 5.5, WIDTH - 40 - (label.frame.size.width + 10), 34)];
     tvS.font = [UIFont systemFontOfSize:15.];
@@ -345,39 +349,95 @@ typedef enum : NSUInteger {
     [subView addSubview:line];
     
     
-    
     [contentView addSubview:subView];
     subView.tag = ContentSubject;
- 
     currentPosY += subView.frame.size.height;
     
     // Body
 
-    UIView* bdView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 34+8)];
+    UIView* bdView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 34 + 8 + 19*3)];
     bdView.backgroundColor = [UIColor whiteColor];
 
-    UITextView* tv = [[UITextView alloc] initWithFrame:CGRectMake(8, 4, WIDTH-16, 34)];
+    UITextView* tv = [[UITextView alloc] initWithFrame:CGRectMake(3, 4, WIDTH-6, 34 + 19*3 - 3)];
     tv.textColor = [UIColor blackColor];
     tv.backgroundColor = [UIColor whiteColor];
-    tv.font = [UIFont systemFontOfSize:16];
+    tv.font = [UIFont systemFontOfSize:15];
     tv.delegate = self;
     [bdView addSubview:tv];
+    tv.text = @"\n\n\n";
+    
+    NSRange start = {0,0};
+    tv.selectedRange = start;
+    
+    self.bodyTextView = tv;
     
     [contentView addSubview:bdView];
     bdView.tag = ContentBody;
+    currentPosY += bdView.frame.size.height;
+
     
-    [self _fixContentSize];
+    // attchments
+
+    UIView* attachView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 1)];
+    attachView.backgroundColor = [UIColor whiteColor];
+    
+    [contentView addSubview:attachView];
+    attachView.tag = ContentAttach;
+    currentPosY += attachView.frame.size.height;
+    
+    
+    // last message
+    
+    
+    if (self.mail.fromMail != nil) {
+        
+        UIView* oldView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 100)];
+        oldView.backgroundColor = [UIColor whiteColor];
+        
+        
+        UITextView* oldtv = [[UITextView alloc] initWithFrame:CGRectMake(8, 4, WIDTH-16, 50)];
+        oldtv.textColor = [UIColor blackColor];
+        oldtv.backgroundColor = [UIColor clearColor];
+        oldtv.font = [UIFont systemFontOfSize:15];
+        oldtv.editable = NO;
+        oldtv.scrollEnabled = NO;
+        [oldView addSubview:oldtv];
+        
+        Person* from = [[Persons sharedInstance] getPersonID:self.mail.fromMail.fromPersonID];
+        NSString* wrote = NSLocalizedString(@"wrote", @"wrote");
+        
+        NSString* oldcontent = [NSString stringWithFormat:@"%@ %@ :\n\n%@\n", from.name, wrote, self.mail.fromMail.content];
+        oldtv.text = oldcontent;
+        
+        [oldtv sizeToFit];
+
+        CGRect f = oldView.frame;
+        f.size.height = oldtv.frame.size.height + 20;
+        oldView.frame = f;
+
+        
+        UIImage* rBack = [[UIImage imageNamed:@"cell_mail_unread"] resizableImageWithCapInsets:UIEdgeInsetsMake(44, 44, 44, 44)];
+        UIImageView* iv = [[UIImageView alloc] initWithImage:[rBack imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+        
+        CGRect ivf = oldtv.frame;
+        ivf.origin.y -= 5;
+        iv.frame = ivf;
+        iv.tintColor = [UIGlobal standardLightGrey];
+        [oldView insertSubview:iv belowSubview:oldtv];
+        
+        [contentView addSubview:oldView];
+        oldView.tag = ContentOld;
+    }
     
     [self _createCCcontent];
     
-
     [self _fillTitle];
     
-    // TODO fill body with last message when reply ?
-
-    // TODO add send by cocoamail ?
+    [self _fixContentSize];
     
-    // TODO add attachment after the body ?
+    [self _updateAttachView];
+    
+    
     // TODO add send by cocoamail ?
 }
 
@@ -406,6 +466,117 @@ typedef enum : NSUInteger {
     }
     
 }
+
+#pragma mark - attach
+
+-(void) _updateAttachView
+{
+    UIView* attach = [self.contentView viewWithTag:ContentAttach];
+    
+    UIView* old = [[attach subviews] firstObject];
+    [old removeFromSuperview];
+    
+    UIView* content = [self _createAttachmentsView];
+    
+    CGRect f = attach.frame;
+    
+    CGFloat delta = content.frame.size.height - f.size.height;
+    
+    f.size.height = content.frame.size.height;
+    attach.frame = f;
+    
+    [attach addSubview:content];
+    
+    if (delta != 0) {
+        [self _attachChangeSize:delta];
+    }
+    
+    UIImage* on = [[UIImage imageNamed:@"editmail_attachment_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+    if (self.mail.attachments.count==0) {
+        UIImage* off = [[UIImage imageNamed:@"editmail_attachment_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [self.attachButton setImage:off forState:UIControlStateNormal];
+        [self.attachButton setImage:on forState:UIControlStateHighlighted];
+    }
+    else {
+        UIImage* more = [[UIImage imageNamed:@"editmail_attachment_more"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [self.attachButton setImage:on forState:UIControlStateNormal];
+        [self.attachButton setImage:more forState:UIControlStateHighlighted];
+    }
+
+    
+}
+
+// TODO this method is in ConversationViewController too (and partially in AttachmentsViewController) : factorize it !!!
+-(UIView*) _createAttachmentsView
+{
+    NSArray* attachs = self.mail.attachments;
+    
+    if (attachs.count==0) {
+        return nil;
+    }
+    
+    CGFloat WIDTH = [UIScreen mainScreen].bounds.size.width;
+    
+    const CGFloat stepY = 73.f;
+    
+    UIView* v = [[UIView alloc] initWithFrame:CGRectMake(2, 0, WIDTH, stepY * attachs.count)];
+    v.backgroundColor = [UIColor whiteColor];
+    CGFloat posY = 0.f;
+    
+    NSInteger idx = 0;
+    
+    for (Attachment* a in attachs) {
+        
+        UILabel* n = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 17, WIDTH - 65 - 44, 20)];
+        n.font = [UIFont systemFontOfSize:16];
+        n.textColor = [UIColor blackColor];
+        n.backgroundColor = v.backgroundColor;
+        [v addSubview:n];
+        n.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        UILabel* s = [[UILabel alloc] initWithFrame:CGRectMake(65, posY + 38, WIDTH - 65 - 44, 20)];
+        s.font = [UIFont systemFontOfSize:12];
+        s.textColor = [UIColor colorWithWhite:0.47 alpha:1.0];
+        s.backgroundColor = v.backgroundColor;
+        [v addSubview:s];
+        s.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(6, posY + 11, 50, 50)];
+        iv.backgroundColor = v.backgroundColor;
+        iv.contentMode = UIViewContentModeScaleAspectFit;
+        [v addSubview:iv];
+        iv.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+        
+        n.text = a.name;
+        s.text = a.size;
+        iv.image = [a miniature];
+        
+        UIButton* del = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH - 51, posY + 10, 53.f, 50.f)];
+        del.tag = idx;
+        UIImage* img = [[UIImage imageNamed:@"delete_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [del addTarget:self action:@selector(_delAttach:) forControlEvents:UIControlEventTouchUpInside];
+        [del setImage:img forState:UIControlStateNormal];
+        del.tintColor = [[Accounts sharedInstance] currentAccount].userColor;
+        [v addSubview:del];
+        
+        idx++;
+        posY += stepY;
+    }
+    
+    return v;
+    
+}
+
+-(void)_delAttach:(UIButton*)b
+{
+    NSMutableArray* attachs = [self.mail.attachments mutableCopy];
+    [attachs removeObjectAtIndex:b.tag];
+    self.mail.attachments = attachs;
+    
+    [self _updateAttachView];
+}
+
 
 #pragma mark - cc view
 
@@ -538,9 +709,18 @@ typedef enum : NSUInteger {
 
 -(void) _fixContentSize
 {
-    UIView* body = [self.contentView viewWithTag:ContentBody];
+    UIView* last = [self.contentView viewWithTag:ContentOld];
     
-    CGFloat height = body.frame.origin.y + body.frame.size.height;
+    if (last==nil) {
+        last = [self.contentView viewWithTag:ContentAttach];
+        
+        if (last==nil) {
+            last = [self.contentView viewWithTag:ContentBody];
+        }
+        
+    }
+    
+    CGFloat height = last.frame.origin.y + last.frame.size.height + 20;
     
     CGRect f = self.contentView.frame;
     f.size.height = height;
@@ -571,8 +751,31 @@ typedef enum : NSUInteger {
     f.origin.y += delta;
     body.frame = f;
     
+    [self _bodyChangeSize:delta];
+}
+
+-(void) _bodyChangeSize:(CGFloat) delta
+{
+    UIView* a = [self.contentView viewWithTag:ContentAttach];
+    
+    CGRect f = a.frame;
+    f.origin.y += delta;
+    a.frame = f;
+    
+    [self _attachChangeSize:delta];
+}
+
+-(void) _attachChangeSize:(CGFloat) delta
+{
+    UIView* a = [self.contentView viewWithTag:ContentOld];
+    
+    CGRect f = a.frame;
+    f.origin.y += delta;
+    a.frame = f;
+    
     [self _fixContentSize];
 }
+
 
 
 
@@ -580,8 +783,12 @@ typedef enum : NSUInteger {
 
 -(void) textViewDidChange:(UITextView *)textView
 {
-    const CGFloat currentHeight = textView.frame.size.height ;
+    const CGFloat currentHeight = textView.frame.size.height;
     const CGFloat next = textView.contentSize.height;
+    
+    if (textView == self.subjectTextView) {
+        [self _manageSendButton];
+    }
     
     if (currentHeight != next) {
         
@@ -602,14 +809,41 @@ typedef enum : NSUInteger {
             [self _subjectChangeSize:delta];
         }
         else {
+            // body textView
+            
             UIView* bogy = [self.contentView viewWithTag:ContentBody];
             
             r = bogy.frame;
             r.size.height += delta;
             bogy.frame = r;
             
-            [self _fixContentSize];
-            
+            [self _bodyChangeSize:delta];
+
+            // scroll to be on screen
+            NSArray* arr = [textView selectionRectsForRange:textView.selectedTextRange];
+            if (arr.count>0) {
+                UITextSelectionRect* r = [arr firstObject];
+
+                const CGRect rt1 = [bogy convertRect:r.rect fromView:textView];
+                const CGRect rt2 = [self.scrollView convertRect:rt1 fromView:textView];
+                const CGRect rt3 = [self.view convertRect:rt2 fromView:self.scrollView];
+                
+                CGFloat fixDelta = 0.f;
+                if (rt3.origin.y >= self.scrollView.frame.size.height - 24) {
+                    fixDelta = rt3.origin.y - (self.scrollView.frame.size.height - 24);
+                    
+                }
+                else if (rt3.origin.y<[WhiteBlurNavBar navBarHeight] + 4) {
+                    fixDelta = rt3.origin.y - ([WhiteBlurNavBar navBarHeight] + 4);
+                }
+                
+                if (fixDelta != 0) {
+                    CGPoint nextOffset = self.scrollView.contentOffset;
+                    nextOffset.y += fixDelta;
+                    [self.scrollView setContentOffset:nextOffset animated:YES];
+                }
+            }
+            // scroll to be on screen
         }
     }
     
@@ -685,9 +919,92 @@ typedef enum : NSUInteger {
 
 #pragma mark - Interaction
 
+- (void)_openPhotoPicker:(UIImagePickerControllerSourceType)sourceType
+{
+    if ([UIImagePickerController isSourceTypeAvailable:sourceType]) {
+        UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+        imagePickerController.sourceType = sourceType;
+        imagePickerController.delegate = self;
+        [[ViewController mainVC] presentViewController:imagePickerController animated:YES completion:nil];
+    }
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage* img = info[UIImagePickerControllerEditedImage];
+    if (img==nil) {
+        img = info[UIImagePickerControllerOriginalImage];
+    }
+    
+    if (img != nil) {
+        Attachment* attach = [[Attachment alloc] init];
+        attach.image = img;
+        
+        attach.name = @"find a name";
+        attach.size = @"find the size";
+        
+        if (self.mail.attachments == nil) {
+            self.mail.attachments = @[attach];
+        }
+        else {
+            NSMutableArray* ma = [self.mail.attachments mutableCopy];
+            [ma addObject:attach];
+            self.mail.attachments = ma;
+        }
+        [self _updateAttachView];
+        
+        [picker dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 -(void) _addAttach
 {
-    [ViewController presentAlertWIP:@"open attachments choice view…"];
+    Account* ca = [[Accounts sharedInstance] currentAccount];
+    
+    UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    
+    UIAlertAction* action = [UIAlertAction actionWithTitle:NSLocalizedString(@"My pictures", @"My pictures")
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* aa) {
+                                                       [self _openPhotoPicker:UIImagePickerControllerSourceTypePhotoLibrary];
+                                                   }];
+    [action setValue:[[UIImage imageNamed:@"pj_photos"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forKey:@"image"];
+    
+    [ac addAction:action];
+    
+    
+    action = [UIAlertAction actionWithTitle:NSLocalizedString(@"New picture", @"New picture")
+                                      style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction* aa) {
+                                        [self _openPhotoPicker:UIImagePickerControllerSourceTypeCamera];
+                                    }];
+    [action setValue:[[UIImage imageNamed:@"pj_camera"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forKey:@"image"];
+    
+    [ac addAction:action];
+    
+    
+    action = [UIAlertAction actionWithTitle:NSLocalizedString(@"Dropbox", @"Dropbox")
+                                      style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction* aa) {
+                                        //
+                                        [ViewController presentAlertWIP:@"dropbox link…"];
+                                    }];
+    [action setValue:[[UIImage imageNamed:@"pj_dropbox"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forKey:@"image"];
+    
+    [ac addAction:action];
+    
+    
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel") style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [ac addAction:defaultAction];
+    
+    ac.view.tintColor = ca.userColor;
+    
+    ViewController* vc = [ViewController mainVC];
+    [vc presentViewController:ac animated:YES completion:nil];
+    
 }
 
 -(void) _addPerson
@@ -701,6 +1018,12 @@ typedef enum : NSUInteger {
         return;
     }
     
+    Account* ca = [[Accounts sharedInstance] currentAccount];
+    
+    
+    UINavigationItem* ni = self.navBar.items.firstObject;
+    UILabel* lbl = (UILabel*)ni.titleView;
+    NSString* currentTitle = lbl.text;
     
     UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
@@ -720,13 +1043,23 @@ typedef enum : NSUInteger {
                                                                   [lbl sizeToFit];
                                                                   [self.navBar setNeedsDisplay];
                                                               }];
+        if ([a.userMail isEqualToString:currentTitle]) {
+            [defaultAction setValue:[UIImage imageNamed:@"swipe_select"] forKey:@"image"];
+        }
+        else {
+            [defaultAction setValue:[UIImage imageNamed:@"empty_pixel"] forKey:@"image"];
+        }
+        
+        
         [ac addAction:defaultAction];
     }
+    
 
     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel") style:UIAlertActionStyleCancel
                                                           handler:nil];
     [ac addAction:defaultAction];
     
+    ac.view.tintColor = ca.userColor;
     
     ViewController* vc = [ViewController mainVC];
     [vc presentViewController:ac animated:YES completion:nil];
