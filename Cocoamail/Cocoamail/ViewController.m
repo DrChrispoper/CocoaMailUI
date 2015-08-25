@@ -31,6 +31,11 @@
 @property (nonatomic, weak) CocoaButton* cocoaButton;
 @property (nonatomic) BOOL askAccountsButton;
 
+
+@property (nonatomic, weak) UIView* animNextView;
+@property (nonatomic, weak) UIView* animCurrentView;
+@property (nonatomic, weak) UIView* animShadowView;
+
 @end
 
 
@@ -63,7 +68,6 @@ static ViewController* s_self;
     [super viewDidLoad];
     
     s_self = self;
-    [Accounts sharedInstance].navBarBlurred = YES;
     
     self.blackStatusBar.backgroundColor = [UIColor whiteColor];
     self.contentView.backgroundColor = [UIColor whiteColor];
@@ -121,70 +125,108 @@ static ViewController* s_self;
     [self.view addSubview:border];
 }
 
+
+-(void) _createShadowViewOverAnimCurrentView
+{
+    UIImageView* iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"trans_shadow"]];
+    
+    iv.backgroundColor = [UIColor clearColor];
+    iv.contentMode = UIViewContentModeScaleToFill;
+    
+    iv.frame = CGRectMake(-3, -20, 3, self.animCurrentView.frame.size.height +20);
+    [self.animCurrentView addSubview:iv];
+    
+    self.animShadowView = iv;
+}
+
 -(void) _panBack:(UIPanGestureRecognizer*)pgr
 {
-    static UIView* nextView = nil;
-    static UIView* currentView = nil;
-    
     if (pgr.enabled==NO) {
         return;
     }
-    
-    if (pgr.state == UIGestureRecognizerStateBegan) {
-        
-        if (self.viewControllers.count>1) {
-        
-            InViewController* vc = [self.viewControllers objectAtIndex:self.viewControllers.count-2];
-            nextView = vc.view;
-        
-            InViewController* f = [self.viewControllers lastObject];
-            currentView = f.view;
-            
-            nextView.userInteractionEnabled = NO;
-            currentView.userInteractionEnabled = NO;
-            
-            [self.contentView insertSubview:nextView belowSubview:currentView];
-        }
-        return;
-    }
-    
-    if (pgr.state == UIGestureRecognizerStateChanged) {
-        CGPoint p = [pgr translationInView:pgr.view];
-        currentView.transform = CGAffineTransformMakeTranslation(MAX(0, p.x), 0);
-        return;
-    }
-    
-    if (pgr.state == UIGestureRecognizerStateEnded) {
 
-        CGPoint v = [pgr velocityInView:pgr.view];
-        
-        if (v.x>0) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
-            nextView.userInteractionEnabled = YES;
-            nextView = nil;
-            currentView = nil;
-        }
-        else {
-            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-            
-            [UIView animateWithDuration:0.3
-                                  delay:0.0
-                 usingSpringWithDamping:0.8
-                  initialSpringVelocity:0.25
-                                options:UIViewAnimationOptionCurveEaseOut
-                             animations:^{
-                                 currentView.transform = CGAffineTransformIdentity;
-                             }
-                             completion:^(BOOL fini) {
-                                 [nextView removeFromSuperview];
-                                 currentView.userInteractionEnabled = YES;
-                                 nextView = nil;
-                                 currentView = nil;
-                                 [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-                             }];
-        }
-        
+    if (self.viewControllers.count<2) {
         return;
+    }
+    
+    
+    switch (pgr.state) {
+        case UIGestureRecognizerStateBegan:
+        {
+            InViewController* vc = [self.viewControllers objectAtIndex:self.viewControllers.count-2];
+            self.animNextView = vc.view;
+            
+            InViewController* f = [self.viewControllers lastObject];
+            self.animCurrentView = f.view;
+            
+            self.animNextView.userInteractionEnabled = NO;
+            self.animCurrentView.userInteractionEnabled = NO;
+            
+            [self _createShadowViewOverAnimCurrentView];
+            
+            self.animNextView.transform = CGAffineTransformMakeTranslation(-self.view.frame.size.width / 4, 0);
+            
+            [self.contentView insertSubview:self.animNextView belowSubview:self.animCurrentView];
+            
+            break;
+        }
+
+        case UIGestureRecognizerStateChanged:
+        {
+            CGPoint p = [pgr translationInView:pgr.view];
+            
+            CGFloat caped = MAX(0, p.x);
+            caped = MIN(caped, self.view.frame.size.width);
+            
+            const CGFloat invPourc = 1.f - (caped / self.view.frame.size.width);
+            
+            self.animCurrentView.transform = CGAffineTransformMakeTranslation(caped, 0);
+            
+            self.animShadowView.alpha = invPourc;
+            self.animNextView.transform = CGAffineTransformMakeTranslation(-(self.view.frame.size.width / 4)*invPourc, 0);
+            
+            break;
+        }
+
+        case UIGestureRecognizerStateEnded:
+        {
+            self.animNextView.userInteractionEnabled = YES;
+            self.animCurrentView.userInteractionEnabled = YES;
+            
+            CGPoint v = [pgr velocityInView:pgr.view];
+            
+            if (v.x>0) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+            }
+            else {
+                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+                
+                [UIView animateWithDuration:0.2
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseOut
+                                 animations:^{
+                                     self.animCurrentView.transform = CGAffineTransformIdentity;
+                                     self.animShadowView.alpha = 1.;
+                                 }
+                                 completion:^(BOOL fini) {
+                                     [self.animNextView removeFromSuperview];
+                                     self.animNextView = nil;
+                                     self.animCurrentView = nil;
+                                     [self.animShadowView removeFromSuperview];
+                                     self.animShadowView=nil;
+                                     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                                 }];
+            }
+            
+            break;
+        }
+            
+        default:
+        {
+            self.animNextView.userInteractionEnabled = YES;
+            self.animCurrentView.userInteractionEnabled = YES;
+            break;
+        }
     }
     /*
     CGPoint v = [pgr velocityInView:pgr.view];
@@ -202,12 +244,25 @@ static ViewController* s_self;
 
 
 
+-(BOOL) _checkInteractionAndBlock
+{
+    BOOL already = [[UIApplication sharedApplication] isIgnoringInteractionEvents];
+    
+    if (already) {
+        return YES;
+    }
+    
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    return NO;
+}
+
 -(void) setupNavigation
 {
-    UIApplication* app = [UIApplication sharedApplication];
-    
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_FOLDER_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
+
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         
         MailListViewController* f = nil;
         Person* person = [notif.userInfo objectForKey:kPRESENT_FOLDER_PERSON];
@@ -219,21 +274,21 @@ static ViewController* s_self;
             NSString* name = [notif.userInfo objectForKey:kPRESENT_FOLDER_NAME];
             f = [[MailListViewController alloc] initWithName:name];
         }
-        [self _animatePushVC:f];
-        
+        [self _animatePushVC:f];        
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_SETTINGS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
-        
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         SettingsViewController* f = [[SettingsViewController alloc] init];
         [self _animatePushVC:f];
-        
     }];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
-        
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         ConversationViewController* f = [[ConversationViewController alloc] init];
         f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
         [self _animatePushVC:f];
@@ -241,8 +296,9 @@ static ViewController* s_self;
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
-        
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         AttachmentsViewController* f = [[AttachmentsViewController alloc] init];
         f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
         [self _animatePushVC:f];
@@ -250,8 +306,9 @@ static ViewController* s_self;
     }];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONTACTS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
-        
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         ContactsViewController* f = [[ContactsViewController alloc] init];
         f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
         [self _animatePushVC:f];
@@ -259,8 +316,9 @@ static ViewController* s_self;
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_EDITMAIL_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
-        
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         EditMailViewController* f = [[EditMailViewController alloc] init];
         f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
         [self _animatePushVC:f];
@@ -272,52 +330,79 @@ static ViewController* s_self;
             return;
         }
 
-        [app beginIgnoringInteractionEvents];
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
         
         InViewController* vc = [self.viewControllers lastObject];
         [vc cleanBeforeGoingBack];
         UIView* lastView = vc.view;
         [self.viewControllers removeLastObject];
         
+        UIView* nextView = nil;
         InViewController* f = [self.viewControllers lastObject];
         
         // tweak to realod nav bar after settings view
         if ([vc isKindOfClass:[SettingsViewController class]] && [f isKindOfClass:[FolderViewController class]]) {
             FolderViewController* f = [[FolderViewController alloc] init];
             f.view.frame = self.contentView.bounds;
-            UIView* nextView = f.view;
+            nextView = f.view;
             [self.contentView insertSubview:nextView belowSubview:lastView];
             
             self.viewControllers = [NSMutableArray arrayWithObject:f];
         }
         //
         else {
-            UIView* nextView = f.view;
+            nextView = f.view;
             [self.contentView insertSubview:nextView belowSubview:lastView];
         }
         
         [self.cocoaButton forceCloseButton];
         
+        UIViewAnimationOptions animOption = UIViewAnimationOptionCurveEaseOut;
         
-        [UIView animateWithDuration:0.2
+        if (self.animShadowView==nil) {
+            nextView.transform = CGAffineTransformMakeTranslation(-self.view.frame.size.width / 4, 0);
+            
+            self.animNextView = nextView;
+            self.animCurrentView = lastView;
+            
+            [self _createShadowViewOverAnimCurrentView];
+            
+            animOption = UIViewAnimationOptionCurveEaseInOut;
+        }
+        
+        
+        [UIView animateWithDuration:0.25
+                              delay:0
+                            options:animOption
                          animations:^{
-                             lastView.transform = CGAffineTransformMakeTranslation(self.view.bounds.size.width, 0);
+                             self.animShadowView.alpha = 0.;
+                             self.animNextView.transform = CGAffineTransformIdentity;
+                             self.animCurrentView.transform = CGAffineTransformMakeTranslation(self.view.bounds.size.width, 0);
                          }
                          completion:^(BOOL fini) {
-                             [lastView removeFromSuperview];
-                             [app endIgnoringInteractionEvents];
+                             self.animNextView.userInteractionEnabled = YES;
+                             
+                             [self.animShadowView removeFromSuperview];
+                             self.animShadowView = nil;
+                             
+                             [self.animCurrentView removeFromSuperview];
+                             self.animCurrentView = nil;
+                             
+                             self.animNextView = nil;
+                             
+                             
+                             [[UIApplication sharedApplication] endIgnoringInteractionEvents];
                          }];
         
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kACCOUNT_CHANGED_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        [app beginIgnoringInteractionEvents];
         
         [[Parser sharedParser] cleanConversations];
         
         BOOL inFolders = self.viewControllers.count == 1;
-        
-        BOOL noAnim = YES;
         
         InViewController* vc = [self.viewControllers lastObject];
         UIView* lastView = vc.view;
@@ -340,21 +425,7 @@ static ViewController* s_self;
         
         [self.contentView insertSubview:nextView belowSubview:lastView];
         
-        if (noAnim) {
-            [lastView removeFromSuperview];
-            [app endIgnoringInteractionEvents];
-        }
-        else {
-            [UIView animateWithDuration:0.2
-                             animations:^{
-                                 lastView.transform = CGAffineTransformMakeTranslation(self.view.bounds.size.width, 0);
-                             }
-                             completion:^(BOOL fini) {
-                                 [lastView removeFromSuperview];
-                                 [app endIgnoringInteractionEvents];
-                             }];
-        }
-        
+        [lastView removeFromSuperview];
     }];
     
     
@@ -363,8 +434,6 @@ static ViewController* s_self;
 
 -(void) _animatePushVC:(InViewController*)nextVC
 {
-    UIApplication* app = [UIApplication sharedApplication];
-    
     InViewController* currentVC = [self.viewControllers lastObject];
     UIView* currentView = currentVC.view;
     
@@ -378,19 +447,30 @@ static ViewController* s_self;
     
     [self.cocoaButton forceCloseButton];
     
+    self.animCurrentView = nextView;
+    [self _createShadowViewOverAnimCurrentView];
+    self.animShadowView.alpha = 0.;
+    
     nextView.transform = CGAffineTransformMakeTranslation(self.view.bounds.size.width, 0);
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-         usingSpringWithDamping:0.8
-          initialSpringVelocity:0.25
+    
+    [UIView animateWithDuration:0.25
+                          delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          nextView.transform = CGAffineTransformIdentity;
+                         currentView.transform = CGAffineTransformMakeTranslation(-self.view.frame.size.width / 4, 0);
+                         self.animShadowView.alpha = 1.;
                      }
                      completion:^(BOOL fini) {
                          [currentView removeFromSuperview];
                          nextView.frame = self.contentView.bounds;
-                         [app endIgnoringInteractionEvents];
+                         
+                         [self.animShadowView removeFromSuperview];
+                         self.animShadowView = nil;
+                         
+                         self.animCurrentView = nil;
+                         
+                         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
                      }];
     
 }

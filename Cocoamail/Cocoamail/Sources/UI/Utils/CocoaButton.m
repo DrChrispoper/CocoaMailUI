@@ -462,9 +462,8 @@
     if (self.openState == 0) {
         
         if (self.subviewsWide.count>0) {
-            [self _closeWide];
-            
             [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil];
+            [self _closeWide];
             return;
         }
         else {

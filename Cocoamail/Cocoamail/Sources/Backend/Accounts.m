@@ -17,6 +17,8 @@
     
     dispatch_once(&once, ^{
         sharedInstance = [[self alloc] init];
+        sharedInstance.quickSwipeType = 2;
+        
         Account* a1 = [self _createAccountMail:@"jean@lafontaine.com" color:[UIColor colorWithRed:1.f green:0.49f blue:0.01f alpha:1.f] code:@"JF"];
         Account* a2 = [self _createAccountMail:@"jlf@google.com" color:[UIColor colorWithRed:0.07f green:0.71f blue:0.02f alpha:1.f] code:@"JLF"];
         Account* a3 = [self _createAccountMail:@"jeanlf@yahoo.com" color:[UIColor colorWithRed:0.01f green:0.49f blue:1.f alpha:1.f] code:@"DOM"];

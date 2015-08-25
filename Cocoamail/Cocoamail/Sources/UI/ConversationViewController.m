@@ -465,12 +465,12 @@
         n.text = [texte stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     }
     
-    inIV.userInteractionEnabled = true;
+    inIV.userInteractionEnabled = YES;
     
     UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_extend:)];
     [inIV addGestureRecognizer:tgr];
     
-    inIV.clipsToBounds = true;
+    inIV.clipsToBounds = YES;
     
     
     CGRect f = self.frame;

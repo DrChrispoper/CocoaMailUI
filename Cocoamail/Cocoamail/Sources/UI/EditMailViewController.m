@@ -141,6 +141,23 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [navBar createWhiteMaskOverView:self.scrollView withOffset:0.f];
     
     [self _manageSendButton];
+    
+    
+    BOOL isReply = NO;
+    
+    if (self.mail.fromMail) {
+        if (self.mail.toPersonID.count>0) {
+            isReply = YES;
+        }
+    }
+    
+    if (isReply) {
+        [self.bodyTextView becomeFirstResponder];
+    }
+    else {
+        [self.toTextField becomeFirstResponder];
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning {
