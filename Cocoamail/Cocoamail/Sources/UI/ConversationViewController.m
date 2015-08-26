@@ -542,14 +542,14 @@
     NSInteger idx = 0;
     for (Attachment* a in attachs) {
         
-        AttachmentView* av = [[AttachmentView alloc] initWithWidth:WIDTH leftMarg:0];
+        AttachmentView* av = [[AttachmentView alloc] initWithWidth:WIDTH-32 leftMarg:0];
         CGRect f = av.frame;
         f.origin.y = posY;
         av.frame = f;
         
         [av fillWith:a];
-        [av buttonActionType:AttachmentViewActionGlobalTap];
-        [av addActionTarget:self selector:@selector(_applyButton:) andTag:idx];
+        [av buttonActionType:AttachmentViewActionDonwload/*AttachmentViewActionGlobalTap*/];
+//        [av addActionTarget:self selector:@selector(_applyButton:) andTag:idx];
         
         [v addSubview:av];
         
@@ -561,11 +561,12 @@
     
 }
 
+/*
 -(void)_applyButton:(UIButton*)button
 {
     [ViewController presentAlertWIP:@"open attachment…"];
 }
-
+*/
 
 
 -(void)_openEdit:(UIButton*)button
