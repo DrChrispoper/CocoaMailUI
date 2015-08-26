@@ -105,7 +105,7 @@
         
         UIColor* colorBubble = nil;
         
-        int count = 0;
+        NSUInteger count = 0;
         text = [Accounts systemFolderNames][indexPath.row];
         imageName = [Accounts systemFolderIcons][indexPath.row];
         
@@ -132,7 +132,7 @@
             
             UILabel* counter = [[UILabel alloc] initWithFrame:CGRectMake(100, (cell.frame.size.height-23)/2, 200, 23)];
             counter.backgroundColor = colorBubble;
-            counter.text = [NSString stringWithFormat:@"%d", count];
+            counter.text = [NSString stringWithFormat:@"%lu", (unsigned long)count];
             
             
             counter.textColor = [UIColor whiteColor];
