@@ -77,7 +77,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 @implementation EditMailViewController
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -173,6 +172,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(BOOL) haveCocoaButton
+{
+    return NO;
 }
 
 -(void) cleanBeforeGoingBack

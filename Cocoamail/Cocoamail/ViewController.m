@@ -113,11 +113,6 @@ static ViewController* s_self;
     border.backgroundColor = [UIColor clearColor];
     border.userInteractionEnabled = YES;
     border.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    /*
-    UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_swipeBack:)];
-    sgr.direction = UISwipeGestureRecognizerDirectionRight;
-    [border addGestureRecognizer:sgr];
-     */
     
     UIPanGestureRecognizer* pgr = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_panBack:)];
     [border addGestureRecognizer:pgr];
@@ -168,6 +163,8 @@ static ViewController* s_self;
             
             [self.contentView insertSubview:self.animNextView belowSubview:self.animCurrentView];
             
+            self.cocoaButton.userInteractionEnabled = NO;
+            
             break;
         }
 
@@ -192,6 +189,7 @@ static ViewController* s_self;
         {
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
+            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
             
             CGPoint v = [pgr velocityInView:pgr.view];
             
@@ -225,6 +223,8 @@ static ViewController* s_self;
         {
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
+            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            
             break;
         }
     }
@@ -234,14 +234,6 @@ static ViewController* s_self;
     NSLog(@"%d| %@ --> %@", pgr.state,  NSStringFromCGPoint(p), NSStringFromCGPoint(v));
     */
 }
-
--(void) _swipeBack:(UISwipeGestureRecognizer*)sgr
-{
-    if (sgr.state == UIGestureRecognizerStateEnded) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
-    }
-}
-
 
 
 -(BOOL) _checkInteractionAndBlock
@@ -392,8 +384,10 @@ static ViewController* s_self;
                              
                              self.animNextView = nil;
                              
-                             
                              [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                             
+                             [self _manageCocoaButton:[f haveCocoaButton]];
+                             
                          }];
         
     }];
@@ -422,6 +416,8 @@ static ViewController* s_self;
             
             self.viewControllers = [NSMutableArray arrayWithObjects:f, inbox, nil];
         }
+        
+        [self _manageCocoaButton:[f haveCocoaButton]];
         
         [self.contentView insertSubview:nextView belowSubview:lastView];
         
@@ -453,6 +449,7 @@ static ViewController* s_self;
     
     nextView.transform = CGAffineTransformMakeTranslation(self.view.bounds.size.width, 0);
     
+    
     [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
@@ -471,9 +468,35 @@ static ViewController* s_self;
                          self.animCurrentView = nil;
                          
                          [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                         
+                         [self _manageCocoaButton:[nextVC haveCocoaButton]];
+                         
                      }];
+}
+
+-(void) _manageCocoaButton:(BOOL)appear
+{
+    if (appear) {
+        if (self.cocoaButton.userInteractionEnabled == NO) {
+            self.cocoaButton.userInteractionEnabled = YES;
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 self.cocoaButton.alpha = 1.;
+                             }];
+        }
+    }
+    else {
+        if (self.cocoaButton.userInteractionEnabled) {
+            self.cocoaButton.userInteractionEnabled = NO;
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 self.cocoaButton.alpha = 0.;
+                             }];
+        }
+    }
     
 }
+
 
 // Cocoa button
 
@@ -622,6 +645,12 @@ static ViewController* s_self;
 {
     // clean delegates
 }
+
+-(BOOL) haveCocoaButton
+{
+    return YES;
+}
+
 
 -(void) _back
 {

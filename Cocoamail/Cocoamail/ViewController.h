@@ -41,6 +41,7 @@
 
 -(void) _back;
 -(void) cleanBeforeGoingBack;
+-(BOOL) haveCocoaButton;
 
 @end
 
