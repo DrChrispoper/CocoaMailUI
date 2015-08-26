@@ -176,6 +176,23 @@ static NSDateFormatter* s_df_hour = nil;
     
 }
 
++(NSInteger) isTodayOrYesterday:(NSString*)dateString
+{
+    NSDate* today = [NSDate date];
+    NSString* todayS = [s_df_day stringFromDate:today];
+    if ([dateString isEqualToString:todayS]) {
+        return 0;
+    }
+
+    NSDate* yesterday = [today dateByAddingTimeInterval:-60*60*24];
+    NSString* yesterdayS = [s_df_day stringFromDate:yesterday];
+    if ([dateString isEqualToString:yesterdayS]) {
+        return -1;
+    }
+    
+    return 1;
+}
+
 
 -(BOOL) haveAttachment
 {
@@ -209,7 +226,7 @@ static NSDateFormatter* s_df_hour = nil;
     mail.day = [s_df_day stringFromDate:mail.date];
     mail.hour = [s_df_hour stringFromDate:mail.date];
     mail.attachments = nil;
-    mail.isFav = false;
+    mail.isFav = self.isFav;
     mail.isRead = false;
     
     mail.fromMail = self;

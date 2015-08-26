@@ -26,6 +26,8 @@
 
 @property (nonatomic) BOOL presentAttach;
 
+@property (nonatomic) FolderType folder;
+
 @end
 
 
@@ -40,10 +42,29 @@
     return self;
 }
 
+-(instancetype) initWithFolder:(FolderType)folder
+{
+    NSString* name = nil;
+    if (folder.type == FolderTypeUser) {
+        name = [[Accounts sharedInstance] currentAccount].userFolders[folder.idx];
+    }
+    else {
+        name = [Accounts systemFolderNames][folder.type];
+    }
+    
+    self = [self initWithName:name];
+    self.folder = folder;
+    return self;
+}
+
+
 -(instancetype) initWithPerson:(Person*)person
 {
     self = [self initWithName:person.name];
+    
     self.onlyPerson = person;
+    self.folder = FolderTypeWith(FolderTypeAll, 0);
+    
     return self;
 }
 
@@ -188,10 +209,10 @@
 
 -(void) setupData
 {
-    NSArray* mails = [[Parser sharedParser] getAllConversations];
+    NSArray* mails = [[[Accounts sharedInstance] currentAccount] getConversationsForFolder:self.folder];
+    //NSArray* mails = [[Parser sharedParser] getAllConversations];
     
     // sort them by day
-    
     NSString* currentDay = @"noDay";
     NSInteger currentIdx = -1;
     
@@ -203,7 +224,6 @@
         
         if (self.onlyPerson!=nil) {
             NSInteger mid = [conv firstMail].fromPersonID;
-            
             Person* p = [[Persons sharedInstance] getPersonID:mid];
             
             if (p != self.onlyPerson) {
@@ -213,9 +233,7 @@
             if (self.presentAttach==NO) {
                 self.presentAttach = [conv haveAttachment];
             }
-            
         }
-        
         
         if ([convDay isEqualToString:currentDay]) {
             NSDictionary* current = construct[currentIdx];
@@ -228,7 +246,6 @@
             NSDictionary* current = @{@"list": [NSMutableArray arrayWithObject:conv], @"day":currentDay};
             [construct addObject:current];
         }
-        
     }
 
     self.convByDay = construct;
@@ -236,6 +253,31 @@
 
 
 #pragma mark - Cell Delegate
+
+-(UIImageView*) imageViewForQuickSwipeAction
+{
+    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single", @"swipe_unread", @"swipe_inbox"];
+    NSInteger swipetype = [Accounts sharedInstance].quickSwipeType;
+    
+    FolderType type;
+    if (swipetype==QuickSwipeArchive) {
+        type.type = FolderTypeAll;
+    }
+    else if (swipetype==QuickSwipeDelete){
+        type.type = FolderTypeDeleted;
+    }
+    
+    if (self.folder.type == type.type) {
+        swipetype = 4;
+    }
+    
+    UIImageView* arch = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imgNames[swipetype]]];
+    if (swipetype==QuickSwipeReply) {
+        arch.highlightedImage = [UIImage imageNamed:@"swipe_reply_all"];
+    }
+    return arch;
+}
+
 
 -(void) unselectAll
 {
@@ -257,10 +299,8 @@
 
 
 
--(void) _removeCell:(ConversationTableViewCell *)cell
+-(void)_commonRemoveCell:(NSIndexPath*)ip
 {
-    NSIndexPath* ip = [self.table indexPathForCell:cell];
-    
     // change in model
     NSDictionary* dayInfos = self.convByDay[ip.section];
     NSMutableArray* ma = dayInfos[@"list"];
@@ -276,9 +316,15 @@
     else {
         [self.table deleteRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationLeft];
     }
-    
+ 
     // TODO deleting cells disturb the nav bar blur cache !!!
     
+}
+
+-(void) _removeCell:(ConversationTableViewCell *)cell
+{
+    NSIndexPath* ip = [self.table indexPathForCell:cell];
+    [self _commonRemoveCell:ip];
     [self cell:cell isChangingDuring:0.3];
 }
 
@@ -287,7 +333,7 @@
     NSInteger swipetype = [Accounts sharedInstance].quickSwipeType;
     
     
-    if (swipetype==2) {
+    if (swipetype==QuickSwipeReply) {
         NSIndexPath* indexPath = [self.table indexPathForCell:cell];
         
         NSDictionary* mailsDay = self.convByDay[indexPath.section];
@@ -298,11 +344,34 @@
         Mail* repm = [m replyMail:[cell isReplyAll]];
         [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:repm}];
     }
-    else if (swipetype == 3) {
+    else if (swipetype == QuickSwipeMark) {
         
     }
     else {
-        [self _removeCell:cell];
+        
+        NSIndexPath* ip = [self.table indexPathForCell:cell];
+        NSDictionary* dayInfos = self.convByDay[ip.section];
+        NSMutableArray* ma = dayInfos[@"list"];
+        Conversation* conv = ma[ip.row];
+        
+        Account* ac = [[Accounts sharedInstance] currentAccount];
+        
+        FolderType type;
+        if (swipetype==QuickSwipeArchive) {
+            type.type = FolderTypeAll;
+        }
+        else {
+            type.type = FolderTypeDeleted;
+        }
+
+        // back action
+        if (self.folder.type == type.type) {
+            type.type = FolderTypeInbox;
+        }
+        
+        if ([ac moveConversation:conv from:self.folder to:type]) {
+            [self _removeCell:cell];
+        }
     }
 }
 
@@ -405,17 +474,17 @@
 
 -(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    // TWEAK
-    if (section == 0) {
+    NSDictionary* dayContent = self.convByDay[section];
+    NSString* dateS = dayContent[@"day"];
+    
+    NSInteger idx = [Mail isTodayOrYesterday:dateS];
+    if (idx == 0) {
         return NSLocalizedString(@"Today", @"Today");
     }
-    else if (section == 1) {
+    else if (idx == -1) {
         return NSLocalizedString(@"Yesterday", @"Yesterday");
     }
-    //
-    
-    NSDictionary* dayContent = self.convByDay[section];
-    return dayContent[@"day"];
+    return dateS;
 }
 
 #pragma mark Table Delegate
@@ -463,7 +532,25 @@
     const CGRect baseRect = cocoaButton.bounds;
     UIColor* color = [[Accounts sharedInstance] currentAccount].userColor;
     
-    NSArray* content = @[@"swipe_cocoabutton_delete", @"swipe_cocoabutton_archive", @"swipe_cocoabutton_folder", @"swipe_cocoabutton_spam"];
+    
+    NSInteger folderType = self.folder.type;
+    
+    NSString* delete_icon = @"swipe_cocoabutton_delete";
+    NSString* archive_icon = @"swipe_cocoabutton_archive";
+    NSString* spam_icon = @"swipe_cocoabutton_spam";
+    NSString* inbox_icon = @"swipe_inbox";
+    
+    if (folderType==FolderTypeAll) {
+        archive_icon = inbox_icon;
+    }
+    else if (folderType==FolderTypeDeleted) {
+        delete_icon = inbox_icon;
+    }
+    else if (folderType==FolderTypeSpam) {
+        spam_icon = inbox_icon;
+    }
+
+    NSArray* content = @[delete_icon, archive_icon, @"swipe_cocoabutton_folder", spam_icon];
     
     NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:content.count];
     
@@ -513,10 +600,144 @@
     [[CocoaButton sharedButton] forceCloseButton];
 }
 
+
+
+
+-(void) _executeMoveOnSelectedCellsTo:(FolderType)toFolder
+{
+    // find the conversations
+    NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.selectedCells.count];
+    NSMutableArray* resIP = [[NSMutableArray alloc] initWithCapacity:self.selectedCells.count];
+    
+    NSInteger section = 0;
+    for (NSDictionary* mailsDay in self.convByDay) {
+        NSArray* convs = mailsDay[@"list"];
+        NSInteger row = 0;
+        
+        for (Conversation* conv in convs) {
+            
+            NSString* mailID = [conv firstMail].mailID;
+            if ([self.selectedCells containsObject:mailID]) {
+                [res addObject:conv];
+                [resIP addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+            }
+            
+            row++;
+        }
+        
+        if (res.count == self.selectedCells.count) {
+            break;
+        }
+        section++;
+    }
+    // TODO find a less expensive way to do that
+    
+    
+    BOOL animDissapear = NO;
+    
+    Account* ac = [[Accounts sharedInstance] currentAccount];
+    for (Conversation* conv in res) {
+        if ([ac moveConversation:conv from:self.folder to:toFolder]) {
+            animDissapear = YES;
+        }
+    }
+    
+    if (animDissapear) {
+        
+        [self.table beginUpdates];
+        
+        for (NSIndexPath* ip in [resIP reverseObjectEnumerator]) {
+            [self _commonRemoveCell:ip];
+        }
+        
+        NSArray* cells = self.table.visibleCells;
+        for (ConversationTableViewCell* cell in cells) {
+            if ([self.selectedCells containsObject:[cell currentID]]) {
+                [self cell:cell isChangingDuring:0.3];
+            }
+        }
+        
+        [self.table endUpdates];
+        
+    }
+    else {
+        [self unselectAll];
+    }
+    
+    [self.selectedCells removeAllObjects];
+    [[CocoaButton sharedButton] forceCloseButton];
+}
+
+
+
+
 -(void) _chooseAction:(UIButton*)button
 {
-    [self unselectAll];
-    [[CocoaButton sharedButton] forceCloseButton];
+    [CocoaButton animateHorizontalButtonCancelTouch:button];
+    
+    FolderType toFolder;
+    toFolder.idx = 0;
+    BOOL doNothing = NO;
+    
+    switch (button.tag) {
+        case 0:
+            toFolder.type = (self.folder.type == FolderTypeDeleted) ? FolderTypeInbox : FolderTypeDeleted;
+            break;
+        case 1:
+            toFolder.type = (self.folder.type == FolderTypeAll) ? FolderTypeInbox : FolderTypeAll;
+            break;
+        case 2:
+        {
+            doNothing = YES;
+            
+            UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+            
+            NSInteger idx = 0;
+            for (NSString* folder in [[Accounts sharedInstance] currentAccount].userFolders) {
+                
+                if (self.folder.type == FolderTypeUser && idx == self.folder.idx) {
+                    continue;
+                }
+                
+                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:folder style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction* aa) {
+                                                                          [self _executeMoveOnSelectedCellsTo:FolderTypeWith(FolderTypeUser, idx)];
+                                                                      }];
+                [ac addAction:defaultAction];
+            }
+            
+            if (ac.actions.count == 0) {
+                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Create a folder" style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction* aa) {
+                                                                          // TODO …
+                                                                      }];
+                [ac addAction:defaultAction];
+            }
+            
+            UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel") style:UIAlertActionStyleCancel
+                                                                  handler:nil];
+            [ac addAction:defaultAction];
+            
+            ac.view.tintColor = [UIColor blackColor];
+            
+            ViewController* vc = [ViewController mainVC];
+            [vc presentViewController:ac animated:YES completion:nil];
+            
+            break;
+        }
+        case 3:
+            toFolder.type = (self.folder.type == FolderTypeSpam) ? FolderTypeInbox : FolderTypeSpam;
+            break;
+        default:
+            [ViewController presentAlertWIP:@"It's a bug!!"];
+            NSLog(@"WTF !!!");
+            doNothing = YES;
+            break;
+    }
+    
+    if (!doNothing) {
+        [self _executeMoveOnSelectedCellsTo:toFolder];
+    }
 }
 
 
@@ -525,5 +746,9 @@
     return nil;
 }
 
+-(BOOL) automaticCloseFor:(CocoaButton*)cocoabutton
+{
+    return self.selectedCells.count == 0;
+}
 
 @end

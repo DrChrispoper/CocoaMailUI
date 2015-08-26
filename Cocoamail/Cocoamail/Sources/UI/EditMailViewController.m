@@ -1191,6 +1191,14 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
+    if ([Accounts sharedInstance].accounts.count == 2) {
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Create a new acccount" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction* aa) {
+                                                                  // TODO …
+                                                              }];
+        [ac addAction:defaultAction];
+    }
+    
     for (Account* a in [Accounts sharedInstance].accounts) {
     
         if (a.isAllAccounts) {
@@ -1219,7 +1227,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         else {
             [defaultAction setValue:[UIImage imageNamed:@"empty_pixel"] forKey:@"image"];
         }
-        
         
         [ac addAction:defaultAction];
     }

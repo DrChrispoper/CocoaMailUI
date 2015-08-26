@@ -11,7 +11,8 @@
 #import "InViewController.h"
 
 #define kPRESENT_FOLDER_NOTIFICATION @"kPRESENT_FOLDER_NOTIFICATION"
-#define kPRESENT_FOLDER_NAME @"kPRESENT_FOLDER_NAME"
+//#define kPRESENT_FOLDER_NAME @"kPRESENT_FOLDER_NAME"
+#define kPRESENT_FOLDER_TYPE @"kPRESENT_FOLDER_TYPE"
 #define kPRESENT_FOLDER_PERSON @"kPRESENT_FOLDER_PERSON"
 
 #define kPRESENT_CONVERSATION_NOTIFICATION @"kPRESENT_CONVERSATION_NOTIFICATION"
@@ -41,6 +42,9 @@
 -(void) refreshCocoaButton;
 
 +(void) presentAlertWIP:(NSString*)message;
+
+-(void) closeCocoaButtonIfNeeded;
+
 
 @end
 

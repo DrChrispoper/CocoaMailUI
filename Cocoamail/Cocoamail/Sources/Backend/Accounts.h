@@ -10,7 +10,18 @@
 #import <UIKit/UIKit.h>
 #import "Persons.h"
 
+@class Conversation;
 @class Account;
+
+
+
+typedef enum : NSUInteger {
+    QuickSwipeArchive,
+    QuickSwipeDelete,
+    QuickSwipeReply,
+    QuickSwipeMark
+} QuickSwipeType;
+
 
 @interface Accounts : NSObject
 
@@ -20,7 +31,7 @@
 +(NSArray*) systemFolderIcons;
 +(NSString*) userFolderIcon;
 
-@property (nonatomic) NSInteger quickSwipeType;
+@property (nonatomic) QuickSwipeType quickSwipeType;
 @property (nonatomic) BOOL navBarBlurred;
 
 
@@ -31,6 +42,47 @@
 
 @end
 
+
+typedef enum : NSUInteger {
+    FolderTypeInbox,
+    FolderTypeFavoris,
+    FolderTypeSent,
+    FolderTypeDrafts,
+    FolderTypeAll,
+    FolderTypeDeleted,
+    FolderTypeSpam,
+    FolderTypeUser
+} BaseFolderType;
+
+typedef struct FolderType {
+    BaseFolderType type;
+    NSInteger idx;
+} FolderType;
+
+static inline FolderType FolderTypeWith(BaseFolderType t, NSInteger idx)
+{
+    FolderType type;
+    type.type = t;
+    type.idx = idx;
+    return type;
+}
+
+static inline NSInteger encodeFolderTypeWith(FolderType t)
+{
+    return t.type * 4096 + t.idx;
+}
+
+static inline FolderType decodeFolderTypeWith(NSInteger code)
+{
+    FolderType type;
+    type.type = code / 4096;
+    type.idx = code % 4096;
+    return type;
+}
+
+
+
+
 @interface Account : NSObject
 
 @property (nonatomic, strong) NSString* codeName;
@@ -38,10 +90,19 @@
 @property (nonatomic, strong) UIColor* userColor;
 
 @property (nonatomic, strong) NSArray* userFolders;
-@property (nonatomic, strong) NSArray* systemFolders;
 
 @property (nonatomic, strong) Person* person;
 
 @property (nonatomic) BOOL isAllAccounts;
+
+-(void) fakeInitContent;
+-(void) releaseContent;
+
+-(NSArray*) getConversationsForFolder:(FolderType)type;
+-(BOOL) moveConversation:(Conversation*)conversation from:(FolderType)folderFrom to:(FolderType)folderTo;
+// return NO if not removed from form folder, YES if really removed
+
+-(NSInteger) unreadInInbox;
+-(void) manage:(Conversation*)conversation isFav:(BOOL)isFav;
 
 @end

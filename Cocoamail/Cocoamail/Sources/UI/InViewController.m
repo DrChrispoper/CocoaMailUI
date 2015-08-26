@@ -62,6 +62,11 @@
 {
     [self.navBar computeBlur];
     [self.pullToRefresh scrollViewDidScroll:scrollView];
+    
+    if (!scrollView.isDecelerating) {
+        [[ViewController mainVC] closeCocoaButtonIfNeeded];
+    }
+    
 }
 
 -(void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate

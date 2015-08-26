@@ -9,7 +9,7 @@
 #import "ConversationViewController.h"
 
 #import "Persons.h"
-
+#import "Accounts.h"
 
 
 @class SingleMailView;
@@ -18,6 +18,7 @@
 
 -(Mail*) mailDisplayed:(SingleMailView*)mailView;
 -(void) mailView:(SingleMailView*)mailView changeHeight:(CGFloat)deltaHeight;
+-(void) makeConversationFav:(BOOL)isFav;
 
 @end
 
@@ -27,6 +28,8 @@
 
 @property (nonatomic, weak) UIView* contentView;
 @property (nonatomic, weak) UIScrollView* scrollView;
+
+@property (nonatomic, strong) NSMutableArray* allMailViews;
 
 @end
 
@@ -44,6 +47,10 @@
 @property (nonatomic, weak) UIImageView* markAsRead;
 
 @property (nonatomic) NSInteger idxInConversation;
+
+@property (nonatomic, weak) UIButton* favoriBtn;
+
+-(void) updateFavUI:(BOOL)isFav;
 
 @end
 
@@ -113,6 +120,8 @@
     UIView* contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 10000)];
     contentView.backgroundColor = [UIColor clearColor];
   
+    self.allMailViews = [NSMutableArray arrayWithCapacity:self.conversation.mails.count];
+    
     NSInteger idx = 0;
     for (Mail* m in self.conversation.mails) {
     
@@ -152,6 +161,16 @@
 -(Mail*) mailDisplayed:(SingleMailView*)mailView;
 {
     return self.conversation.mails[mailView.idxInConversation];
+}
+
+-(void) makeConversationFav:(BOOL)isFav
+{
+    Account* ac = [[Accounts sharedInstance] currentAccount];
+    [ac manage:self.conversation isFav:isFav];
+    
+    for (SingleMailView* smv in self.allMailViews) {
+        [smv updateFavUI:isFav];
+    }
 }
 
 
@@ -202,6 +221,8 @@
     
     CGFloat height = smv.bounds.size.height;
     [v addSubview:smv];
+    
+    [self.allMailViews addObject:smv];
     
     return posY + height + 2;
 }
@@ -276,6 +297,10 @@
     return nil;
 }
 
+-(BOOL) automaticCloseFor:(CocoaButton *)cocoabutton
+{
+    return YES;
+}
 
 @end
 
@@ -348,6 +373,7 @@
             xPos -= step;
         }
         
+        self.favori = nil;
     }
     else {
         
@@ -437,7 +463,7 @@
     self.frame = f;
 
     
-    
+    self.favoriBtn = nil;
     if (extended) {
         NSArray* btns = @[@"unread_o", @"forward_o", @"reply_o", @"replyall_o", @"cell_favoris_o"];
         
@@ -465,6 +491,7 @@
             if (name == [btns lastObject]) {
                 [b addTarget:self action:@selector(_fav:) forControlEvents:UIControlEventTouchUpInside];
                 b.selected = mail.isFav;
+                self.favoriBtn = b;
             }
             else if (name == [btns firstObject]) {
                 [b addTarget:self action:@selector(_masr:) forControlEvents:UIControlEventTouchUpInside];
@@ -477,12 +504,15 @@
             }
             
         }
-        
     }
     
-    
     [self addSubview:inIV];
-    
+}
+
+-(void) updateFavUI:(BOOL)isFav
+{
+    self.favoriBtn.selected = isFav;
+    self.favori.highlighted = isFav;
 }
 
 
@@ -549,8 +579,7 @@
 -(void) _fav:(UIButton*)button
 {
     Mail* mail = [self.delegate mailDisplayed:self];
-    mail.isFav = !mail.isFav;
-    button.selected = mail.isFav;
+    [self.delegate makeConversationFav:!mail.isFav];
 }
 
 
@@ -583,8 +612,7 @@
             }
             else {
                 Mail* mail = [self.delegate mailDisplayed:self];
-                mail.isFav = !mail.isFav;
-                self.favori.highlighted = mail.isFav;
+                [self.delegate makeConversationFav:!mail.isFav];
             }
             return;
         }

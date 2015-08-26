@@ -42,4 +42,6 @@
 -(void) unselectAll;
 -(UIPanGestureRecognizer*) tableViewPanGesture;
 
+-(UIImageView*) imageViewForQuickSwipeAction;
+
 @end

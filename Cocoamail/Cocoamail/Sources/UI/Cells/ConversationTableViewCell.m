@@ -84,15 +84,7 @@
     self.backViewR.alpha = 0.f;
     
     
-    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single",@"swipe_unread"];
-    NSInteger idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
-    
-    UIImageView* arch = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imgNames[idxQuickSwipe]]];
-    
-    if (idxQuickSwipe==2) {
-        arch.highlightedImage = [UIImage imageNamed:@"swipe_reply_all"];
-    }
-    
+    UIImageView* arch = [self.delegate imageViewForQuickSwipeAction];    
     CGRect fa = arch.frame;
     fa.origin.x = 8;
     fa.origin.y = 28;
@@ -371,8 +363,6 @@
         case UIGestureRecognizerStateEnded:
         {
             UIPanGestureRecognizer* tpgr = [self.delegate tableViewPanGesture];
-            
-//            NSLog(@"%d", tpgr.state);
 
             BOOL otherIsStopped = (tpgr.state == UIGestureRecognizerStatePossible || tpgr.state == UIGestureRecognizerStateFailed);
             
@@ -382,7 +372,10 @@
                 
                 // tav fav
                 if (self.favori.tag == tagFavSelected) {
-                    [self mail].isFav = self.favori.highlighted;
+                    
+                    Account* ac = [[Accounts sharedInstance] currentAccount];
+                    [ac manage:self.conversation isFav:self.favori.highlighted];
+
                     self.favori.tag = 0;
                     back = true;
                 }
@@ -478,10 +471,9 @@
                 if (userEndAction) {
                     
                     NSInteger idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
-                    if (idxQuickSwipe == 3) {
+                    if (idxQuickSwipe == QuickSwipeMark) {
                         Mail* m = [self mail];
                         m.isRead = !m.isRead;
-                        
                         [self fillWithConversation:self.conversation isSelected:false];
                     }
                     
@@ -541,7 +533,7 @@
     
     
     NSInteger idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
-    if (idxQuickSwipe == 2) {
+    if (idxQuickSwipe == QuickSwipeReply) {
         BOOL toMany = mail.toPersonID.count>1;
         self.leftAction.highlighted = toMany;
     }

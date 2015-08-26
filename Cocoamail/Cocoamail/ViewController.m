@@ -75,8 +75,7 @@ static ViewController* s_self;
     
     self.contentView.clipsToBounds = YES;
     
-    // FAKE: to init accounts creation
-    [Accounts sharedInstance];
+    [[[Accounts sharedInstance] currentAccount] fakeInitContent];
     
     [self setup];
     
@@ -96,6 +95,12 @@ static ViewController* s_self;
 {
     [self.cocoaButton updateColor];
 }
+
+-(void) closeCocoaButtonIfNeeded
+{
+    [self.cocoaButton forceCloseButton];
+}
+
 
 
 - (void)setup
@@ -264,8 +269,9 @@ static ViewController* s_self;
             f = [[MailListViewController alloc] initWithPerson:person];
         }
         else {
-            NSString* name = [notif.userInfo objectForKey:kPRESENT_FOLDER_NAME];
-            f = [[MailListViewController alloc] initWithName:name];
+            NSNumber* codedType = [notif.userInfo objectForKey:kPRESENT_FOLDER_TYPE];
+            f = [[MailListViewController alloc] initWithFolder:decodeFolderTypeWith(codedType.integerValue)];
+            
         }
         [self _animatePushVC:f];        
     }];
@@ -395,7 +401,7 @@ static ViewController* s_self;
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kACCOUNT_CHANGED_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         
-        [[Parser sharedParser] cleanConversations];
+        //[[Parser sharedParser] cleanConversations];
         
         BOOL inFolders = self.viewControllers.count == 1;
         
@@ -410,8 +416,7 @@ static ViewController* s_self;
             self.viewControllers = [NSMutableArray arrayWithObject:f];
         }
         else {
-            NSString* name = [[Accounts systemFolderNames] firstObject];
-            MailListViewController* inbox = [[MailListViewController alloc] initWithName:name];
+            MailListViewController* inbox = [[MailListViewController alloc] initWithFolder:FolderTypeWith(FolderTypeInbox, 0)];
             inbox.view.frame = self.contentView.bounds;
             nextView = inbox.view;
             
@@ -566,7 +571,11 @@ static ViewController* s_self;
 -(void) _applyAccountButton:(UIButton*)button
 {
     [self.cocoaButton closeHorizontalButton:button refreshCocoaButtonAndDo:^{
-        [Accounts sharedInstance].currentAccountIdx = button.tag;
+        
+        Accounts* A = [Accounts sharedInstance];
+        [[A currentAccount] releaseContent];
+        A.currentAccountIdx = button.tag;
+        [[A currentAccount] fakeInitContent];
         [[NSNotificationCenter defaultCenter] postNotificationName:kACCOUNT_CHANGED_NOTIFICATION object:nil];
     }];
 }
@@ -634,6 +643,18 @@ static ViewController* s_self;
     return nil;
 }
 
+
+-(BOOL) automaticCloseFor:(CocoaButton *)cocoabutton
+{
+    InViewController* currentVC = [self.viewControllers lastObject];
+    
+    if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
+        id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
+        return [src automaticCloseFor:cocoabutton];
+    }
+    
+    return YES;
+}
 
 @end
 

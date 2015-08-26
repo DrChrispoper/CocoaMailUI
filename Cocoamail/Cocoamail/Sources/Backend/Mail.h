@@ -40,6 +40,8 @@
 -(Mail*) replyMail:(BOOL)replyAll;
 -(Mail*) transfertMail;
 
++(NSInteger) isTodayOrYesterday:(NSString*)dateString;
+
 @end
 
 

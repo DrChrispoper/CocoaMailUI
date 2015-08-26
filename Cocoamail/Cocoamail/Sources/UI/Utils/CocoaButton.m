@@ -96,8 +96,7 @@
     self.nameView.text = cac.codeName;
 }
 
-
--(void) forceCloseButton
+-(void) _forceCloseButtonSkipDatasource
 {
     [self replaceMainButton:nil];
     
@@ -111,7 +110,17 @@
     }
     
     self.openState = 0;
+}
+
+
+
+-(void) forceCloseButton
+{
+    if ([self.datasource automaticCloseFor:self]==NO) {
+        return;
+    }
     
+    [self _forceCloseButtonSkipDatasource];
 }
 
 -(void) forceCloseHorizontal
@@ -128,7 +137,7 @@
 
 -(void) closeHorizontalButton:(UIButton*)button refreshCocoaButtonAndDo:(void (^)())action
 {
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    self.userInteractionEnabled = NO;
     
     AccountButton* supportV = (AccountButton*)[button superview];
     [supportV.superview bringSubviewToFront:supportV];
@@ -181,7 +190,7 @@
         self.backView.alpha = 1.0;
         [button removeFromSuperview];
         
-        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        self.userInteractionEnabled = YES;
     }];
 }
 
@@ -235,8 +244,7 @@
     }
     self.subviewsHorizontal = buttons;
     
-    
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    self.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.3
                           delay:0.
@@ -257,7 +265,7 @@
                          
                      }
                      completion:^(BOOL fini){
-                         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                         self.userInteractionEnabled = YES;
                          self.openState = 2;
                      }];
     
@@ -265,7 +273,7 @@
 
 -(void) _closeHorizontal
 {
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    self.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.15
                           delay:0.
@@ -292,7 +300,7 @@
                      }
                      completion:^(BOOL fini){
                          [self _boingAnimationForView:self andThen:^{
-                             [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                             self.userInteractionEnabled = YES;
                              self.openState = 0;
                          }];
                      }];
@@ -314,7 +322,7 @@
     else if (self.openState == 1) {
         [UIView animateWithDuration:0.2
                          animations:^{
-                             [self forceCloseButton];
+                             [self _forceCloseButtonSkipDatasource];
                          }
                          completion:^(BOOL fini){
                              [self _openHorizontal];
@@ -392,10 +400,6 @@
         return;
     }
     
-    
-    
-    //[[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-    
     [UIView animateWithDuration:0.3
                           delay:0.
          usingSpringWithDamping:0.7
@@ -414,7 +418,6 @@
                          }
                      }
                      completion:^(BOOL fini){
-                         //[[UIApplication sharedApplication] endIgnoringInteractionEvents];
                          self.openState = 1;
                      }];
     
@@ -424,7 +427,7 @@
 
 -(void) _closeWide
 {
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    self.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.3
                           delay:0.
@@ -441,7 +444,7 @@
                          
                      }
                      completion:^(BOOL fini){
-                         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                         self.userInteractionEnabled = YES;
                          self.openState = 0;
                          for (UIView* v in self.subviewsWide) {
                              [v removeFromSuperview];
@@ -542,6 +545,23 @@
     return nil;
 }
 
+
++(void) animateHorizontalButtonCancelTouch:(UIButton*)button
+{
+    [UIView animateWithDuration:0.15
+                          delay:0.
+         usingSpringWithDamping:0.5
+          initialSpringVelocity:0.3
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         CGFloat scale = 33.f/44.f;
+                         button.transform = CGAffineTransformScale(button.transform, scale, scale);
+                     }
+                     completion:^(BOOL fini){
+                     }];
+}
+
+
 @end
 
 
@@ -581,11 +601,11 @@
 {
     [UIView animateWithDuration:0.15
                           delay:0.
-         usingSpringWithDamping:0.8
+         usingSpringWithDamping:0.5
           initialSpringVelocity:0.3
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
-                         button.transform =  CGAffineTransformIdentity;
+                         button.transform = CGAffineTransformIdentity;
                      }
                      completion:^(BOOL fini){
                      }];
@@ -593,6 +613,8 @@
 
 -(void) _cancelTouchButton:(UIButton*)button
 {
+    [CocoaButton animateHorizontalButtonCancelTouch:button];
+    /*
     [UIView animateWithDuration:0.15
                           delay:0.
          usingSpringWithDamping:0.5
@@ -604,6 +626,7 @@
                      }
                      completion:^(BOOL fini){
                      }];
+     */
     
 }
 

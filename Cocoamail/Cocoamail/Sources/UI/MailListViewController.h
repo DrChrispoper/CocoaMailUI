@@ -9,10 +9,12 @@
 #import "ViewController.h"
 #import "CocoaButton.h"
 #import "Persons.h"
+#import "Accounts.h"
+
 
 @interface MailListViewController : InViewController <CocoaButtonDatasource>
 
--(instancetype) initWithName:(NSString*)name;
+-(instancetype) initWithFolder:(FolderType)folder;
 -(instancetype) initWithPerson:(Person*)person;
 
 @end

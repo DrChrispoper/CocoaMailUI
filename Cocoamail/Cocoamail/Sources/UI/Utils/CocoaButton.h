@@ -14,6 +14,7 @@
 
 -(NSArray*) buttonsWideFor:(CocoaButton*)cocoabutton;
 -(NSArray*) buttonsHorizontalFor:(CocoaButton*)cocoabutton;
+-(BOOL) automaticCloseFor:(CocoaButton*)cocoabutton;
 
 @end
 
@@ -33,7 +34,8 @@
 
 -(void) replaceMainButton:(UIButton*)button;
 
-
 -(void) closeHorizontalButton:(UIButton*)button refreshCocoaButtonAndDo:(void (^)())action;
+
++(void) animateHorizontalButtonCancelTouch:(UIButton*)button;
 
 @end

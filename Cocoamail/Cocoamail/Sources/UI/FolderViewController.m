@@ -59,17 +59,10 @@
 }
 
 
--(void) _endPickSettingsColor:(UIColor*)color
+-(void) viewDidAppear:(BOOL)animated
 {
-    Account* account = [[Accounts sharedInstance] currentAccount];
-    account.userColor = color;
-    
-    [[ViewController mainVC] refreshCocoaButton];
-    
+    [super viewDidAppear:animated];
     [self.table reloadData];
-    [self.table setContentOffset:CGPointMake(0, -self.table.contentInset.top) animated:YES];
-    self.settingsButton.selected = false;
-    [self.navBar computeBlurForceNew];
 }
 
 
@@ -90,7 +83,7 @@
 {
     Account* ac = [[Accounts sharedInstance] currentAccount];
     
-    return (section==0) ? ac.systemFolders.count : ac.userFolders.count;
+    return (section==0) ? [Accounts systemFolderNames].count : ac.userFolders.count;
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -112,19 +105,22 @@
         
         UIColor* colorBubble = nil;
         
-        int count = [[cac systemFolders][indexPath.row] intValue];
+        int count = 0;
         text = [Accounts systemFolderNames][indexPath.row];
         imageName = [Accounts systemFolderIcons][indexPath.row];
         
         switch (indexPath.row) {
             case 0:
                 colorBubble = cac.userColor;
+                count = [cac unreadInInbox];
                 break;
             case 1:
                 colorBubble = [UIColor whiteColor];
+                count = [cac getConversationsForFolder:FolderTypeWith(1, 0)].count;
                 break;
             case 3:
                 colorBubble = [UIGlobal bubbleFolderGrey];
+                count = [cac getConversationsForFolder:FolderTypeWith(3, 0)].count;
                 break;
             default:
                 break;
@@ -210,16 +206,18 @@
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString* name = nil;
+    FolderType type;
     if (indexPath.section == 0) {
-        name = [Accounts systemFolderNames][indexPath.row];
+        type.type = indexPath.row;
+        type.idx = 0;
     }
     else {
-        Account* cac = [[Accounts sharedInstance] currentAccount];
-        name = [cac userFolders][indexPath.row];
+        type.type = FolderTypeUser;
+        type.idx = indexPath.row;
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_NAME:name}];
+    NSNumber* encodedType = @(encodeFolderTypeWith(type));
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_TYPE:encodedType}];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
