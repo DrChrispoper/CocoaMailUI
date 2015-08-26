@@ -165,7 +165,6 @@
 -(void) _attach
 {
     Conversation* c = [[Conversation alloc] init];
-
     // keep only mail sent by onlyPerson with attachment
     NSMutableArray* tmp = [NSMutableArray arrayWithCapacity:500];
     for (NSDictionary* d in self.convByDay) {

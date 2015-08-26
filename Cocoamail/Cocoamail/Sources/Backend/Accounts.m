@@ -14,7 +14,7 @@
 
 -(void) _fakeCreateFoldersContent;
 
-@property (nonatomic, strong) NSArray* allsMails;
+@property (nonatomic, strong) NSMutableArray* allsMails;
 
 @property (nonatomic, strong) NSArray* userFoldersContent;
 @property (nonatomic, strong) NSArray* systemFoldersContent;
@@ -242,6 +242,20 @@
     return res;
     
 }
+
+-(void) sendMail:(Mail*)mail
+{
+    NSInteger index = self.allsMails.count;
+    
+    [mail sendMail];
+    
+    Conversation* c = [[Conversation alloc] init];
+    c.mails = @[mail];
+    [self.allsMails addObject:c];
+    
+    [self _addIdx:index inArray:FolderTypeWith(FolderTypeSent, 0)];
+}
+
 
 -(BOOL) moveConversation:(Conversation*)conversation from:(FolderType)folderFrom to:(FolderType)folderTo
 {

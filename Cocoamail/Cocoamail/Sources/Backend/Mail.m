@@ -65,7 +65,6 @@ static NSDateFormatter* s_df_hour = nil;
     
     // fake but stable
     mail.mailID = [NSString stringWithFormat:@"%ld", (long)s_nextMailID++];
-//    mail.haveAttachment = (rand() % 4 == 0);
     [self _addAttachmentsTo:mail];
     [self _setIsRead:mail];
     //
@@ -200,12 +199,33 @@ static NSDateFormatter* s_df_hour = nil;
 }
 
 
--(Mail*) replyMail:(BOOL)replyAll
+-(void) sendMail
+{
+    self.date = [NSDate date];
+    self.day = [s_df_day stringFromDate:self.date];
+    self.hour = [s_df_hour stringFromDate:self.date];
+    self.isRead = true;
+    
+    // fake but stable
+    self.mailID = [NSString stringWithFormat:@"%ld", (long)s_nextMailID++];
+    //
+    
+}
+
++(Mail*) newMailFormCurrentAccount
 {
     Mail* mail = [[Mail alloc] init];
+    mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);
+    return mail;
+}
+
+
+
+-(Mail*) replyMail:(BOOL)replyAll
+{
+    Mail* mail = [Mail newMailFormCurrentAccount];
     
     mail.title = self.title;
-    mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);
   
     if (replyAll) {
         
@@ -222,18 +242,11 @@ static NSDateFormatter* s_df_hour = nil;
     }
   
     mail.content = @"";
-    mail.date = [NSDate date];
-    mail.day = [s_df_day stringFromDate:mail.date];
-    mail.hour = [s_df_hour stringFromDate:mail.date];
     mail.attachments = nil;
     mail.isFav = self.isFav;
-    mail.isRead = false;
+    mail.isRead = true;
     
     mail.fromMail = self;
-    
-    // fake but stable
-    mail.mailID = [NSString stringWithFormat:@"%ld", (long)s_nextMailID++];
-    //
     
     return mail;
 }
@@ -244,6 +257,13 @@ static NSDateFormatter* s_df_hour = nil;
     Mail* mail = [self replyMail:NO];
     mail.toPersonID = nil;
     mail.attachments = self.attachments;
+    
+    Person* from = [[Persons sharedInstance] getPersonID:self.fromPersonID];
+    NSString* wrote = NSLocalizedString(@"wrote", @"wrote");
+    NSString* oldcontent = [NSString stringWithFormat:@"\n\n%@ %@ :\n\n%@\n", from.name, wrote, self.content];
+    mail.content = oldcontent;
+
+    mail.fromMail = nil;
     
     return mail;
 }

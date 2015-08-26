@@ -26,9 +26,31 @@
     self.mainScrollView = mainScrollView;
     
     WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:mainScrollView.frame.size.width];
+    
+    if (item.rightBarButtonItem==nil) {
+        UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"empty_pixel" andHighlighted:@"empty_pixel"];
+        [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
+        item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
+    }
+
+    if (item.leftBarButtonItem==nil) {
+        UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"empty_pixel" andHighlighted:@"empty_pixel"];
+        [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
+        item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
+    }
+    
+    
     [navBar pushNavigationItem:item animated:NO];
-    [self.view addSubview:navBar];
+    
+    UIView* navBarSupport = [[UIView alloc] initWithFrame:navBar.bounds];
+    navBarSupport.backgroundColor = [UIColor clearColor];
+    navBarSupport.clipsToBounds = YES;
+    [navBarSupport addSubview:navBar];
+    
+    [self.view addSubview:navBarSupport];
     self.navBar = navBar;
+ 
+    self.navBar.frame = CGRectInset(self.navBar.frame, -3, 0);
     
     [navBar createWhiteMaskOverView:mainScrollView withOffset:mainScrollView.contentInset.top];
 }

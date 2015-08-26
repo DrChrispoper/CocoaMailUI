@@ -75,11 +75,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 @implementation EditMailViewController
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     if (self.mail == nil) {
-        self.mail = [[Mail alloc] init];
+        self.mail = [Mail newMailFormCurrentAccount];
     }
     
 //    self.view.backgroundColor = [UIGlobal standardLightGrey];
@@ -91,7 +92,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
-
     UIButton* send = [WhiteBlurNavBar navBarButtonWithImage:@"editmail_send_off" andHighlighted:@"editmail_send_on"];
     UIImage* imgNo = [[UIImage imageNamed:@"editmail_send_no"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [send setImage:imgNo forState:UIControlStateDisabled];
@@ -134,7 +134,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [self setupNavBarWith:item overMainScrollView:self.scrollView];
     
-    [self _manageSendButton];
+    self.navBar.frame = CGRectInset(self.navBar.frame, -5, 0);
     
     BOOL isReply = NO;
     
@@ -196,14 +196,15 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 {
     self.mail.title = self.subjectTextView.text;
     self.mail.content = self.bodyTextView.text;
-    // TODO : everything else
+    
+    [self.selectedAccount sendMail:self.mail];
     
     [self _back];
 }
 
 -(void) _manageSendButton
 {
-    self.sendButton.enabled = self.subjectTextView.text.length>0 && self.mail.toPersonID.count>0;
+    self.sendButton.enabled = /*self.subjectTextView.text.length>0 &&*/ self.mail.toPersonID.count>0;
 }
 
 -(void) _keyboardNotification:(BOOL)listen
@@ -280,16 +281,18 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [toView addSubview:label];
     
     UIButton* addButton = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-45, 0, 45, 45)];
+    /*
     UIImage* plusOff = [[UIImage imageNamed:@"editmail_contact_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImage* plusOn = [[UIImage imageNamed:@"editmail_contact_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [addButton setImage:plusOff forState:UIControlStateNormal];
     [addButton setImage:plusOn forState:UIControlStateHighlighted];
-    
     addButton.tintColor = [ca userColor];
+     */
     [addButton addTarget:self action:@selector(_addPerson) forControlEvents:UIControlEventTouchUpInside];
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [toView addSubview:addButton];
     self.toButton = addButton;
+    self.toButton.hidden = YES;
     
     [self.viewsWithAccountTintColor addObject:addButton];
     
@@ -347,7 +350,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [subView addSubview:label];
     
-    addButton = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-45, 0, 45, 45)];
+    addButton = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH-46, 0, 45, 45)];
     addButton.backgroundColor = [UIColor whiteColor];
     addButton.tintColor = [ca userColor];
     [addButton addTarget:self action:@selector(_addAttach) forControlEvents:UIControlEventTouchUpInside];
@@ -357,7 +360,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     self.attachButton = addButton;
     
-    UITextView* tvS = [[UITextView alloc] initWithFrame:CGRectMake(label.frame.size.width + 10, 5.5, WIDTH - 40 - (label.frame.size.width + 10), 34)];
+    UITextView* tvS = [[UITextView alloc] initWithFrame:CGRectMake(label.frame.size.width + 10, 5.5, WIDTH - 42 - (label.frame.size.width + 10), 34)];
     tvS.font = [UIFont systemFontOfSize:15.];
     tvS.textColor = [UIColor blackColor];
     tvS.delegate = self;
@@ -380,7 +383,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     // Body
 
-    UIView* bdView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 34 + 8 + 19*3)];
+    UIView* bdView = [[UIView alloc] initWithFrame:CGRectMake(0, currentPosY, WIDTH, 34 + 8 + 19*3 + 20)];
     bdView.backgroundColor = [UIColor whiteColor];
 
     UITextView* tv = [[UITextView alloc] initWithFrame:CGRectMake(3, 4, WIDTH-6, 34 + 19*3 - 3)];
@@ -395,6 +398,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     tv.selectedRange = start;
     
     self.bodyTextView = tv;
+    
+    
+    UILabel* signature = [[UILabel alloc] initWithFrame:CGRectMake(8, bdView.frame.size.height-28 , WIDTH-16, 20)];
+    signature.textColor = [UIGlobal noImageBadgeColor];
+    signature.backgroundColor = [UIColor whiteColor];
+    signature.font = [UIFont systemFontOfSize:15];
+    signature.text = @"Sent with CocoaMail";
+    [bdView addSubview:signature];
+    signature.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+    
     
     [contentView addSubview:bdView];
     bdView.tag = ContentBody;
@@ -458,6 +471,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [self _fillTitle];
     
+    if (self.mail.content.length > 0) {
+        [self _fillBody];
+    }
+    
     [self _fixContentSize];
     
     [self _updateAttachView];
@@ -489,8 +506,34 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         subject.frame = r;
         [self _subjectChangeSize:delta];
     }
-    
 }
+
+-(void) _fillBody
+{
+    CGFloat lastH = self.bodyTextView.frame.size.height;
+    
+    self.bodyTextView.text = self.mail.content;
+    
+    CGRect fourLineFrame = self.bodyTextView.frame;
+    
+    [self.bodyTextView sizeToFit];
+    
+    CGFloat delta = self.bodyTextView.frame.size.height - lastH;
+    
+    if (delta <= 0.) {
+        self.bodyTextView.frame = fourLineFrame;
+    }
+    else {
+        UIView* body = [self.contentView viewWithTag:ContentBody];
+        CGRect r = body.frame;
+        r.size.height += delta;
+        body.frame = r;
+        [self _bodyChangeSize:delta];
+    }
+}
+
+
+
 
 #pragma mark - attach
 
@@ -715,7 +758,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     CGFloat height = last.frame.origin.y + last.frame.size.height + 20;
     
     CGRect f = self.contentView.frame;
-    f.size.height = height;
+    f.size.height = height + 50;
     self.contentView.frame = f;
 
     self.scrollView.contentSize = self.contentView.frame.size;
@@ -777,11 +820,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 {
     const CGFloat currentHeight = textView.frame.size.height;
     const CGFloat next = textView.contentSize.height;
-    
+    /*
     if (textView == self.subjectTextView) {
         [self _manageSendButton];
     }
-    
+    */
     if (currentHeight != next) {
         
         CGFloat delta = next - currentHeight;
@@ -839,8 +882,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         }
     }
     
+    /*
     [self _manageSendButton];
-    
+    */
 }
 
 -(BOOL) textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -859,6 +903,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _presentSearchUI
 {
+    if (self.searchUI!=nil) {
+        return;
+    }
+    
     self.tapContentGesture.enabled = NO;
     
     UIImage* plusOff = [[UIImage imageNamed:@"editmail_close_bubble_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -866,12 +914,13 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [self.toButton setImage:plusOff forState:UIControlStateNormal];
     [self.toButton setImage:plusOn forState:UIControlStateHighlighted];
     self.toButton.tintColor = [UIGlobal noImageBadgeColor];
+    self.toButton.hidden = NO;
     
     
     UIView* toView = [self.contentView viewWithTag:ContentTo];
     CGFloat posY = toView.frame.origin.y + toView.frame.size.height;
     
-    UIView* searchUI = [[UIView alloc] initWithFrame:CGRectMake(0, posY, self.scrollView.frame.size.width, self.scrollView.frame.size.height - posY + 50)];
+    UIView* searchUI = [[UIView alloc] initWithFrame:CGRectMake(0, posY, self.scrollView.frame.size.width, self.scrollView.frame.size.height - posY)];
     searchUI.backgroundColor = [UIColor whiteColor];
     
     UIImage* shadow = [UIImage imageNamed:@"editmail_shadow_stretch"];
@@ -879,9 +928,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     iv.frame = CGRectMake(0, 0, toView.frame.size.width, 3);
     iv.contentMode = UIViewContentModeScaleToFill;
     
-    CGRect ftv = searchUI.bounds;
-    ftv.size.height -= 50;
-    UITableView* tv = [[UITableView alloc] initWithFrame:ftv style:UITableViewStyleGrouped];
+    UITableView* tv = [[UITableView alloc] initWithFrame:searchUI.bounds style:UITableViewStyleGrouped];
     tv.delegate = self;
     tv.dataSource = self;
     tv.backgroundColor = [UIGlobal standardLightGrey];
@@ -891,7 +938,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     self.searchTableView = tv;
     
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, self.scrollView.frame.size.height);
+    CGRect fcv = self.contentView.frame;
+    fcv.size = self.scrollView.frame.size;
+    self.contentView.frame = fcv;
+    
+    self.scrollView.contentSize = self.contentView.frame.size;
     
     [self.contentView addSubview:searchUI];
     self.searchUI = searchUI;
@@ -899,13 +950,20 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _removeSearchUI
 {
+    if (self.searchUI == nil) {
+        return;
+    }
+    
     self.currentSearchPersonList = nil;
     
+    /*
     UIImage* plusOff = [[UIImage imageNamed:@"editmail_contact_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImage* plusOn = [[UIImage imageNamed:@"editmail_contact_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [self.toButton setImage:plusOff forState:UIControlStateNormal];
     [self.toButton setImage:plusOn forState:UIControlStateHighlighted];
     self.toButton.tintColor = [self.selectedAccount userColor];
+    */
+    self.toButton.hidden = YES;
     
     self.tapContentGesture.enabled = YES;
     
@@ -963,7 +1021,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [self _createCCcontent];
     
     self.toTextField.text = nil;
-    [self.toTextField resignFirstResponder];
+    [self _removeSearchUI];
+    //[self.toTextField resignFirstResponder];
     
     return nil;
 }
@@ -972,10 +1031,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (self.currentSearchPersonList==nil) {
-        self.currentSearchPersonList = [[Persons sharedInstance] allPersons];
-    }
-    
     return self.currentSearchPersonList.count;
 }
 
@@ -999,12 +1054,21 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
     if (newText.length>0) {
         
-        NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.currentSearchPersonList.count];
+        if (self.currentSearchPersonList==nil) {
+            self.currentSearchPersonList = [[Persons sharedInstance] allPersons];
+        }
+        
+        if (newText.length==1) {
+            [self _presentSearchUI];
+        }
         
         newText = [newText lowercaseString];
         
+        NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:self.currentSearchPersonList.count];
+        
         for (Person* p in self.currentSearchPersonList) {
-            if ([p.name rangeOfString:newText].location != NSNotFound) {
+            
+            if ([p.name rangeOfString:newText options:NSCaseInsensitiveSearch].location != NSNotFound) {
                 [res addObject:p];
             }
             else if ([p.email rangeOfString:newText].location != NSNotFound) {
@@ -1013,9 +1077,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         }
         
         self.currentSearchPersonList = res;
+        
+        [self.searchTableView reloadData];
     }
-    
-    [self.searchTableView reloadData];
+    else {
+        [self _removeSearchUI];
+    }
     
     return YES;
 }
@@ -1023,9 +1090,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 -(void) textFieldDidBeginEditing:(UITextField *)textField
 {
     [self.scrollView setContentOffset:CGPointZero animated:YES];
+    /*
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _presentSearchUI];
     });
+     */
 }
 
 -(void) textFieldDidEndEditing:(UITextField *)textField
@@ -1035,7 +1104,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(BOOL) textFieldShouldReturn:(UITextField *)textField
 {
-    [textField resignFirstResponder];
+    //[textField resignFirstResponder];
 
     NSString* mailText = textField.text;
     
@@ -1074,6 +1143,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     }
     
     textField.text = nil;
+    [self _removeSearchUI];
     self.currentSearchPersonList = nil;
     
     return NO;
@@ -1176,7 +1246,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         return;
     }
     
-    [ViewController presentAlertWIP:@"go to list view…"];
+    //[ViewController presentAlertWIP:@"go to list view…"];
 }
 
 -(void) _tapTitle:(UITapGestureRecognizer*)tgr
@@ -1199,8 +1269,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         [ac addAction:defaultAction];
     }
     
-    for (Account* a in [Accounts sharedInstance].accounts) {
+    NSInteger idx = -1;
     
+    for (Account* a in [Accounts sharedInstance].accounts) {
+        idx++;
+        
         if (a.isAllAccounts) {
             continue;
         }
@@ -1214,6 +1287,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                                                                   lbl.text = a.userMail;
                                                                   [lbl sizeToFit];
                                                                   self.selectedAccount = a;
+                                                                  
+                                                                  self.mail.fromPersonID = -(1+idx);
                                                                   
                                                                   for (UIView* v in self.viewsWithAccountTintColor) {
                                                                       v.tintColor = a.userColor;
@@ -1310,9 +1385,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     mail.textColor = [UIColor whiteColor];
     mail.font = [UIFont systemFontOfSize:14.f];
     [back addSubview:mail];
-    mail.textAlignment = NSTextAlignmentCenter;
+    mail.textAlignment = NSTextAlignmentLeft;
     mail.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    mail.text = p.email;
+    mail.text = [NSString stringWithFormat:@"  %@", p.email];
     
     UIButton* remove = [[UIButton alloc] initWithFrame:CGRectMake(2, 0, 31.f, 33.f)];    
     [remove setImage:[UIImage imageNamed:@"editmail_close_bubble_off"] forState:UIControlStateNormal];
@@ -1369,7 +1444,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                      animations:^{
                          
                          self.frame = self.baseFrame;
-                         self.badge.frame = self.bounds;
+                         //self.badge.frame = self.bounds;
                          
                          self.backgroundView.alpha = 0.;
                          
@@ -1425,11 +1500,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                          f.size.width = lastPosX - minX;
                          self.frame = f;
                          
-                         
+                         /*
                          f = self.badge.frame;
                          f.origin.x = self.baseFrame.origin.x - minX;
                          self.badge.frame = f;
-                         
+                         */
                          self.backgroundView.alpha = 1.;
                          
                      }

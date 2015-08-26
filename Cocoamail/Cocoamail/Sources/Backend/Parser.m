@@ -182,7 +182,7 @@
     
 }
 
--(NSArray*) getAllConversations
+-(NSMutableArray*) getAllConversations
 {
     if (self.allConversations) {
         return self.allConversations;

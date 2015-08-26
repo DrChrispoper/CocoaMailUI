@@ -120,6 +120,24 @@
     UIView* contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 10000)];
     contentView.backgroundColor = [UIColor clearColor];
   
+    // title
+    UILabel* lbl = [[UILabel alloc] initWithFrame:self.view.bounds];
+    lbl.text = [self.conversation firstMail].title;
+    lbl.numberOfLines = 0;
+    lbl.backgroundColor = [UIColor clearColor];
+    lbl.textColor = [UIGlobal noImageBadgeColor];
+    lbl.font = [UIFont boldSystemFontOfSize:16];
+    lbl.textAlignment = NSTextAlignmentCenter;
+    [lbl sizeToFit];
+    
+    CGRect tf = lbl.frame;
+    tf.origin = CGPointMake(0, -tf.size.height + 25);
+    tf.size = CGSizeMake(self.view.bounds.size.width, tf.size.height);
+    lbl.frame = tf;
+    
+    [contentView addSubview:lbl];
+    //
+    
     self.allMailViews = [NSMutableArray arrayWithCapacity:self.conversation.mails.count];
     
     NSInteger idx = 0;

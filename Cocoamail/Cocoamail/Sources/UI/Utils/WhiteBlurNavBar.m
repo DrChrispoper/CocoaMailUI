@@ -74,7 +74,7 @@
 
 -(instancetype) initWithWidth:(CGFloat)width
 {
-    self = [super initWithFrame:CGRectMake(0, 0, width+10, [WhiteBlurNavBar navBarHeight])];
+    self = [super initWithFrame:CGRectMake(0, 0, width, [WhiteBlurNavBar navBarHeight])];
     
     self.opaque = false;
     

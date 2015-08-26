@@ -12,7 +12,7 @@
 
 @class Conversation;
 @class Account;
-
+@class Mail;
 
 
 typedef enum : NSUInteger {
@@ -104,5 +104,7 @@ static inline FolderType decodeFolderTypeWith(NSInteger code)
 
 -(NSInteger) unreadInInbox;
 -(void) manage:(Conversation*)conversation isFav:(BOOL)isFav;
+
+-(void) sendMail:(Mail*)mail;
 
 @end

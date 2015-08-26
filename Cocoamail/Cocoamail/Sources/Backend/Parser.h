@@ -14,7 +14,7 @@
 
 //-(void) parseFables;
 
--(NSArray*) getAllConversations;
+-(NSMutableArray*) getAllConversations;
 -(void) cleanConversations;
 
 

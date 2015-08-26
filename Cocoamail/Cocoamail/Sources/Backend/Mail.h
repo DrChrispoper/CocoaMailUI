@@ -40,7 +40,10 @@
 -(Mail*) replyMail:(BOOL)replyAll;
 -(Mail*) transfertMail;
 
+-(void) sendMail;
+
 +(NSInteger) isTodayOrYesterday:(NSString*)dateString;
++(Mail*) newMailFormCurrentAccount;
 
 @end
 
