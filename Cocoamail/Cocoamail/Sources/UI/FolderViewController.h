@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "UIGlobal.h"
 
 @interface FolderViewController : InViewController
 

@@ -9,7 +9,6 @@
 #import "ConversationTableViewCell.h"
 
 #import "ViewController.h"
-#import "UIGlobal.h"
 #import "Accounts.h"
 #import "CocoaButton.h"
 #import "Persons.h"
@@ -140,21 +139,6 @@
     
     lpgr.delegate = self;
     
-    /*
-    UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_swipe:)];
-    sgr.direction = UISwipeGestureRecognizerDirectionLeft;
-    [self.contentView addGestureRecognizer:sgr];
-
-    UISwipeGestureRecognizer* sgrR = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_swipe:)];
-    sgrR.direction = UISwipeGestureRecognizerDirectionRight;
-    [self.contentView addGestureRecognizer:sgrR];
-    
-    [sgr requireGestureRecognizerToFail:lpgr];
-    [sgrR requireGestureRecognizerToFail:lpgr];
-    */
-    
-    //[lpgr requireGestureRecognizerToFail:[self.delegate tableViewGesture]];
-    
     [self.contentView addSubview:back];
     
     
@@ -246,82 +230,6 @@
 {
     [self.delegate cellIsUnselected:self];
 }
-
-
-/*
--(void) _swipe:(UISwipeGestureRecognizer*)sgr
-{
-    
-    if (sgr.state != UIGestureRecognizerStateEnded) {
-        return;
-    }
-
-    BOOL doBoing = false;
-    
-    if (sgr.direction == UISwipeGestureRecognizerDirectionRight) {
-        if ( self.currentSwipedPosition < -40) {
-            self.currentSwipedPosition = 0;
-        }
-        else {
-            doBoing = true;
-        }
-    }
-    else {
-        if ( self.currentSwipedPosition < 1) {
-            self.currentSwipedPosition = -[self _limiteRightSwipe];
-        }
-    }
-
-    if (doBoing) {
-
-        self.leftAction.hidden = true;
-        self.backViewR.alpha = 0.0;
-        
-        [UIView animateWithDuration:0.2
-                         animations:^{
-                             CGRect frame = self.baseView.frame;
-                             frame.size = self.panBaseSize;
-                             frame.origin.x = 8 + 20;
-                             frame.size.width -= 20;
-                             self.baseView.frame = frame;
-                             self.backViewL.alpha = 0.5;
-                         }
-                         completion:^(BOOL fini){
-                             
-                             [UIView animateWithDuration:0.2 animations:^{
-                                 CGRect frame = self.baseView.frame;
-                                 frame.size = self.panBaseSize;
-                                 frame.origin.x = 8;
-                                 self.baseView.frame = frame;
-                                 self.backViewL.alpha = 0.0;
-                             }];
-                         }];
-        
-        [self.delegate cell:self isChangingDuring:0.45];
-        
-        return;
-    }
-
-    if (self.currentSwipedPosition<0) {
-        [self _cellIsSelected];
-    }
-    else {
-        [self _cellIsUnselected];
-    }
-    
-    [UIView animateWithDuration:0.2
-                          delay:0.0
-         usingSpringWithDamping:0.8
-          initialSpringVelocity:0.1
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         [self _applyStableFrame];
-                     }
-                     completion:nil];
-    
-    [self.delegate cell:self isChangingDuring:0.25];
-}
-*/
 
 -(void) _press:(UILongPressGestureRecognizer*)lpgr
 {

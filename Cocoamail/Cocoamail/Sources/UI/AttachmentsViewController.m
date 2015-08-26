@@ -14,8 +14,6 @@
 @interface AttachmentsViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UITableView* table;
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
-
 @property (nonatomic, strong) NSArray* mailsWithAttachment;
 
 @end
@@ -38,16 +36,14 @@
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
-    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];//[self.conversation firstMail].title];
+    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
     UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
-    
     UILabel* l = [WhiteBlurNavBar titleViewForItemTitle:[self.conversation firstMail].title];
+    item.titleView = l;
     /*
     UIImageView* iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"attachment_off"]];
     
@@ -71,10 +67,7 @@
     
     item.titleView = support;
     */
-    item.titleView = l;
     
-    
-    [navBar pushNavigationItem:item animated:NO];
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
@@ -86,24 +79,15 @@
     
     table.backgroundColor = [UIColor whiteColor];
     
-    //table.rowHeight = 72.5f;
-    
     [self.view addSubview:table];
-    [self.view addSubview:navBar];
     
-    [navBar createWhiteMaskOverView:table withOffset:45];
-    
-    self.navBar = navBar;
-    
+    [self setupNavBarWith:item overMainScrollView:table];
     
     [self _setupData];
     
     table.dataSource = self;
-    table.delegate = self;
-    
-    table.clipsToBounds = NO;
-    self.table = table;
-    
+    table.delegate = self;    
+    self.table = table;    
 }
 
 
@@ -119,11 +103,6 @@
     
     self.mailsWithAttachment = res;
     
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -178,10 +157,6 @@
 
 #pragma mark Table Delegate
 
--(void) scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self.navBar computeBlur];
-}
 
 -(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {

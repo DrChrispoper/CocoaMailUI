@@ -38,8 +38,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 @property (nonatomic, weak) UIView* contentView;
 @property (nonatomic, weak) UIScrollView* scrollView;
 
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
-
 @property (nonatomic, weak) UITextView* subjectTextView;
 @property (nonatomic, weak) UITextView* bodyTextView;
 @property (nonatomic, strong) id keyboardNotificationId;
@@ -87,12 +85,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 //    self.view.backgroundColor = [UIGlobal standardLightGrey];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    CGRect screenBounds = [UIScreen mainScreen].bounds;
-    
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
-    
-    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil/*mail.title*/];
+    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
     UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"editmail_cancel_off" andHighlighted:@"editmail_cancel_on"];
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
@@ -122,8 +115,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [self.viewsWithAccountTintColor addObject:back];
     [self.viewsWithAccountTintColor addObject:send];
     
-    
-    
     UILabel* titleView = [WhiteBlurNavBar titleViewForItemTitle:ca.userMail];
     
     if (allAccounts.accounts.count>1) {
@@ -133,9 +124,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     }
     item.titleView = titleView;
     
-    [navBar pushNavigationItem:item animated:NO];
-    
-
     [self _setup];
     
     UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_tapContent:)];
@@ -144,13 +132,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [self _keyboardNotification:YES];
     
-    [self.view addSubview:navBar];
-    self.navBar = navBar;
-    
-    [navBar createWhiteMaskOverView:self.scrollView withOffset:0.f];
+    [self setupNavBarWith:item overMainScrollView:self.scrollView];
     
     [self _manageSendButton];
-    
     
     BOOL isReply = NO;
     
@@ -169,10 +153,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 -(BOOL) haveCocoaButton
 {
@@ -613,13 +593,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     CGFloat delta = 0.f;
     
-    /*
-    NSMutableArray* fakeIDs = [NSMutableArray arrayWithArray:self.mail.toPersonID];
-    [fakeIDs addObjectsFromArray:self.mail.toPersonID];
-    [fakeIDs addObjectsFromArray:self.mail.toPersonID];
-    */
-    
-//    if (fakeIDs.count > 0) {
     if (self.mail.toPersonID.count > 0) {
         
         NSArray* alls = ccView.subviews;
@@ -650,7 +623,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         NSInteger idx = 0;
         
         for (NSNumber* val in self.mail.toPersonID) {
-//        for (NSNumber* val in fakeIDs) {
             NSInteger personID = [val integerValue];
             Person* p = [[Persons sharedInstance] getPersonID:personID];
             
@@ -1270,17 +1242,14 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 -(void) scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.scrollView) {
-        [self.navBar computeBlur];
+        [super scrollViewDidScroll:scrollView];
         return;
     }
-    
     
     if ([scrollView isKindOfClass:[UITextView class]]) {
-        
         scrollView.contentOffset = CGPointMake(0, 0);
         return;
-    }
-    
+    }    
     
 }
 

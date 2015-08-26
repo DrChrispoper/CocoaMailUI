@@ -12,13 +12,11 @@
 #import "Parser.h"
 #import "Mail.h"
 #import "Accounts.h"
-#import "PullToRefresh.h"
 
 @interface MailListViewController () <UITableViewDataSource, UITableViewDelegate, ConversationCellDelegate>
 
 @property (nonatomic, strong) NSMutableArray* convByDay;
 @property (nonatomic, weak) UITableView* table;
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
 
 @property (nonatomic, strong) NSString* folderName;
 
@@ -27,10 +25,6 @@
 @property (nonatomic, strong) Person* onlyPerson;
 
 @property (nonatomic) BOOL presentAttach;
-
-@property (nonatomic, strong) PullToRefresh* pullToRefresh;
-
-
 
 @end
 
@@ -42,18 +36,14 @@
 {
     self = [super init];    
     self.folderName = name;
-    
     self.selectedCells = [[NSMutableSet alloc] initWithCapacity:25];
-    
     return self;
 }
 
 -(instancetype) initWithPerson:(Person*)person
 {
     self = [self initWithName:person.name];
-    
     self.onlyPerson = person;
-    
     return self;
 }
 
@@ -77,9 +67,7 @@
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
-    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil/*self.folderName*/];
+    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
     UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
@@ -92,8 +80,6 @@
         [attach addTarget:self action:@selector(_attach) forControlEvents:UIControlEventTouchUpInside];
         item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:attach];
     }
-    
-    [navBar pushNavigationItem:item animated:NO];
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
@@ -144,20 +130,16 @@
     table.backgroundColor = [UIGlobal standardLightGrey];
     
     [self.view addSubview:table];
-    [self.view addSubview:navBar];
     
-    self.navBar = navBar;
-    self.table = table;
-    
-    [self.navBar createWhiteMaskOverView:self.table withOffset:offsetToUse];
-    
+    [self setupNavBarWith:item overMainScrollView:table];
+
     table.dataSource = self;
     table.delegate = self;
+    self.table = table;
     
-    self.pullToRefresh = [[PullToRefresh alloc] init];
-                          
-    
+    [self addPullToRefreshWithDelta:0];
 }
+
 
 -(void) _attach
 {
@@ -250,12 +232,6 @@
     }
 
     self.convByDay = construct;
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -444,23 +420,6 @@
 
 #pragma mark Table Delegate
 
-
--(void) scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self.navBar computeBlur];
-    
-    [self.pullToRefresh scrollViewDidScroll:scrollView];
-}
-
-
--(void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    [self.pullToRefresh scrollViewDidEndDragging:scrollView];
-}
-
-
-
-
 -(CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 24;
@@ -556,8 +515,6 @@
 
 -(void) _chooseAction:(UIButton*)button
 {
-    //NSLog(@"choose action %d", button.tag);
-    
     [self unselectAll];
     [[CocoaButton sharedButton] forceCloseButton];
 }
@@ -567,10 +524,6 @@
 {
     return nil;
 }
-
-
-
-
 
 
 @end

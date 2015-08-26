@@ -9,14 +9,11 @@
 #import "FolderViewController.h"
 
 #import "Accounts.h"
-#import "PullToRefresh.h"
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UITableView* table;
 @property (nonatomic, weak) UIButton* settingsButton;
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
-@property (nonatomic, strong) PullToRefresh* pullToRefresh;
 
 @end
 
@@ -28,21 +25,17 @@
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
     Account* currentAccount = [[Accounts sharedInstance] currentAccount];
-    //currentAccount.userColor = [UIColor colorWithRed:1.f green:0.49f blue:0.01f alpha:1.f];
     
-    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil/*currentAccount.userMail*/];
+    UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
     UIButton* settingsBtn = [WhiteBlurNavBar navBarButtonWithImage:@"settings_off" andHighlighted:@"settings_on"];
     [settingsBtn addTarget:self action:@selector(_settings) forControlEvents:UIControlEventTouchUpInside];
+    item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:settingsBtn];
     self.settingsButton = settingsBtn;
     
-    item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:settingsBtn];
-    
     item.titleView = [WhiteBlurNavBar titleViewForItemTitle:currentAccount.userMail];
-    [navBar pushNavigationItem:item animated:NO];
+
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
@@ -55,26 +48,14 @@
     table.backgroundColor = [UIGlobal standardLightGrey];
     
     [self.view addSubview:table];
-    [self.view addSubview:navBar];
+    
+    [self setupNavBarWith:item overMainScrollView:table];
 
-    [navBar createWhiteMaskOverView:table withOffset:44-30];
-    
-    self.navBar = navBar;
-    
     table.dataSource = self;
-    table.delegate = self;
-    
-    table.clipsToBounds = NO;
+    table.delegate = self;    
     self.table = table;
     
-    self.pullToRefresh = [[PullToRefresh alloc] init];
-    self.pullToRefresh.delta = 30;
-    
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self addPullToRefreshWithDelta:30];
 }
 
 
@@ -94,62 +75,7 @@
 
 -(void) _settings
 {
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_SETTINGS_NOTIFICATION object:nil];
-    
-    /*
-    
-    self.settingsButton.selected = true;
-    
-    UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:@"Choose main color" preferredStyle:UIAlertControllerStyleAlert];
-    
-    
-    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"blue" style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction * action) {
-                                                              [self _endPickSettingsColor:[UIColor colorWithRed:0.01f green:0.49f blue:1.f alpha:1.f]];
-                                                          }];
-    [ac addAction:defaultAction];
-    
-    
-    defaultAction = [UIAlertAction actionWithTitle:@"purple" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:0.44f green:0.02f blue:1.f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-    
-    defaultAction = [UIAlertAction actionWithTitle:@"magenta" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:1.f green:0.01f blue:0.87f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-    
-    defaultAction = [UIAlertAction actionWithTitle:@"red" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:1.f green:0.07f blue:0.01f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-
-    defaultAction = [UIAlertAction actionWithTitle:@"orange" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:1.f green:0.49f blue:0.01f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-
-    defaultAction = [UIAlertAction actionWithTitle:@"yellow" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:0.96f green:0.72f blue:0.02f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-
-    defaultAction = [UIAlertAction actionWithTitle:@"green" style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction * action) {
-                                               [self _endPickSettingsColor:[UIColor colorWithRed:0.07f green:0.71f blue:0.02f alpha:1.f]];
-                                           }];
-    [ac addAction:defaultAction];
-    
-    ViewController* mvc = [ViewController mainVC];
-    [mvc presentViewController:ac animated:YES completion:nil];
-     */
 }
 
 #pragma mark - Table Datasource
@@ -271,18 +197,6 @@
 
 
 #pragma mark Table Delegate
-
--(void) scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self.navBar computeBlur];
-    
-    [self.pullToRefresh scrollViewDidScroll:scrollView];
-}
-
--(void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    [self.pullToRefresh scrollViewDidEndDragging:scrollView];
-}
 
 -(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {

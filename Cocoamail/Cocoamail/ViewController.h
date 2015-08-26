@@ -8,10 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-
-#import "UIGlobal.h"
-#import "WhiteBlurNavBar.h"
-
+#import "InViewController.h"
 
 #define kPRESENT_FOLDER_NOTIFICATION @"kPRESENT_FOLDER_NOTIFICATION"
 #define kPRESENT_FOLDER_NAME @"kPRESENT_FOLDER_NAME"
@@ -35,15 +32,6 @@
 
 #define kBACK_NOTIFICATION @"kBACK_NOTIFICATION"
 
-
-
-@interface InViewController : UIViewController
-
--(void) _back;
--(void) cleanBeforeGoingBack;
--(BOOL) haveCocoaButton;
-
-@end
 
 
 @interface ViewController : UIViewController

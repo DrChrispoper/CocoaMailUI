@@ -14,7 +14,6 @@
 @interface SettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UITableView* table;
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
 
 @end
 
@@ -26,8 +25,6 @@
 
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
 
     UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
@@ -35,8 +32,6 @@
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
     item.titleView = [WhiteBlurNavBar titleViewForItemTitle:@"Settings"];
-    
-    [navBar pushNavigationItem:item animated:NO];
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
@@ -49,24 +44,15 @@
     table.backgroundColor = [UIGlobal standardLightGrey];
     
     [self.view addSubview:table];
-    [self.view addSubview:navBar];
     
-    [navBar createWhiteMaskOverView:table withOffset:44-30];
-    
-    self.navBar = navBar;
-    
+    [self setupNavBarWith:item overMainScrollView:table];
+
     table.dataSource = self;
-    table.delegate = self;
-    
-    table.clipsToBounds = NO;
+    table.delegate = self;    
     self.table = table;
 
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 -(void) cleanBeforeGoingBack
 {
@@ -145,11 +131,6 @@
 
 
 #pragma mark Table Delegate
-
--(void) scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self.navBar computeBlur];
-}
 
 -(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {

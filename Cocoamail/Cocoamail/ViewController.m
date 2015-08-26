@@ -11,13 +11,14 @@
 #import "FolderViewController.h"
 #import "MailListViewController.h"
 #import "ConversationViewController.h"
-#import "Accounts.h"
-#import "CocoaButton.h"
 #import "ContactsViewController.h"
 #import "AttachmentsViewController.h"
 #import "SettingsViewController.h"
 #import "EditMailViewController.h"
+
 #import "Parser.h"
+#import "Accounts.h"
+#import "CocoaButton.h"
 
 
 
@@ -637,25 +638,4 @@ static ViewController* s_self;
 @end
 
 
-
-
-@implementation InViewController
-
--(void) cleanBeforeGoingBack
-{
-    // clean delegates
-}
-
--(BOOL) haveCocoaButton
-{
-    return YES;
-}
-
-
--(void) _back
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
-}
-
-@end
 

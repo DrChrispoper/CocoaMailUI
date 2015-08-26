@@ -28,8 +28,6 @@
 @property (nonatomic, weak) UIView* contentView;
 @property (nonatomic, weak) UIScrollView* scrollView;
 
-@property (nonatomic, weak) WhiteBlurNavBar* navBar;
-
 @end
 
 
@@ -59,7 +57,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-
     //
     Persons* p = [Persons sharedInstance];
     if (p.idxMorePerson == 0) {
@@ -70,12 +67,6 @@
     
     
     self.view.backgroundColor = [UIGlobal standardLightGrey];
-    
-    CGRect screenBounds = [UIScreen mainScreen].bounds;
-    
-    
-    WhiteBlurNavBar* navBar = [[WhiteBlurNavBar alloc] initWithWidth:screenBounds.size.width];
-    
     
     Mail* mail = [self.conversation firstMail];
     
@@ -93,35 +84,11 @@
     
     item.titleView = [WhiteBlurNavBar titleViewForItemTitle:mail.title];
     
-    [navBar pushNavigationItem:item animated:NO];
-    
     [self _setup];
     
-    [self.view addSubview:navBar];
-    self.navBar = navBar;
-
-    [navBar createWhiteMaskOverView:self.scrollView withOffset:0.f];
-    /*
-    UISwipeGestureRecognizer* sgr = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_backSwipe:)];
-    sgr.direction = UISwipeGestureRecognizerDirectionRight;
-    [self.view addGestureRecognizer:sgr];
-    */
+    [self setupNavBarWith:item overMainScrollView:self.scrollView];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-/*
--(void) _backSwipe:(UISwipeGestureRecognizer*)sgr
-{
-    if (sgr.state == UIGestureRecognizerStateEnded && sgr.enabled) {
-        [self _back];
-    }
-    
-}
-*/
 
 -(void) cleanBeforeGoingBack
 {
@@ -179,12 +146,6 @@
     [self.view addSubview:sv];
     sv.delegate = self;
     self.scrollView = sv;
-}
-
-
--(void) scrollViewDidScroll:(UIScrollView *)scrollView
-{    
-    [self.navBar computeBlur];
 }
 
 
@@ -548,9 +509,7 @@
         av.frame = f;
         
         [av fillWith:a];
-        [av buttonActionType:AttachmentViewActionDonwload/*AttachmentViewActionGlobalTap*/];
-//        [av addActionTarget:self selector:@selector(_applyButton:) andTag:idx];
-        
+        [av buttonActionType:AttachmentViewActionDonwload];
         [v addSubview:av];
         
         idx++;
@@ -558,15 +517,7 @@
     }
     
     return v;
-    
 }
-
-/*
--(void)_applyButton:(UIButton*)button
-{
-    [ViewController presentAlertWIP:@"open attachment…"];
-}
-*/
 
 
 -(void)_openEdit:(UIButton*)button

@@ -13,6 +13,4 @@
 
 @property (nonatomic, strong) Mail* mail;
 
-// TODO always create a new mail to put here (stop updating existing one…)
-
 @end
