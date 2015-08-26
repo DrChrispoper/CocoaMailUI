@@ -43,4 +43,6 @@
 
 +(Person*) createWithName:(NSString*)name email:(NSString*)mail icon:(NSString*)icon codeName:(NSString*)codeName;
 
+-(BOOL) isFakeDotPerson;
+
 @end

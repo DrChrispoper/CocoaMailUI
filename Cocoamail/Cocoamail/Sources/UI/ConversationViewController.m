@@ -63,7 +63,7 @@
     //
     Persons* p = [Persons sharedInstance];
     if (p.idxMorePerson == 0) {
-        Person* more = [Person createWithName:nil email:nil icon:@"recipients_on" codeName:nil];
+        Person* more = [Person createWithName:nil email:nil icon:@"recipients_off" codeName:nil];
         p.idxMorePerson = [p addPerson:more];
     }
     // TODO put it elsewhere
@@ -441,9 +441,7 @@
         f = n.frame;
         f.size.width = self.posXtoUsers - f.origin.x;
         n.frame = f;
-        
-        
-        // TODO add attachments
+
         UIView* av = [self _createAttachments:mail.attachments];
         if (av != nil) {
             

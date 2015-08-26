@@ -58,6 +58,15 @@
 }
 
 
+-(void) _applyTrueTitleViewTo:(UINavigationItem*)item
+{
+    UILabel* l = [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
+    if (self.onlyPerson==nil) {
+        l.textColor = [[Accounts sharedInstance] currentAccount].userColor;
+    }
+    item.titleView = l;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -76,7 +85,7 @@
     [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
     item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
-    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
+    [self _applyTrueTitleViewTo:item];
     
     if (self.presentAttach) {
         UIButton* attach = [WhiteBlurNavBar navBarButtonWithImage:@"attachment_off" andHighlighted:@"attachment_on"];
@@ -257,7 +266,7 @@
     [UIView setAnimationsEnabled:NO];
     
     UINavigationItem* item =self.navBar.items.lastObject;
-    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
+    [self _applyTrueTitleViewTo:item];
     [self.navBar setNeedsDisplay];
     [UIView setAnimationsEnabled:YES];
     
@@ -340,7 +349,7 @@
     
     if (nbSelected==0) {
         [cb forceCloseHorizontal];
-        item.titleView =  [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
+        [self _applyTrueTitleViewTo:item];
     }
     else {
         if (nbSelected==1) {

@@ -57,6 +57,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 @property (nonatomic, weak) UITapGestureRecognizer* tapContentGesture;
 
+@property (nonatomic, strong) Account* selectedAccount;
+@property (nonatomic, strong) NSMutableArray* viewsWithAccountTintColor;
+
 @end
 
 
@@ -73,6 +76,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 
 @implementation EditMailViewController
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -105,14 +109,20 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     self.sendButton = send;
     
     Accounts* allAccounts = [Accounts sharedInstance];
-    
     Account* ca = [allAccounts currentAccount];
-    if ([ca.userMail isEqualToString:@"all"]) {
+    if (ca.isAllAccounts) {
         ca = [allAccounts.accounts firstObject];
     }
     
+    self.selectedAccount = ca;
+    self.viewsWithAccountTintColor = [NSMutableArray arrayWithCapacity:20];
+    
     back.tintColor = [ca userColor];
     send.tintColor = [ca userColor];
+    
+    [self.viewsWithAccountTintColor addObject:back];
+    [self.viewsWithAccountTintColor addObject:send];
+    
     
     
     UILabel* titleView = [WhiteBlurNavBar titleViewForItemTitle:ca.userMail];
@@ -262,8 +272,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     sv.delegate = self;
     self.scrollView = sv;
 
-    Accounts* allAccounts = [Accounts sharedInstance];
-    Account* ca = [allAccounts currentAccount];
+    Account* ca = self.selectedAccount;
     
     CGFloat currentPosY = 44.f;
     
@@ -297,6 +306,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [toView addSubview:addButton];
     self.toButton = addButton;
+    
+    [self.viewsWithAccountTintColor addObject:addButton];
     
     UITextField* tf = [[UITextField alloc] initWithFrame:CGRectMake(label.frame.size.width + 10, 1.5, WIDTH - 32 - (label.frame.size.width + 10), 43)];
     tf.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -358,6 +369,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [addButton addTarget:self action:@selector(_addAttach) forControlEvents:UIControlEventTouchUpInside];
     addButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [subView addSubview:addButton];
+    [self.viewsWithAccountTintColor addObject:addButton];
     
     self.attachButton = addButton;
     
@@ -591,7 +603,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _createCCcontent
 {
-    UIColor* currentAccountColor = [[Accounts sharedInstance] currentAccount].userColor;
+    UIColor* currentAccountColor = self.selectedAccount.userColor;
     
     UIView* ccView = [self.contentView viewWithTag:ContentCC];
     
@@ -625,6 +637,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         [ccButton setImage:ccon forState:UIControlStateSelected];
         ccButton.tintColor = currentAccountColor;
         [ccView addSubview:ccButton];
+        [self.viewsWithAccountTintColor addObject:ccButton];
         
         ccButton.selected = self.personsAreHidden;
         
@@ -916,8 +929,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     UIImage* plusOn = [[UIImage imageNamed:@"editmail_contact_on"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [self.toButton setImage:plusOff forState:UIControlStateNormal];
     [self.toButton setImage:plusOn forState:UIControlStateHighlighted];
-    self.toButton.tintColor = [[[Accounts sharedInstance] currentAccount] userColor];
-    
+    self.toButton.tintColor = [self.selectedAccount userColor];
     
     self.tapContentGesture.enabled = YES;
     
@@ -1134,8 +1146,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _addAttach
 {
-    Account* ca = [[Accounts sharedInstance] currentAccount];
-    
     UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     
@@ -1175,7 +1185,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                                                           handler:nil];
     [ac addAction:defaultAction];
     
-    ac.view.tintColor = ca.userColor;
+    ac.view.tintColor = [UIColor blackColor];
     
     ViewController* vc = [ViewController mainVC];
     [vc presentViewController:ac animated:YES completion:nil];
@@ -1199,9 +1209,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         return;
     }
     
-    Account* ca = [[Accounts sharedInstance] currentAccount];
-    
-    
     UINavigationItem* ni = self.navBar.items.firstObject;
     UILabel* lbl = (UILabel*)ni.titleView;
     NSString* currentTitle = lbl.text;
@@ -1210,7 +1217,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     for (Account* a in [Accounts sharedInstance].accounts) {
     
-        if ([a.userMail isEqualToString:@"all"]) {
+        if (a.isAllAccounts) {
             continue;
         }
         
@@ -1222,6 +1229,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                                                                   UILabel* lbl = (UILabel*)ni.titleView;
                                                                   lbl.text = a.userMail;
                                                                   [lbl sizeToFit];
+                                                                  self.selectedAccount = a;
+                                                                  
+                                                                  for (UIView* v in self.viewsWithAccountTintColor) {
+                                                                      v.tintColor = a.userColor;
+                                                                  }
+                                                                  
                                                                   [self.navBar setNeedsDisplay];
                                                               }];
         if ([a.userMail isEqualToString:currentTitle]) {
@@ -1240,7 +1253,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                                                           handler:nil];
     [ac addAction:defaultAction];
     
-    ac.view.tintColor = ca.userColor;
+    ac.view.tintColor = [UIColor blackColor];
     
     ViewController* vc = [ViewController mainVC];
     [vc presentViewController:ac animated:YES completion:nil];

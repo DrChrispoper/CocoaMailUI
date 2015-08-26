@@ -42,4 +42,6 @@
 
 @property (nonatomic, strong) Person* person;
 
+@property (nonatomic) BOOL isAllAccounts;
+
 @end

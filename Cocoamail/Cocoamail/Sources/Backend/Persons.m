@@ -92,8 +92,15 @@
 
 -(NSInteger) randomID
 {
-    NSInteger max = self.alls.count;
-    return rand() % max;
+    const NSInteger max = self.alls.count;
+    while (true) {
+        NSInteger idx = rand() % max;
+        if (![self.alls[idx] isFakeDotPerson]) {
+            return idx;
+        }
+    }
+    
+    //return rand() % max;
 }
 
 
@@ -195,8 +202,7 @@
         
         UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 33, 33)];
         
-        if (self.codeName==nil && self.email==nil && self.name==nil) {
-            // "…" icon
+        if ([self isFakeDotPerson]) {
             iv.image = [[UIImage imageNamed:self.imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             iv.tintColor = [UIGlobal noImageBadgeColor];
         }
@@ -213,6 +219,12 @@
     }
     
 }
+
+-(BOOL) isFakeDotPerson
+{
+    return (self.codeName==nil && self.email==nil && self.name==nil);
+}
+
 
 
 @end

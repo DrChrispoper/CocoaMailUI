@@ -48,7 +48,7 @@
     
     
     UILabel* l = [WhiteBlurNavBar titleViewForItemTitle:[self.conversation firstMail].title];
-    
+    /*
     UIImageView* iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"attachment_off"]];
     
     UIView* support = [[UIView alloc] initWithFrame:CGRectMake(0, 0, l.frame.size.width + iv.frame.size.width + 2.f, 33.f)];
@@ -70,6 +70,9 @@
     }
     
     item.titleView = support;
+    */
+    item.titleView = l;
+    
     
     [navBar pushNavigationItem:item animated:NO];
     

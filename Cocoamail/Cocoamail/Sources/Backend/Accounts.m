@@ -49,10 +49,10 @@
 +(Account*) _createAllAccountsFrom:(NSArray*)accounts
 {
     Account* ac = [[Account alloc] init];
-    ac.userMail = @"all";
+    ac.userMail = NSLocalizedString(@"All accounts", @"All accounts");
     ac.userColor = [UIColor blackColor];
     ac.codeName = @"ALL";
-    
+    ac.isAllAccounts = YES;
     NSMutableArray* counters = [NSMutableArray arrayWithCapacity:7];
     for (int i=0; i<7; i++) {
     
