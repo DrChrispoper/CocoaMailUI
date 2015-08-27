@@ -23,10 +23,12 @@ typedef enum : NSUInteger {
 } ContentType;
 
 
+@class ExpendableBadge;
 
 @protocol ExpendableBadgeDelegate
 
 -(void) removePersonAtIndex:(NSInteger)idx;
+-(void) closeOthersBadge:(ExpendableBadge*)badge;
 
 @end
 
@@ -58,6 +60,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 @property (nonatomic, strong) Account* selectedAccount;
 @property (nonatomic, strong) NSMutableArray* viewsWithAccountTintColor;
 
+@property (nonatomic, strong) NSMutableArray* expandableBadges;
+
+
 @end
 
 
@@ -67,6 +72,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 -(instancetype) initWithFrame:(CGRect)frame andPerson:(Person*)p;
 -(void) setupWithIndex:(NSInteger)idx andDelegate:(id<ExpendableBadgeDelegate>)delegate;
 -(void) isHiddenContact;
+
+-(void) close;
 
 @end
 
@@ -173,6 +180,31 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     self.scrollView.delegate = nil;
 }
 
+#pragma mark - Interaction Cleaning
+
+-(void) closeOthersBadge:(ExpendableBadge*)badgeOpening
+{
+    for (ExpendableBadge* badge in self.expandableBadges) {
+        if (badge != badgeOpening) {
+            [badge close];
+        }
+    }
+}
+
+
+-(void) _closeCurrentInteractingView
+{
+    [self _closeBadge];
+    [self _hideKeyboard];
+}
+
+-(void) _closeBadge
+{
+    for (ExpendableBadge* badge in self.expandableBadges) {
+        [badge close];
+    }
+}
+
 -(void) _hideKeyboard
 {
     [self.contentView endEditing:YES];
@@ -192,7 +224,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         }
     }
     
-    [self _hideKeyboard];
+    [self _closeCurrentInteractingView];
 }
 
 
@@ -715,6 +747,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         
         NSInteger idx = 0;
         
+        self.expandableBadges = [NSMutableArray arrayWithCapacity:self.mail.toPersonID.count];
+        
         for (NSNumber* val in self.mail.toPersonID) {
             NSInteger personID = [val integerValue];
             Person* p = [[Persons sharedInstance] getPersonID:personID];
@@ -732,6 +766,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
             if (self.personsAreHidden) {
                 [v isHiddenContact];
             }
+            
+            [self.expandableBadges addObject:v];
             
             nextPosX += stepX;
         }
@@ -1084,6 +1120,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     return self.currentSearchPersonList.count;
 }
 
+-(void) textViewDidBeginEditing:(UITextView *)textView
+{
+    [self _closeBadge];
+}
+
+
 
 #pragma mark - TextField Delegate
 
@@ -1139,6 +1181,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) textFieldDidBeginEditing:(UITextField *)textField
 {
+    [self _closeBadge];
+    
     [self.scrollView setContentOffset:CGPointZero animated:YES];
     /*
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1242,6 +1286,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _addAttach
 {
+    [self _closeCurrentInteractingView];
+    
     UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     
@@ -1304,6 +1350,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     if (tgr.enabled==NO || tgr.state != UIGestureRecognizerStateEnded) {
         return;
     }
+    
+    [self _closeCurrentInteractingView];
     
     UINavigationItem* ni = self.navBar.items.firstObject;
     UILabel* lbl = (UILabel*)ni.titleView;
@@ -1490,6 +1538,14 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 }
 
 
+-(void) close
+{
+    if (self.expanded) {
+        [self _closeAndThen:nil];
+    }
+}
+
+
 -(void) _closeAndThen:(void(^)())action
 {
     
@@ -1544,6 +1600,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [support bringSubviewToFront:self];
     
     //self.voile.hidden = YES;
+    
+    [self.delegate closeOthersBadge:self];
     
     [UIView animateWithDuration:0.25
                      animations:^{
