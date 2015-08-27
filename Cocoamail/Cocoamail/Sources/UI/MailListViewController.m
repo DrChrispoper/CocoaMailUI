@@ -90,9 +90,7 @@
     
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
-    UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
-    [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
-    item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
+    item.leftBarButtonItem = [self backButtonInNavBar];
     
     [self _applyTrueTitleViewTo:item];
     

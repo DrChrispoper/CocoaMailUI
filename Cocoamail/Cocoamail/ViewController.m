@@ -271,7 +271,6 @@ static ViewController* s_self;
         else {
             NSNumber* codedType = [notif.userInfo objectForKey:kPRESENT_FOLDER_TYPE];
             f = [[MailListViewController alloc] initWithFolder:decodeFolderTypeWith(codedType.integerValue)];
-            
         }
         [self _animatePushVC:f];        
     }];
@@ -321,6 +320,25 @@ static ViewController* s_self;
         EditMailViewController* f = [[EditMailViewController alloc] init];
         f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
         [self _animatePushVC:f];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kBACK_TO_INBOX_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+
+        if (self.viewControllers.count>3) {
+            NSRange toRemove;
+            toRemove.location = 2;
+            toRemove.length = self.viewControllers.count - 3;
+            [self.viewControllers removeObjectsInRange:toRemove];
+        }
+        
+        if (self.viewControllers.count>2) {
+            MailListViewController* f = [[MailListViewController alloc] initWithFolder:FolderTypeWith(FolderTypeInbox, 0)];
+            [self.viewControllers replaceObjectAtIndex:1 withObject:f];
+        }
+        
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+             
     }];
     
     

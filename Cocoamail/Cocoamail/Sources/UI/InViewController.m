@@ -14,12 +14,40 @@
 
 @property (nonatomic, strong) PullToRefresh* pullToRefresh;
 
+@property (nonatomic, strong) NSDate* datePressDownBackButton;
 
 @end
 
 
 
 @implementation InViewController
+
+
+-(UIBarButtonItem*) backButtonInNavBar
+{
+    UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"back_off" andHighlighted:@"back_on"];
+    [back addTarget:self action:@selector(_pressUp) forControlEvents:UIControlEventTouchUpInside];
+    [back addTarget:self action:@selector(_pressDown) forControlEvents:UIControlEventTouchDown];
+    
+    return [[UIBarButtonItem alloc] initWithCustomView:back];
+}
+
+
+-(void) _pressDown
+{
+    self.datePressDownBackButton = [NSDate date];
+}
+
+-(void)_pressUp
+{
+    if ([self.datePressDownBackButton timeIntervalSinceNow]>-1) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+    }
+    else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_TO_INBOX_NOTIFICATION object:nil];
+    }
+}
+
 
 -(void) setupNavBarWith:(UINavigationItem*)item overMainScrollView:(UIScrollView*)mainScrollView
 {
@@ -29,13 +57,11 @@
     
     if (item.rightBarButtonItem==nil) {
         UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"empty_pixel" andHighlighted:@"empty_pixel"];
-        [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
         item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     }
 
     if (item.leftBarButtonItem==nil) {
         UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"empty_pixel" andHighlighted:@"empty_pixel"];
-        [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
         item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     }
     
@@ -73,10 +99,6 @@
     return YES;
 }
 
--(void) _back
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
-}
 
 #pragma mark - Defaut Delegate
 

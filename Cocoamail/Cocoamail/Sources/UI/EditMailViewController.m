@@ -192,6 +192,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 #pragma mark - UI
 
+-(void) _back
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+}
+
+
 -(void) _send
 {
     self.mail.title = self.subjectTextView.text;

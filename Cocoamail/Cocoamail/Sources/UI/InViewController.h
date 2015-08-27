@@ -19,10 +19,10 @@
 @property (nonatomic, weak) WhiteBlurNavBar* navBar;
 
 -(void) setupNavBarWith:(UINavigationItem*)item overMainScrollView:(UIScrollView*)mainScrollView;
+-(UIBarButtonItem*) backButtonInNavBar;
 -(void) addPullToRefreshWithDelta:(CGFloat)delta;
 
 
--(void) _back;
 -(void) cleanBeforeGoingBack;
 -(BOOL) haveCocoaButton;
 
