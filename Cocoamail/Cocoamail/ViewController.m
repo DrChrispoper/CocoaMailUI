@@ -517,7 +517,7 @@ static ViewController* s_self;
 -(void) _manageCocoaButton:(BOOL)appear
 {
     if (appear) {
-        if (self.cocoaButton.userInteractionEnabled == NO) {
+        if (self.cocoaButton.alpha == 0.) {
             self.cocoaButton.userInteractionEnabled = YES;
             [UIView animateWithDuration:0.25
                              animations:^{
@@ -526,7 +526,7 @@ static ViewController* s_self;
         }
     }
     else {
-        if (self.cocoaButton.userInteractionEnabled) {
+        if (self.cocoaButton.alpha == 1.) {
             self.cocoaButton.userInteractionEnabled = NO;
             [UIView animateWithDuration:0.25
                              animations:^{
