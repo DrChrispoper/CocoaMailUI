@@ -106,5 +106,7 @@ static inline FolderType decodeFolderTypeWith(NSInteger code)
 -(void) manage:(Conversation*)conversation isFav:(BOOL)isFav;
 
 -(void) sendMail:(Mail*)mail;
+-(void) saveDraft:(Mail*)mail;
+-(void) deleteDraft:(Mail*)mail;
 
 @end

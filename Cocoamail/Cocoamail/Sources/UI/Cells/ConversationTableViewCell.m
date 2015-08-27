@@ -186,6 +186,12 @@
     self.currentSwipedPosition = 0.0;
     self.panBaseSize = self.baseView.frame.size;
     
+    
+    if ([self.delegate isADraft]) {
+        self.favori.hidden = YES;
+    }
+    
+    
 }
 
 -(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -223,6 +229,7 @@
     [self.delegate cellIsUnselected:self];
 }
 
+
 -(void) _press:(UILongPressGestureRecognizer*)lpgr
 {
     const CGPoint pos = [lpgr locationInView:lpgr.view];
@@ -246,9 +253,12 @@
             
             // tap attachment
             if (self.attachment.hidden == NO) {
-                bigger = CGRectInset(self.attachment.frame, -10, -10);
-                if (CGRectContainsPoint(bigger, pos)) {
-                    self.attachment.highlighted = true;
+                
+                if (![self.delegate isADraft]) {
+                    bigger = CGRectInset(self.attachment.frame, -10, -10);
+                    if (CGRectContainsPoint(bigger, pos)) {
+                        self.attachment.highlighted = true;
+                    }
                 }
             }
             
@@ -392,12 +402,15 @@
                         if (fabs(pos.y - self.panBasePos.y)<8) {
                             
                             // tap user badge
-                            CGRect bigger = CGRectInset(self.badge.frame, -10, -10);
-                            if (CGRectContainsPoint(bigger, pos)) {
+                            if (![self.delegate isADraft]) {
                                 
-                                Person* person = [[Persons sharedInstance] getPersonID:[self mail].fromPersonID];
-                                [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_PERSON:person}];
-                                return;
+                                CGRect bigger = CGRectInset(self.badge.frame, -10, -10);
+                                if (CGRectContainsPoint(bigger, pos)) {
+                                    
+                                    Person* person = [[Persons sharedInstance] getPersonID:[self mail].fromPersonID];
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_PERSON:person}];
+                                    return;
+                                }
                             }
                             
                             // tap cell
@@ -422,9 +435,17 @@
                                                                   completion:^(BOOL fini){
                                                                       [overView removeFromSuperview];
                                                                       [self.delegate unselectAll];
-                                                                      [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_CONVERSATION_NOTIFICATION
-                                                                                                                          object:nil
-                                                                                                                        userInfo:@{kPRESENT_CONVERSATION_KEY:self.conversation}];
+                                                                      
+                                                                      if ([self.delegate isADraft]) {
+                                                                          [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION
+                                                                                                                              object:nil
+                                                                                                                            userInfo:@{kPRESENT_MAIL_KEY:[self.conversation firstMail]}];                                                                          
+                                                                      }
+                                                                      else {
+                                                                          [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_CONVERSATION_NOTIFICATION
+                                                                                                                              object:nil
+                                                                                                                            userInfo:@{kPRESENT_CONVERSATION_KEY:self.conversation}];
+                                                                      }
                                                                       
                                                                   }];
                                              }];
@@ -470,7 +491,8 @@
 
                 if (userEndAction) {
                     
-                    NSInteger idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
+                    QuickSwipeType idxQuickSwipe = [self quickSwipeType];
+                    
                     if (idxQuickSwipe == QuickSwipeMark) {
                         Mail* m = [self mail];
                         m.isRead = !m.isRead;
@@ -494,12 +516,21 @@
 }
 
 
+-(QuickSwipeType) quickSwipeType
+{
+    QuickSwipeType idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
+    if ([self.delegate isADraft]) {
+        return QuickSwipeDelete;
+    }
+    return idxQuickSwipe;
+}
+
+
 - (void)fillWithConversation:(Conversation*)conv isSelected:(BOOL)selected
 {
     self.conversation = conv;
     Mail* mail = [self mail];
     
-    // content
     self.title.text = mail.title;
     
     Person* p = [[Persons sharedInstance] getPersonID:mail.fromPersonID];
@@ -532,7 +563,7 @@
     }
     
     
-    NSInteger idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
+    QuickSwipeType idxQuickSwipe = [self quickSwipeType];
     if (idxQuickSwipe == QuickSwipeReply) {
         BOOL toMany = mail.toPersonID.count>1;
         self.leftAction.highlighted = toMany;

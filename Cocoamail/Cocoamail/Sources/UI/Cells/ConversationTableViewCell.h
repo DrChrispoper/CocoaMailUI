@@ -40,8 +40,11 @@
 -(void) cellIsUnselected:(ConversationTableViewCell*)cell;
 
 -(void) unselectAll;
--(UIPanGestureRecognizer*) tableViewPanGesture;
 
+// datasource
+-(UIPanGestureRecognizer*) tableViewPanGesture;
 -(UIImageView*) imageViewForQuickSwipeAction;
+-(BOOL) isADraft;
 
 @end
+

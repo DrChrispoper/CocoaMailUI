@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSArray* userFoldersContent;
 @property (nonatomic, strong) NSArray* systemFoldersContent;
 
+@property (nonatomic, strong) NSMutableArray* drafts;
+
 @end
 
 
@@ -59,6 +61,8 @@
     ac.person = [Person createWithName:mail email:ac.userMail icon:nil codeName:code];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
+    ac.drafts = [NSMutableArray arrayWithCapacity:10];
+    
     return ac;
 }
 
@@ -88,7 +92,20 @@
     return self.accounts[self.currentAccountIdx];
 }
 
-
+-(NSArray*) getAllDrafts
+{
+    NSMutableArray* alls = [[NSMutableArray alloc] initWithCapacity:50];
+    for (Account* a in self.accounts) {
+        if (a.isAllAccounts) {
+            continue;
+        }
+        
+        NSArray* draft = [a getConversationsForFolder:FolderTypeWith(FolderTypeDrafts, 0)];
+        [alls addObjectsFromArray:draft];
+        
+    }
+    return alls;
+}
 
 +(NSArray*) systemFolderNames
 {
@@ -129,6 +146,7 @@
     self.allsMails = nil;
     self.userFoldersContent = nil;
     self.systemFoldersContent = nil;
+    // let the drafts
 }
 
 
@@ -160,7 +178,7 @@
     FolderType Finbox = FolderTypeWith(FolderTypeInbox, 0);
     FolderType Ffav = FolderTypeWith(FolderTypeFavoris, 0);
     //FolderType Fsent = FolderTypeWith(FolderTypeSent, 0);
-    FolderType Fdrafts = FolderTypeWith(FolderTypeDrafts, 0);
+    //FolderType Fdrafts = FolderTypeWith(FolderTypeDrafts, 0);
     FolderType Fall = FolderTypeWith(FolderTypeAll, 0);
     FolderType Fdeleted = FolderTypeWith(FolderTypeDeleted, 0);
     FolderType FSpam = FolderTypeWith(FolderTypeSpam, 0);
@@ -173,15 +191,12 @@
     
         [self _addIdx:idx inArray:Fall];
         
-        if (hasard<5) {
+        if (hasard<6) {
             for (Mail* m in c.mails) {
                 m.isFav = YES;
             }
             [self _addIdx:idx inArray:Ffav];
             [self _addIdx:idx inArray:Finbox];
-        }
-        else if (hasard<6) {
-            [self _addIdx:idx inArray:Fdrafts];
         }
         else if (hasard<10) {
             [self _addIdx:idx inArray:Fdeleted];
@@ -222,7 +237,24 @@
 
 -(NSArray*) getConversationsForFolder:(FolderType)type
 {
-
+    
+    if (type.type == FolderTypeDrafts) {
+        
+        if (self.isAllAccounts) {
+            return [[Accounts sharedInstance] getAllDrafts];
+        }
+        
+        NSMutableArray* res = [NSMutableArray arrayWithCapacity:self.drafts.count];
+        
+        [self.drafts enumerateObjectsWithOptions:0
+                                      usingBlock:^(id obj, NSUInteger idx, BOOL* stop){
+                                          Conversation* c = [[Conversation alloc] init];
+                                          c.mails = @[obj];
+                                          [res addObject:c];
+                                      }];
+        return res;
+    }
+    
     NSMutableIndexSet* set = nil;
     if (type.type == FolderTypeUser) {
         set = self.userFoldersContent[type.idx];
@@ -245,9 +277,13 @@
 
 -(void) sendMail:(Mail*)mail
 {
+    if ([self.drafts containsObject:mail]) {
+        [self.drafts removeObject:mail];
+    }
+    
     NSInteger index = self.allsMails.count;
     
-    [mail sendMail];
+    [mail updateMailInfos];
     
     Conversation* c = [[Conversation alloc] init];
     c.mails = @[mail];
@@ -255,6 +291,24 @@
     
     [self _addIdx:index inArray:FolderTypeWith(FolderTypeSent, 0)];
 }
+
+-(void) saveDraft:(Mail*)mail
+{
+    [mail updateMailInfos];
+    
+    mail.isRead = NO;
+    mail.isFav = NO;
+
+    if (![self.drafts containsObject:mail]) {
+        [self.drafts addObject:mail];
+    }
+}
+
+-(void) deleteDraft:(Mail*)mail
+{
+    [self.drafts removeObject:mail];
+}
+
 
 
 -(BOOL) moveConversation:(Conversation*)conversation from:(FolderType)folderFrom to:(FolderType)folderTo
@@ -348,7 +402,6 @@
     for (Mail* m in conversation.mails) {
         m.isFav = isFav;
     }
-//    mail.isFav = isFav;
 }
 
 

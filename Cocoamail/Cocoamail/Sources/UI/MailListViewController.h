@@ -17,4 +17,6 @@
 -(instancetype) initWithFolder:(FolderType)folder;
 -(instancetype) initWithPerson:(Person*)person;
 
+-(BOOL) istheSame:(MailListViewController*)other;
+
 @end

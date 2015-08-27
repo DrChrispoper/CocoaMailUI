@@ -68,6 +68,22 @@
     return self;
 }
 
+-(BOOL) istheSame:(MailListViewController*)other
+{
+    if (self.onlyPerson!=nil) {
+        return self.onlyPerson == other.onlyPerson;
+    }
+    
+    if (self.folder.type != FolderTypeUser) {
+        return (self.folder.type == other.folder.type);
+    }
+    else if (other.folder.type == FolderTypeUser) {
+        return other.folder.idx == self.folder.idx;
+    }
+    
+    return NO;
+}
+
 
 -(void) _applyTrueTitleViewTo:(UINavigationItem*)item
 {
@@ -251,6 +267,12 @@
 
 #pragma mark - Cell Delegate
 
+-(BOOL) isADraft
+{
+    return self.folder.type == FolderTypeDrafts;
+}
+
+
 -(UIImageView*) imageViewForQuickSwipeAction
 {
     NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single", @"swipe_unread", @"swipe_inbox"];
@@ -266,6 +288,11 @@
     
     if (self.folder.type == type.type) {
         swipetype = 4;
+    }
+    
+    
+    if ([self isADraft]) {
+        swipetype = 1;
     }
     
     UIImageView* arch = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imgNames[swipetype]]];
@@ -327,49 +354,45 @@
 
 -(void) leftActionDoneForCell:(ConversationTableViewCell *)cell
 {
-    NSInteger swipetype = [Accounts sharedInstance].quickSwipeType;
+    NSIndexPath* indexPath = [self.table indexPathForCell:cell];
+    NSDictionary* mailsDay = self.convByDay[indexPath.section];
+    NSArray* convs = mailsDay[@"list"];
+    Conversation* conv = convs[indexPath.row];
     
+    QuickSwipeType swipetype = [Accounts sharedInstance].quickSwipeType;
     
-    if (swipetype==QuickSwipeReply) {
-        NSIndexPath* indexPath = [self.table indexPathForCell:cell];
-        
-        NSDictionary* mailsDay = self.convByDay[indexPath.section];
-        NSArray* convs = mailsDay[@"list"];
-        Conversation* conv = convs[indexPath.row];
-        
-        Mail* m = [conv firstMail];
-        Mail* repm = [m replyMail:[cell isReplyAll]];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:repm}];
-    }
-    else if (swipetype == QuickSwipeMark) {
-        
-    }
-    else {
-        
-        NSIndexPath* ip = [self.table indexPathForCell:cell];
-        NSDictionary* dayInfos = self.convByDay[ip.section];
-        NSMutableArray* ma = dayInfos[@"list"];
-        Conversation* conv = ma[ip.row];
-        
-        Account* ac = [[Accounts sharedInstance] currentAccount];
-        
-        FolderType type;
-        if (swipetype==QuickSwipeArchive) {
-            type.type = FolderTypeAll;
+    switch (swipetype) {
+        case QuickSwipeReply:
+        {
+            Mail* m = [conv firstMail];
+            Mail* repm = [m replyMail:[cell isReplyAll]];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION object:nil userInfo:@{kPRESENT_MAIL_KEY:repm}];
+            break;
         }
-        else {
-            type.type = FolderTypeDeleted;
+        case QuickSwipeMark:
+        {
+            break;
         }
-
-        // back action
-        if (self.folder.type == type.type) {
-            type.type = FolderTypeInbox;
-        }
-        
-        if ([ac moveConversation:conv from:self.folder to:type]) {
-            [self _removeCell:cell];
+        default:
+        {
+            // QuickSwipeArchive / QuickSwipeDelete
+            FolderType type;
+            type.type = (swipetype==QuickSwipeArchive) ? FolderTypeAll : FolderTypeDeleted;
+            
+            // back action
+            if (self.folder.type == type.type) {
+                type.type = FolderTypeInbox;
+            }
+            
+            Account* ac = [[Accounts sharedInstance] currentAccount];
+            if ([ac moveConversation:conv from:self.folder to:type]) {
+                [self _removeCell:cell];
+            }
+            
+            break;
         }
     }
+    
 }
 
 -(void) cell:(ConversationTableViewCell*)cell isChangingDuring:(double)timeInterval;
@@ -537,17 +560,23 @@
     NSString* spam_icon = @"swipe_cocoabutton_spam";
     NSString* inbox_icon = @"swipe_inbox";
     
-    if (folderType==FolderTypeAll) {
-        archive_icon = inbox_icon;
+    
+    NSArray* content = @[delete_icon];
+    
+    if (![self isADraft]) {
+        
+        if (folderType==FolderTypeAll) {
+            archive_icon = inbox_icon;
+        }
+        else if (folderType==FolderTypeDeleted) {
+            delete_icon = inbox_icon;
+        }
+        else if (folderType==FolderTypeSpam) {
+            spam_icon = inbox_icon;
+        }
+        
+        content = @[delete_icon, archive_icon, @"swipe_cocoabutton_folder", spam_icon];
     }
-    else if (folderType==FolderTypeDeleted) {
-        delete_icon = inbox_icon;
-    }
-    else if (folderType==FolderTypeSpam) {
-        spam_icon = inbox_icon;
-    }
-
-    NSArray* content = @[delete_icon, archive_icon, @"swipe_cocoabutton_folder", spam_icon];
     
     NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:content.count];
     

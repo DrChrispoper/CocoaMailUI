@@ -199,7 +199,7 @@ static NSDateFormatter* s_df_hour = nil;
 }
 
 
--(void) sendMail
+-(void) updateMailInfos
 {
     self.date = [NSDate date];
     self.day = [s_df_day stringFromDate:self.date];

@@ -101,9 +101,15 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     self.sendButton = send;
     
     Accounts* allAccounts = [Accounts sharedInstance];
-    Account* ca = [allAccounts currentAccount];
-    if (ca.isAllAccounts) {
-        ca = [allAccounts.accounts firstObject];
+    Account* ca = nil;
+    if (self.mail.fromPersonID < 0) {
+        ca = allAccounts.accounts[-(1+self.mail.fromPersonID)];
+    }
+    else {
+        Account* ca = [allAccounts currentAccount];
+        if (ca.isAllAccounts) {
+            ca = [allAccounts.accounts firstObject];
+        }
     }
     
     self.selectedAccount = ca;
@@ -194,6 +200,47 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
 
 -(void) _back
 {
+    BOOL haveSomething = self.subjectTextView.text.length > 0
+    || [self.bodyTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0
+    || self.mail.attachments.count>0 ;
+    
+    if (haveSomething) {
+        
+        UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil
+                                                                    message:NSLocalizedString(@"Save to drafts ?", @"Save to drafts ?")
+                                                             preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", @"Save") style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction* aa) {
+                                                                  
+                                                                  self.mail.title = self.subjectTextView.text;
+                                                                  self.mail.content = self.bodyTextView.text;
+                                                                  
+                                                                  [self.selectedAccount saveDraft:self.mail];
+                                                                  [self _reallyGoBack];
+                                                              }];
+        [ac addAction:defaultAction];
+        
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", @"Delete") style:UIAlertActionStyleDestructive
+                                                              handler:^(UIAlertAction* aa) {
+                                                                  [self.selectedAccount deleteDraft:self.mail];
+                                                                  [self _reallyGoBack];
+                                                              }];
+        [ac addAction:cancelAction];
+        
+        
+        ViewController* vc = [ViewController mainVC];
+        
+        [vc presentViewController:ac animated:YES completion:nil];
+        
+    }
+    else {
+        [self _reallyGoBack];
+    }
+}
+
+-(void) _reallyGoBack
+{
     [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
 }
 
@@ -205,7 +252,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [self.selectedAccount sendMail:self.mail];
     
-    [self _back];
+    [self _reallyGoBack];
 }
 
 -(void) _manageSendButton
@@ -484,9 +531,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [self _fixContentSize];
     
     [self _updateAttachView];
-    
-    
-    // TODO add send by cocoamail ?
 }
 
 
@@ -1286,6 +1330,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         
         UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:a.userMail style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction* aa) {
+                                                                  
+                                                                  // remove from last account if already saved here
+                                                                  [self.selectedAccount deleteDraft:self.mail];
                                                                   
                                                                   UINavigationItem* ni = self.navBar.items.firstObject;
                                                                   

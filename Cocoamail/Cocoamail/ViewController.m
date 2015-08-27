@@ -272,7 +272,23 @@ static ViewController* s_self;
             NSNumber* codedType = [notif.userInfo objectForKey:kPRESENT_FOLDER_TYPE];
             f = [[MailListViewController alloc] initWithFolder:decodeFolderTypeWith(codedType.integerValue)];
         }
-        [self _animatePushVC:f];        
+        
+        // don't open the same view twice
+        BOOL doNothing = NO;
+        InViewController* last = [self.viewControllers lastObject];
+        if ([last isKindOfClass:[MailListViewController class]]) {
+            MailListViewController* mlvc = (MailListViewController*)last;
+            if ([f istheSame:mlvc]) {
+                doNothing = YES;
+            }
+        }
+        
+        if (doNothing) {
+            [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        }
+        else {
+            [self _animatePushVC:f];
+        }
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_SETTINGS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
