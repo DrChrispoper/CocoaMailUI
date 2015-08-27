@@ -215,7 +215,15 @@ static NSDateFormatter* s_df_hour = nil;
 +(Mail*) newMailFormCurrentAccount
 {
     Mail* mail = [[Mail alloc] init];
-    mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);
+    
+    Accounts* allAccounts = [Accounts sharedInstance];
+    if (allAccounts.currentAccountIdx == allAccounts.accounts.count -1) {
+        mail.fromPersonID = -1;
+    }
+    else {
+        mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);
+    }
+    
     return mail;
 }
 

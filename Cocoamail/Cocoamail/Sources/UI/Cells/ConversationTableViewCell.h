@@ -44,7 +44,7 @@
 // datasource
 -(UIPanGestureRecognizer*) tableViewPanGesture;
 -(UIImageView*) imageViewForQuickSwipeAction;
--(BOOL) isADraft;
+-(BOOL) isPresentingDrafts;
 
 @end
 

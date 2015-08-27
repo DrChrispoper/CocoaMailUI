@@ -187,7 +187,7 @@
     self.panBaseSize = self.baseView.frame.size;
     
     
-    if ([self.delegate isADraft]) {
+    if ([self.delegate isPresentingDrafts]) {
         self.favori.hidden = YES;
     }
     
@@ -254,7 +254,7 @@
             // tap attachment
             if (self.attachment.hidden == NO) {
                 
-                if (![self.delegate isADraft]) {
+                if (![self.delegate isPresentingDrafts]) {
                     bigger = CGRectInset(self.attachment.frame, -10, -10);
                     if (CGRectContainsPoint(bigger, pos)) {
                         self.attachment.highlighted = true;
@@ -402,7 +402,7 @@
                         if (fabs(pos.y - self.panBasePos.y)<8) {
                             
                             // tap user badge
-                            if (![self.delegate isADraft]) {
+                            if (![self.delegate isPresentingDrafts]) {
                                 
                                 CGRect bigger = CGRectInset(self.badge.frame, -10, -10);
                                 if (CGRectContainsPoint(bigger, pos)) {
@@ -436,7 +436,7 @@
                                                                       [overView removeFromSuperview];
                                                                       [self.delegate unselectAll];
                                                                       
-                                                                      if ([self.delegate isADraft]) {
+                                                                      if ([self.delegate isPresentingDrafts]) {
                                                                           [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_EDITMAIL_NOTIFICATION
                                                                                                                               object:nil
                                                                                                                             userInfo:@{kPRESENT_MAIL_KEY:[self.conversation firstMail]}];                                                                          
@@ -519,7 +519,7 @@
 -(QuickSwipeType) quickSwipeType
 {
     QuickSwipeType idxQuickSwipe = [Accounts sharedInstance].quickSwipeType;
-    if ([self.delegate isADraft]) {
+    if ([self.delegate isPresentingDrafts]) {
         return QuickSwipeDelete;
     }
     return idxQuickSwipe;

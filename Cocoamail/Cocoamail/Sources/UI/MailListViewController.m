@@ -215,7 +215,12 @@
 
 -(void) viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];    
+    [super viewDidAppear:animated];
+    
+    if ([self isPresentingDrafts]) {
+        [self setupData];
+    }
+    
     [self.table reloadData];
 }
 
@@ -267,7 +272,7 @@
 
 #pragma mark - Cell Delegate
 
--(BOOL) isADraft
+-(BOOL) isPresentingDrafts
 {
     return self.folder.type == FolderTypeDrafts;
 }
@@ -291,7 +296,7 @@
     }
     
     
-    if ([self isADraft]) {
+    if ([self isPresentingDrafts]) {
         swipetype = 1;
     }
     
@@ -563,7 +568,7 @@
     
     NSArray* content = @[delete_icon];
     
-    if (![self isADraft]) {
+    if (![self isPresentingDrafts]) {
         
         if (folderType==FolderTypeAll) {
             archive_icon = inbox_icon;
