@@ -88,9 +88,11 @@
 -(void) _applyTrueTitleViewTo:(UINavigationItem*)item
 {
     UILabel* l = [WhiteBlurNavBar titleViewForItemTitle:self.folderName];
+    /*
     if (self.onlyPerson==nil) {
         l.textColor = [[Accounts sharedInstance] currentAccount].userColor;
     }
+     */
     item.titleView = l;
 }
 

@@ -25,13 +25,12 @@
         return;
     }
     
-    if (scrollView.contentOffset.y < (-scrollView.contentInset.top-10 - self.delta)) {
+    if (scrollView.contentOffset.y < (-scrollView.contentInset.top- 0 - self.delta)) {
         
         if (self.pullToRefresh == nil ) {
-            UIActivityIndicatorView* av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            UIActivityIndicatorView* av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             [av stopAnimating];
             av.center = CGPointMake(scrollView.frame.size.width / 2, -35 + self.delta);
-            
             [scrollView addSubview:av];
             
             self.pullToRefresh = av;
@@ -39,7 +38,7 @@
         
         self.pullToRefresh.hidden = NO;
         
-        CGFloat limite = -scrollView.contentInset.top - 50;
+        CGFloat limite = -scrollView.contentInset.top - 60;
         CGFloat pourc = scrollView.contentOffset.y / limite;
         
         if (pourc>1){
@@ -47,7 +46,7 @@
         }
         
         pourc = pourc * pourc;
-        self.pullToRefresh.transform = CGAffineTransformMakeScale(pourc, pourc);
+        self.pullToRefresh.transform = CGAffineTransformScale(CGAffineTransformMakeRotation(M_PI_2), pourc, pourc);
     }
     else{
         self.pullToRefresh.hidden = YES;
@@ -58,7 +57,7 @@
 
 -(void) scrollViewDidEndDragging:(UIScrollView *)scrollView
 {
-    if (scrollView.contentOffset.y < (-scrollView.contentInset.top-50)) {
+    if (scrollView.contentOffset.y < (-scrollView.contentInset.top-60)) {
         
         [self.pullToRefresh startAnimating];
         

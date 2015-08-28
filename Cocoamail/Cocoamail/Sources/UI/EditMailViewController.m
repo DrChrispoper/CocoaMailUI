@@ -131,9 +131,29 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     UILabel* titleView = [WhiteBlurNavBar titleViewForItemTitle:ca.userMail];
     
     if (allAccounts.accounts.count>1) {
+        
         titleView.userInteractionEnabled = YES;
         UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_tapTitle:)];
         [titleView addGestureRecognizer:tgr];
+        
+        UIView* support = [[UIView alloc] initWithFrame:CGRectInset(titleView.bounds, -12, -6.75)];
+        CGRect f = support.frame;
+        f.origin.x = floorf(f.origin.x);
+        f.origin.y = floorf(f.origin.y);
+        f.size.width = floorf(f.size.width);
+        f.size.height = 33.;
+        support.frame = f;
+        
+        support.layer.borderColor = [UIGlobal noImageBadgeColor].CGColor;
+        support.layer.borderWidth = 0.5;
+        support.userInteractionEnabled = NO;
+        support.backgroundColor = [UIColor clearColor];
+        support.layer.cornerRadius = 33./2.;
+        
+        support.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        [titleView addSubview:support];
+        
     }
     item.titleView = titleView;
     
@@ -238,6 +258,14 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     if (haveSomething) {
         
+        // auto-save
+        self.mail.title = self.subjectTextView.text;
+        self.mail.content = self.bodyTextView.text;
+        
+        [self.selectedAccount saveDraft:self.mail];
+        [self _reallyGoBack];
+        
+        /*
         UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil
                                                                     message:NSLocalizedString(@"Save to drafts ?", @"Save to drafts ?")
                                                              preferredStyle:UIAlertControllerStyleAlert];
@@ -264,6 +292,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         ViewController* vc = [ViewController mainVC];
         
         [vc presentViewController:ac animated:YES completion:nil];
+         */
         
     }
     else {
@@ -518,7 +547,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         oldView.backgroundColor = [UIColor whiteColor];
         
         
-        UITextView* oldtv = [[UITextView alloc] initWithFrame:CGRectMake(8, 4, WIDTH-16, 50)];
+        UITextView* oldtv = [[UITextView alloc] initWithFrame:CGRectMake(10, 4, WIDTH-20, 50)];
         oldtv.textColor = [UIColor blackColor];
         oldtv.backgroundColor = [UIColor clearColor];
         oldtv.font = [UIFont systemFontOfSize:15];
@@ -529,7 +558,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         Person* from = [[Persons sharedInstance] getPersonID:self.mail.fromMail.fromPersonID];
         NSString* wrote = NSLocalizedString(@"wrote", @"wrote");
         
-        NSString* oldcontent = [NSString stringWithFormat:@"%@ %@ :\n\n%@\n", from.name, wrote, self.mail.fromMail.content];
+        NSString* oldcontent = [NSString stringWithFormat:@"\n%@ %@ :\n\n%@\n", from.name, wrote, self.mail.fromMail.content];
         oldtv.text = oldcontent;
         
         [oldtv sizeToFit];
@@ -543,13 +572,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         UIImageView* iv = [[UIImageView alloc] initWithImage:[rBack imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
         
         CGRect ivf = oldtv.frame;
-        ivf.origin.y -= 5;
+        ivf.origin.x -= 2;
+        ivf.size.width += 4;
+        ivf.size.height += 6;
         iv.frame = ivf;
         iv.tintColor = [UIGlobal standardLightGrey];
         [oldView insertSubview:iv belowSubview:oldtv];
         
         [contentView addSubview:oldView];
         oldView.tag = ContentOld;
+        
     }
     
     [self _createCCcontent];
@@ -1488,7 +1520,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     [back addSubview:mail];
     mail.textAlignment = NSTextAlignmentLeft;
     mail.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    mail.text = [NSString stringWithFormat:@"  %@", p.email];
+    mail.text = [NSString stringWithFormat:@"          %@", p.email];
     
     UIButton* remove = [[UIButton alloc] initWithFrame:CGRectMake(2, 0, 31.f, 33.f)];    
     [remove setImage:[UIImage imageNamed:@"editmail_close_bubble_off"] forState:UIControlStateNormal];
@@ -1555,23 +1587,26 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                          self.frame = self.baseFrame;
                          //self.badge.frame = self.bounds;
                          
-                         self.backgroundView.alpha = 0.;
+                         //self.backgroundView.alpha = 0.;
                          
                      }
                      completion:^(BOOL fini){
                          //self.voile.hidden = NO;
+                         self.backgroundView.alpha = 0.;
                          self.expanded = NO;
                          if (action != nil) {
                              action();
                          }
                      }];
     
+    /*
     [UIView animateWithDuration:0.15 delay:0.
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
                          self.badge.alpha = 1.;
                      }
                      completion:nil];
+     */
 }
 
 -(void)_tap:(UITapGestureRecognizer*)tgr
@@ -1603,6 +1638,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     
     [self.delegate closeOthersBadge:self];
     
+    self.backgroundView.alpha = 1.;
     [UIView animateWithDuration:0.25
                      animations:^{
                          
@@ -1616,20 +1652,20 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
                          f.origin.x = self.baseFrame.origin.x - minX;
                          self.badge.frame = f;
                          */
-                         self.backgroundView.alpha = 1.;
+                         //self.backgroundView.alpha = 1.;
                          
                      }
                      completion:^(BOOL fini){
                          self.expanded = YES;
                      }];
-    
+    /*
     [UIView animateWithDuration:0.15 delay:0.1
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
                          self.badge.alpha = 0.;
                      }
                      completion:nil];
-    
+    */
     
 }
 

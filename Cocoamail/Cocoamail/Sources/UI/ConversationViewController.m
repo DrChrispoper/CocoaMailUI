@@ -122,16 +122,19 @@
     UILabel* lbl = [[UILabel alloc] initWithFrame:self.view.bounds];
     lbl.text = [self.conversation firstMail].title;
     lbl.numberOfLines = 0;
-    lbl.backgroundColor = [UIColor clearColor];
-    lbl.textColor = [UIGlobal noImageBadgeColor];
+    lbl.textColor = [UIColor whiteColor];
     lbl.font = [UIFont boldSystemFontOfSize:16];
     lbl.textAlignment = NSTextAlignmentCenter;
     [lbl sizeToFit];
     
     CGRect tf = lbl.frame;
-    tf.origin = CGPointMake(0, -tf.size.height + 25);
-    tf.size = CGSizeMake(self.view.bounds.size.width, tf.size.height);
+    tf.size = CGSizeMake(self.view.bounds.size.width-16, tf.size.height+36);
+    tf.origin = CGPointMake(8, -tf.size.height + 30);
     lbl.frame = tf;
+    
+    lbl.backgroundColor = [UIColor colorWithWhite:180./255. alpha:1.0];
+    lbl.layer.cornerRadius = 20;
+    lbl.layer.masksToBounds = YES;
     
     [contentView addSubview:lbl];
     //
@@ -170,6 +173,7 @@
     
     [self.view addSubview:sv];
     sv.delegate = self;
+    sv.alwaysBounceVertical = YES;
     self.scrollView = sv;
 }
 
@@ -449,14 +453,14 @@
         if (av != nil) {
             
             CGRect f = inIV.frame;
-            f.size.height += av.frame.size.height;
+            f.size.height += av.frame.size.height + 30;
             inIV.frame = f;
             
             f = av.frame;
-            f.origin.y = height - 45;
+            f.origin.y = height - 45 + 15;
             av.frame = f;
             
-            height += av.frame.size.height;
+            height = inIV.frame.size.height;
             [inIV addSubview:av];
         }
         
@@ -558,9 +562,18 @@
         [av buttonActionType:AttachmentViewActionDonwload];
         [v addSubview:av];
         
+        UIView* line = [[UIView alloc] initWithFrame:CGRectMake(0, posY, WIDTH - 32, 0.5)];
+        line.backgroundColor = [UIGlobal standardLightGrey];
+        [v addSubview:line];
+        
         idx++;
         posY += stepY;
     }
+    
+    UIView* line = [[UIView alloc] initWithFrame:CGRectMake(0, posY, WIDTH - 32, 0.5)];
+    line.backgroundColor = [UIGlobal standardLightGrey];
+    [v addSubview:line];
+    
     
     return v;
 }
