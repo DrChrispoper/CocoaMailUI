@@ -692,6 +692,9 @@
         
         [self.table endUpdates];
         
+        UINavigationItem* item = self.navBar.items.lastObject;
+        [self _applyTrueTitleViewTo:item];
+        
     }
     else {
         [self unselectAll];
