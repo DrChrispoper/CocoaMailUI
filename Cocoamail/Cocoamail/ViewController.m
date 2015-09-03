@@ -277,14 +277,20 @@ static ViewController* s_self;
                 f.conversation = [infos lastObject];
             
                 self.nextVC = f;
-                self.animCurrentView = f.view;
-                [self _createShadowViewOverAnimCurrentView];
-                self.animNextView = f.view;
+            }
+            else if ([first isEqualToString:kPRESENT_SETTINGS_NOTIFICATION]) {
+                SettingsViewController* f = [[SettingsViewController alloc] init];
+                self.nextVC = f;
             }
             else {
                 // is there another case ?
                 return;
             }
+            
+            self.animCurrentView = self.nextVC.view;
+            [self _createShadowViewOverAnimCurrentView];
+            self.animNextView = self.nextVC.view;
+            
 
             self.animCurrentView = vc.view;
             

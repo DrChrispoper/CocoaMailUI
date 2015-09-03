@@ -65,6 +65,10 @@
     [self.table reloadData];
 }
 
+-(NSArray*) nextViewControllerInfos
+{
+    return @[kPRESENT_SETTINGS_NOTIFICATION, @""];
+}
 
 -(void) _settings
 {
