@@ -15,5 +15,6 @@
 +(UIColor*) noImageBadgeColor;
 
 +(UIColor*) standardTableLineColor;
++(UIColor*) standardBlue;
 
 @end

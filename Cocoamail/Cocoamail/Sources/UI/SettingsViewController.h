@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 
+#import "CloudViewController.h"
+
 @interface SettingsViewController : InViewController
 
 @end

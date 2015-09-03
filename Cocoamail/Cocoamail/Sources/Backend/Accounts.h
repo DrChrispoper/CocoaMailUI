@@ -33,6 +33,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) QuickSwipeType quickSwipeType;
 @property (nonatomic) BOOL navBarBlurred;
+@property (nonatomic) NSInteger defaultAccountIdx;
+@property (nonatomic) BOOL showBadgeCount;
 
 
 @property (nonatomic, strong) NSArray* accounts;

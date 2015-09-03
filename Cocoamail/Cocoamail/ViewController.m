@@ -469,7 +469,15 @@ static ViewController* s_self;
         ConversationViewController* f = [[ConversationViewController alloc] init];
         f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
         [self _animatePushVC:f];
-        
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CLOUD_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        CloudViewController* f = [[CloudViewController alloc] init];
+        f.cloudServiceName = [notif.userInfo objectForKey:kSETTINGS_KEY];
+        [self _animatePushVC:f];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){

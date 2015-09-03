@@ -10,6 +10,7 @@
 		82B915E61B56FF5C00C327AD /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = 82B915E51B56FF5C00C327AD /* Parser.m */; };
 		82B915E81B5707A600C327AD /* fables.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82B915E71B5707A600C327AD /* fables.txt */; };
 		82DD6FDD1B8D8FBA0026E0FC /* InViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82DD6FDC1B8D8FBA0026E0FC /* InViewController.m */; };
+		82DD91481B98BBCC0094823C /* CloudViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82DD91471B98BBCC0094823C /* CloudViewController.m */; };
 		82E0E4AB1B80C7FD008A2F16 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */; };
 		82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D11B57E53E00E76B92 /* MailListViewController.m */; };
 		82E264D51B57E76A00E76B92 /* Mail.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D41B57E76A00E76B92 /* Mail.m */; };
@@ -52,6 +53,8 @@
 		82B915E71B5707A600C327AD /* fables.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fables.txt; sourceTree = "<group>"; };
 		82DD6FDB1B8D8FBA0026E0FC /* InViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InViewController.h; sourceTree = "<group>"; };
 		82DD6FDC1B8D8FBA0026E0FC /* InViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InViewController.m; sourceTree = "<group>"; };
+		82DD91461B98BBCC0094823C /* CloudViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudViewController.h; sourceTree = "<group>"; };
+		82DD91471B98BBCC0094823C /* CloudViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudViewController.m; sourceTree = "<group>"; };
 		82E0E4A91B80C7FD008A2F16 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
 		82E264D01B57E53E00E76B92 /* MailListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailListViewController.h; sourceTree = "<group>"; };
@@ -122,6 +125,7 @@
 		82DD6FDA1B8D8F8D0026E0FC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				82DD91451B98B82B0094823C /* Settings */,
 				82E9696E1B555566004AB846 /* FolderViewController.h */,
 				82E9696F1B555566004AB846 /* FolderViewController.m */,
 				82E264D01B57E53E00E76B92 /* MailListViewController.h */,
@@ -140,6 +144,15 @@
 				82DD6FDC1B8D8FBA0026E0FC /* InViewController.m */,
 			);
 			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		82DD91451B98B82B0094823C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				82DD91461B98BBCC0094823C /* CloudViewController.h */,
+				82DD91471B98BBCC0094823C /* CloudViewController.m */,
+			);
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		82E264D61B58001800E76B92 /* Cells */ = {
@@ -394,6 +407,7 @@
 				82E30A611B78D6570088AB1D /* UIImage+ImageEffects.m in Sources */,
 				82E264D91B58003000E76B92 /* ConversationTableViewCell.m in Sources */,
 				82E969491B554745004AB846 /* AppDelegate.m in Sources */,
+				82DD91481B98BBCC0094823C /* CloudViewController.m in Sources */,
 				82E44C491B79F58800FD9DCC /* CocoaButton.m in Sources */,
 				82DD6FDD1B8D8FBA0026E0FC /* InViewController.m in Sources */,
 				82E62BF91B82377100DF71FC /* SettingsViewController.m in Sources */,

@@ -19,6 +19,7 @@
 @property (nonatomic, weak) WhiteBlurNavBar* navBar;
 
 -(void) setupNavBarWith:(UINavigationItem*)item overMainScrollView:(UIScrollView*)mainScrollView;
+-(void) setupSimpleNavBarWith:(UINavigationItem*)item andWidth:(CGFloat)width;
 -(UIBarButtonItem*) backButtonInNavBar;
 -(void) addPullToRefreshWithDelta:(CGFloat)delta;
 
