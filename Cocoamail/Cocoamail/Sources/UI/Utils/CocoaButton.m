@@ -77,6 +77,10 @@
     [self addGestureRecognizer:tgr];
     self.userInteractionEnabled = YES;
     
+    UILongPressGestureRecognizer* lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_lgpress:)];
+    lpgr.minimumPressDuration = 1.;
+    [self addGestureRecognizer:lpgr];
+    
     UILabel* l = [[UILabel alloc] initWithFrame:self.bounds];
     l.backgroundColor = [UIColor clearColor];
     l.textColor = [UIColor whiteColor];
@@ -454,10 +458,25 @@
     
 }
 
+-(void) _lgpress:(UILongPressGestureRecognizer*)lpgr
+{
+    if (lpgr.enabled==NO) {
+        return;
+    }
+    
+    if (lpgr.state == UIGestureRecognizerStateBegan) {
+        
+        lpgr.enabled = NO;
+        lpgr.enabled = YES;
+        
+        if ([self.datasource cocoabuttonLongPress:self]) {
+                [self _openHorizontal];
+        }
+    }
+}
 
 -(void) _tap:(UITapGestureRecognizer*)tgr
 {
-    
     if (tgr.enabled==NO || tgr.state!=UIGestureRecognizerStateEnded) {
         return;
     }

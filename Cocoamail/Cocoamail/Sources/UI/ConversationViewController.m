@@ -67,7 +67,7 @@
     //
     Persons* p = [Persons sharedInstance];
     if (p.idxMorePerson == 0) {
-        Person* more = [Person createWithName:nil email:nil icon:@"recipients_off" codeName:nil];
+        Person* more = [Person createWithName:nil email:nil icon:[UIImage imageNamed:@"recipients_off"] codeName:nil];
         p.idxMorePerson = [p addPerson:more];
     }
     // TODO put it elsewhere
@@ -107,7 +107,14 @@
                                                       userInfo:@{kPRESENT_CONVERSATION_KEY:self.conversation}];
 }
 
+-(NSArray*) nextViewControllerInfos
+{
+    if ([self.conversation haveAttachment]) {
+        return @[kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION, self.conversation];
+    }
 
+    return [super nextViewControllerInfos];
+}
 
 -(void) _setup
 {
@@ -185,8 +192,8 @@
 
 -(void) makeConversationFav:(BOOL)isFav
 {
-    Account* ac = [[Accounts sharedInstance] currentAccount];
-    [ac manage:self.conversation isFav:isFav];
+    //Account* ac = [[Accounts sharedInstance] currentAccount];
+    //[ac manage:self.conversation isFav:isFav];
     
     for (SingleMailView* smv in self.allMailViews) {
         [smv updateFavUI:isFav];
@@ -320,6 +327,11 @@
 -(BOOL) automaticCloseFor:(CocoaButton *)cocoabutton
 {
     return YES;
+}
+
+-(BOOL) cocoabuttonLongPress:(CocoaButton *)cocoabutton
+{
+    return NO;
 }
 
 @end
@@ -601,13 +613,14 @@
 -(void) _masr:(UIButton*)button
 {
     Mail* mail = [self.delegate mailDisplayed:self];
-    mail.isRead = !mail.isRead;
+    [mail toggleRead];
     button.selected = mail.isRead;
 }
 
 -(void) _fav:(UIButton*)button
 {
     Mail* mail = [self.delegate mailDisplayed:self];
+    [mail toggleFav];
     [self.delegate makeConversationFav:!mail.isFav];
 }
 

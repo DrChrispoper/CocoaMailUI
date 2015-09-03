@@ -211,7 +211,6 @@
         self.whiteMask.hidden = YES;
     }
 
-    
     // compute new or use cached one
     
     if (currentOffset <= self.baseOffset) {

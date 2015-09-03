@@ -228,18 +228,12 @@
 
 -(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    AttachmentsCell * cell = (AttachmentsCell*)[tableView cellForRowAtIndexPath:indexPath];
+    
+    [cell.attachView beginActionDownload];
+    
     return nil;
-//    return indexPath;
 }
-
-/*
--(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-*/
-
-
 
 @end
 

@@ -37,6 +37,8 @@
 @property (nonatomic, weak) UIView* animCurrentView;
 @property (nonatomic, weak) UIView* animShadowView;
 
+@property (nonatomic, strong) InViewController* nextVC;
+
 @end
 
 
@@ -75,7 +77,7 @@ static ViewController* s_self;
     
     self.contentView.clipsToBounds = YES;
     
-    [[[Accounts sharedInstance] currentAccount] fakeInitContent];
+    //[[[Accounts sharedInstance] currentAccount] fakeInitContent];
     
     [self setup];
     
@@ -124,6 +126,16 @@ static ViewController* s_self;
     [border addGestureRecognizer:pgr];
     
     [self.view addSubview:border];
+    
+    UIView* borderN = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-5, 0, 5, self.view.frame.size.height)];
+    borderN.backgroundColor = [UIColor clearColor];
+    borderN.userInteractionEnabled = YES;
+    borderN.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
+    
+    UIPanGestureRecognizer* pgrN = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_panNext:)];
+    [borderN addGestureRecognizer:pgrN];
+
+    [self.view addSubview:borderN];
 }
 
 
@@ -240,6 +252,156 @@ static ViewController* s_self;
     NSLog(@"%d| %@ --> %@", pgr.state,  NSStringFromCGPoint(p), NSStringFromCGPoint(v));
     */
 }
+
+
+-(void) _panNext:(UIPanGestureRecognizer*)pgr
+{
+    if (pgr.enabled==NO) {
+        return;
+    }
+    
+    switch (pgr.state) {
+        case UIGestureRecognizerStateBegan:
+        {
+            InViewController* vc = [self.viewControllers lastObject];
+            
+            NSArray* infos = [vc nextViewControllerInfos];
+            if (infos.count!=2) {
+                return;
+            }
+            
+            
+            NSString* first = [infos firstObject];
+            if ([first isEqualToString:kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION]) {
+                AttachmentsViewController* f = [[AttachmentsViewController alloc] init];
+                f.conversation = [infos lastObject];
+                
+                self.nextVC = f;
+            }
+            else if ([first isEqualToString:kPRESENT_SETTINGS_NOTIFICATION]) {
+                SettingsViewController* f = [[SettingsViewController alloc] init];
+                self.nextVC = f;
+            }
+            else {
+                // is there another case ?
+                return;
+            }
+            
+            self.animCurrentView = self.nextVC.view;
+            [self _createShadowViewOverAnimCurrentView];
+            self.animNextView = self.nextVC.view;
+            
+            self.animCurrentView = vc.view;
+            
+            self.animNextView.userInteractionEnabled = NO;
+            self.animCurrentView.userInteractionEnabled = NO;
+            
+            self.animNextView.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width, 0);
+            
+            [self.contentView insertSubview:self.animNextView aboveSubview:self.animCurrentView];
+            
+            self.cocoaButton.userInteractionEnabled = NO;
+            
+            break;
+        }
+            
+        case UIGestureRecognizerStateChanged:
+        {
+            if (self.nextVC==nil) {
+                return;
+            }
+            
+            CGPoint p = [pgr translationInView:pgr.view];
+            
+            CGFloat caped = MIN(0, p.x);
+            caped = MAX(caped, -self.view.frame.size.width);
+            
+            CGFloat invPourc = - (caped / self.view.frame.size.width);
+            
+            self.animNextView.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width+caped, 0);
+            
+            self.animShadowView.alpha = invPourc;
+            self.animCurrentView.transform = CGAffineTransformMakeTranslation(-(self.view.frame.size.width / 4)*invPourc, 0);
+            
+            break;
+        }
+            
+        case UIGestureRecognizerStateEnded:
+        {
+            if (self.nextVC==nil) {
+                return;
+            }
+            
+            self.animNextView.userInteractionEnabled = YES;
+            self.animCurrentView.userInteractionEnabled = YES;
+            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            
+            CGPoint v = [pgr velocityInView:pgr.view];
+            
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            
+            if (v.x>0) {
+                // cancel
+                self.nextVC = nil;
+                
+                [UIView animateWithDuration:0.2
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseOut
+                                 animations:^{
+                                     self.animNextView.transform = CGAffineTransformMakeTranslation(self.view.frame.size.width, 0);
+                                     self.animCurrentView.transform = CGAffineTransformIdentity;
+                                     self.animShadowView.alpha = 1.;
+                                 }
+                                 completion:^(BOOL fini) {
+                                     [self.animNextView removeFromSuperview];
+                                     self.animNextView = nil;
+                                     self.animCurrentView = nil;
+                                     [self.animShadowView removeFromSuperview];
+                                     self.animShadowView=nil;
+                                     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                                 }];
+                
+            }
+            else {
+                // validate
+                [self.viewControllers addObject:self.nextVC];
+                self.nextVC = nil;
+                
+                [UIView animateWithDuration:0.2
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseOut
+                                 animations:^{
+                                     
+                                     self.animNextView.transform = CGAffineTransformIdentity;
+                                     self.animCurrentView.transform = CGAffineTransformMakeTranslation(-(self.view.frame.size.width / 4), 0);;
+                                     self.animShadowView.alpha = 0.;
+                                 }
+                                 completion:^(BOOL fini) {
+                                     [self.animCurrentView removeFromSuperview];
+                                     self.animNextView = nil;
+                                     self.animCurrentView = nil;
+                                     [self.animShadowView removeFromSuperview];
+                                     self.animShadowView=nil;
+                                     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                                 }];
+            }
+            
+            break;
+        }
+            
+        default:
+        {
+            self.nextVC = nil;
+            self.animNextView.userInteractionEnabled = YES;
+            self.animCurrentView.userInteractionEnabled = YES;
+            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            
+            break;
+        }
+    }
+}
+
+
 
 
 -(BOOL) _checkInteractionAndBlock
@@ -609,7 +771,7 @@ static ViewController* s_self;
         Accounts* A = [Accounts sharedInstance];
         [[A currentAccount] releaseContent];
         A.currentAccountIdx = button.tag;
-        [[A currentAccount] fakeInitContent];
+        //[[A currentAccount] fakeInitContent];
         [[NSNotificationCenter defaultCenter] postNotificationName:kACCOUNT_CHANGED_NOTIFICATION object:nil];
     }];
 }
@@ -671,12 +833,27 @@ static ViewController* s_self;
     
     if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
         id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
-        return [src buttonsHorizontalFor:cocoabutton];
+        NSArray* res = [src buttonsHorizontalFor:cocoabutton];
+        if (res!=nil) {
+            return res;
+        }
     }
     
-    return nil;
+    return [self _accountsButtons];
 }
 
+-(BOOL) cocoabuttonLongPress:(CocoaButton *)cocoabutton
+{
+    InViewController* currentVC = [self.viewControllers lastObject];
+    
+    if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
+        id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
+        return [src cocoabuttonLongPress:cocoabutton];
+    }
+    
+    self.askAccountsButton = YES;
+    return YES;
+}
 
 -(BOOL) automaticCloseFor:(CocoaButton *)cocoabutton
 {

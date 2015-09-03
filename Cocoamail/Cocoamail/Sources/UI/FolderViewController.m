@@ -7,7 +7,7 @@
 //
 
 #import "FolderViewController.h"
-
+#import "AppSettings.h"
 #import "Accounts.h"
 
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -65,6 +65,10 @@
     [self.table reloadData];
 }
 
+-(NSArray*) nextViewControllerInfos
+{
+    return @[kPRESENT_SETTINGS_NOTIFICATION, @""];
+}
 
 -(void) _settings
 {
@@ -90,7 +94,6 @@
 {
     return (indexPath.row==0) ? 44.5f : 44.0f;
 }
-
 
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -215,7 +218,8 @@
         type.type = FolderTypeUser;
         type.idx = indexPath.row;
     }
-    
+
+    [[[Accounts sharedInstance] currentAccount] setCurrentFolder:type];
     NSNumber* encodedType = @(encodeFolderTypeWith(type));
     [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_FOLDER_NOTIFICATION object:nil userInfo:@{kPRESENT_FOLDER_TYPE:encodedType}];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

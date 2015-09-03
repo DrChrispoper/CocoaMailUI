@@ -383,8 +383,7 @@
                 // tav fav
                 if (self.favori.tag == tagFavSelected) {
                     
-                    Account* ac = [[Accounts sharedInstance] currentAccount];
-                    [ac manage:self.conversation isFav:self.favori.highlighted];
+                    [[self.conversation firstMail] toggleFav];
 
                     self.favori.tag = 0;
                     back = true;
@@ -495,7 +494,7 @@
                     
                     if (idxQuickSwipe == QuickSwipeMark) {
                         Mail* m = [self mail];
-                        m.isRead = !m.isRead;
+                        [m toggleRead];
                         [self fillWithConversation:self.conversation isSelected:false];
                     }
                     

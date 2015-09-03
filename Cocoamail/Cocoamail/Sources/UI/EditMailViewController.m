@@ -311,7 +311,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     self.mail.title = self.subjectTextView.text;
     self.mail.content = self.bodyTextView.text;
     
-    [self.selectedAccount sendMail:self.mail];
+    [self.selectedAccount sendMail:self.mail bcc:self.personsAreHidden];
     
     [self _reallyGoBack];
 }
@@ -1299,7 +1299,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         Attachment* attach = [[Attachment alloc] init];
         attach.image = img;
         
-        attach.name = @"find a name";
+        attach.fileName = @"find a name";
         attach.size = @"find the size";
         
         if (self.mail.attachments == nil) {

@@ -10,7 +10,7 @@
 
 #import "Accounts.h"
 #import "ViewController.h"
-
+#import "CCMAttachment.h"
 
 @interface Attachments ()
 
@@ -38,7 +38,7 @@
     self = [super init];
     
     
-    NSArray* names = @[@"Plein d'animaux.jpg", @"livre.jpg", @"renard & cicogne.jpg",
+    /*NSArray* names = @[@"Plein d'animaux.jpg", @"livre.jpg", @"renard & cicogne.jpg",
                        @"CD.jpg", @"portrait.pjg", @"image.jpg",
                        @"ane N&B.jpg", @"couverture.jpg", @"Grenouilles.jpg",
                        @"GustaveDoré.jpg", @"livreEnfant.jpg", @"Le lièvre et la tortue.jpg"];
@@ -75,7 +75,7 @@
     for (NSString* name in names) {
         
         Attachment* at = [[Attachment alloc] init];
-        at.name = name;
+        at.imageName = name;
         at.size = size[idx];
         
         if (idx<4) {
@@ -93,7 +93,7 @@
     }
     
     
-    self.alls = tmp;
+    self.alls = tmp;*/
     
     return self;
 }
@@ -127,9 +127,64 @@
         return self.image;
     }
     
+    self.mimeType = [self.mimeType lowercaseString];
+    
+    if([att.mimeType  isEqualToString:@"application/msword"] ||
+       [att.mimeType isEqualToString:@"application/vnd.oasis.opendocument.text"]||
+       [att.mimeType rangeOfString:@"text/"].location != NSNotFound) {
+        [cell.iconButton setImage:[UIImage imageNamed:@"text"]];
+    }
+    else if([att.mimeType isEqualToString:@"application/pdf"]) {
+        [cell.iconButton setImage:[UIImage imageNamed:@"pdf"]];
+    }
+    else if([att.mimeType rangeOfString:@"image/"].location != NSNotFound) {
+        UIImage * image;
+        if (att.data) {
+            image = [UIImage imageWithData:att.data];
+        }
+        else {
+            image = [UIImage imageNamed:@"picture"];
+        }
+        
+        [cell.iconButton setImage:image];
+    }
+    else if([att.mimeType rangeOfString:@"audio/"].location != NSNotFound) {
+        [cell.iconButton setImage:[UIImage imageNamed:@"audio"]];
+    }
+    else if([att.mimeType rangeOfString:@"video/"].location != NSNotFound) {
+        UIImage * image;
+        if (att.data) {
+            NSString *filePath = [StringUtil filePathInDocumentsDirectoryForAttachmentFileName:att.fileName];
+            
+            [att.data writeToFile:filePath atomically:YES];
+            
+            NSURL *URL = [NSURL fileURLWithPath:filePath];
+            
+            AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:URL options:nil];
+            AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+            generate.appliesPreferredTrackTransform = TRUE;
+            NSError *err = NULL;
+            CMTime time = CMTimeMake(1, 60);
+            CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+            
+            CCMLog(@"err==%@, imageRef==%@", err, imgRef);
+            image = [[UIImage alloc] initWithCGImage:imgRef];
+        }
+        else {
+            image = [UIImage imageNamed:@"video"];
+        }
+        
+        [cell.iconButton setImage:image];
+    }
+    else if([att.mimeType rangeOfString:@"zip"].location != NSNotFound) {
+        [cell.iconButton setImage:[UIImage imageNamed:@"zip"]];
+    }
+    else{
+        [cell.iconButton setImage:[UIImage imageNamed:@"attachment"]];
+    }
+
     return [UIImage imageNamed:self.imageName];
 }
-
 
 @end
 
@@ -259,7 +314,7 @@
 
 -(void) fillWith:(Attachment*)at
 {
-    self.name.text = at.name;
+    self.name.text = at.fileName;
     self.size.text = at.size;
     self.mini.image = [at miniature];
 }
