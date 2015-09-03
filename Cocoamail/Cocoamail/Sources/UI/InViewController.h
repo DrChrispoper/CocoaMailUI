@@ -26,6 +26,7 @@
 -(void) cleanBeforeGoingBack;
 -(BOOL) haveCocoaButton;
 
+-(NSArray*) nextViewControllerInfos;
 
 // if the subclass use this methods, call super
 -(void) scrollViewDidScroll:(UIScrollView *)scrollView;

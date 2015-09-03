@@ -99,6 +99,12 @@
     return YES;
 }
 
+-(NSArray*) nextViewControllerInfos
+{
+    return nil;
+}
+
+
 
 #pragma mark - Defaut Delegate
 

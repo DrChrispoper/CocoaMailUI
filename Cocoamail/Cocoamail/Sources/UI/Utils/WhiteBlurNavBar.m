@@ -210,7 +210,6 @@
     else {
         self.whiteMask.hidden = YES;
     }
-
     
     // compute new or use cached one
     

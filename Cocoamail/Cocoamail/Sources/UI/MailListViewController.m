@@ -178,7 +178,7 @@
 }
 
 
--(void) _attach
+-(Conversation*) _createAttachs
 {
     Conversation* c = [[Conversation alloc] init];
     // keep only mail sent by onlyPerson with attachment
@@ -202,10 +202,29 @@
     // to have the right title in next VC
     [c firstMail].title = self.onlyPerson.name;
     
+    return c;
+}
+
+-(void) _attach
+{
+    Conversation* c = [self _createAttachs];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION object:nil
                                                       userInfo:@{kPRESENT_CONVERSATION_KEY:c}];
 }
+
+-(NSArray*) nextViewControllerInfos
+{
+    
+    if (self.presentAttach) {
+        Conversation* c = [self _createAttachs];
+        return @[kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION, c];
+    }
+    
+    return [super nextViewControllerInfos];
+}
+
+
 
 
 -(void) cleanBeforeGoingBack

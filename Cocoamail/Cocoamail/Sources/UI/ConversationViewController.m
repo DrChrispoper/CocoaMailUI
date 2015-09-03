@@ -107,6 +107,15 @@
                                                       userInfo:@{kPRESENT_CONVERSATION_KEY:self.conversation}];
 }
 
+-(NSArray*) nextViewControllerInfos
+{
+    if ([self.conversation haveAttachment]) {
+        return @[kPRESENT_CONVERSATION_ATTACHMENTS_NOTIFICATION, self.conversation];
+    }
+    
+    return [super nextViewControllerInfos];
+}
+
 
 
 -(void) _setup
