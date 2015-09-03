@@ -49,6 +49,6 @@ typedef enum : NSUInteger {
 -(void) addActionTarget:(id)target selector:(SEL)selector andTag:(NSInteger)tag;
 
 -(void) buttonActionType:(AttachmentViewAction)type;
-
+-(void) beginActionDownload;
 
 @end

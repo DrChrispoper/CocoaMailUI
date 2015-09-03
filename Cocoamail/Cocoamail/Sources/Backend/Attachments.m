@@ -204,6 +204,7 @@
     switch (type) {
         case AttachmentViewActionNone:
             self.btn.hidden = YES;
+            self.internalState = -1;
             break;
             
         case AttachmentViewActionDonwload:
@@ -234,6 +235,7 @@
             
             self.btn = tapAttach;
             
+            self.internalState = -1;
             break;
         }
         case AttachmentViewActionDelete:
@@ -242,10 +244,12 @@
             [self.btn setImage:img forState:UIControlStateNormal];
             [self.btn setImage:nil forState:UIControlStateHighlighted];
             self.btn.tintColor = [[Accounts sharedInstance] currentAccount].userColor;
+            self.internalState = -1;
             
             break;
         }
         default:
+            self.internalState = -1;
             self.btn.hidden = NO;
             break;
     }
@@ -280,6 +284,15 @@
                      completion:nil];
     
 }
+
+-(void) beginActionDownload
+{
+    if (self.internalState == 0) {
+        [self _applyButtonDownload:self.btn];
+    }
+}
+
+
 
 -(void)_applyButtonDownload:(UIButton*)b
 {
