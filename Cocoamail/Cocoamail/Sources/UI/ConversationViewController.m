@@ -331,6 +331,12 @@
     return YES;
 }
 
+-(BOOL) cocoabuttonLongPress:(CocoaButton *)cocoabutton
+{
+    return NO;
+}
+
+
 @end
 
 

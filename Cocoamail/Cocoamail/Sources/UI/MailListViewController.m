@@ -28,6 +28,8 @@
 
 @property (nonatomic) FolderType folder;
 
+@property (nonatomic) BOOL longPressOnCocoabutton;
+
 @end
 
 
@@ -573,8 +575,20 @@
 
 #pragma mark - CocoaButton
 
+
+-(BOOL) cocoabuttonLongPress:(CocoaButton *)cocoabutton
+{
+    self.longPressOnCocoabutton = YES;
+    return YES;
+}
+
 -(NSArray*) buttonsHorizontalFor:(CocoaButton*)cocoaButton
 {
+    if (self.longPressOnCocoabutton) {
+        self.longPressOnCocoabutton = NO;
+        return nil;
+    }
+    
     const CGRect baseRect = cocoaButton.bounds;
     UIColor* color = [[Accounts sharedInstance] currentAccount].userColor;
     

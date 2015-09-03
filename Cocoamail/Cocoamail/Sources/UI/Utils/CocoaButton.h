@@ -15,6 +15,7 @@
 -(NSArray*) buttonsWideFor:(CocoaButton*)cocoabutton;
 -(NSArray*) buttonsHorizontalFor:(CocoaButton*)cocoabutton;
 -(BOOL) automaticCloseFor:(CocoaButton*)cocoabutton;
+-(BOOL) cocoabuttonLongPress:(CocoaButton*)cocoabutton;
 
 @end
 

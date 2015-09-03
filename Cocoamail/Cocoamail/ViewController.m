@@ -834,12 +834,27 @@ static ViewController* s_self;
     
     if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
         id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
-        return [src buttonsHorizontalFor:cocoabutton];
+        NSArray* res = [src buttonsHorizontalFor:cocoabutton];
+        if (res!=nil) {
+            return res;
+        }
     }
-    
-    return nil;
+
+    return [self _accountsButtons];
 }
 
+-(BOOL) cocoabuttonLongPress:(CocoaButton *)cocoabutton
+{
+    InViewController* currentVC = [self.viewControllers lastObject];
+    
+    if ([currentVC conformsToProtocol:@protocol(CocoaButtonDatasource)]) {
+        id<CocoaButtonDatasource> src = (id<CocoaButtonDatasource>)currentVC;
+        return [src cocoabuttonLongPress:cocoabutton];
+    }
+    
+    self.askAccountsButton = YES;
+    return YES;
+}
 
 -(BOOL) automaticCloseFor:(CocoaButton *)cocoabutton
 {
