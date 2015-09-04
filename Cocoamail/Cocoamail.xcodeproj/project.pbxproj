@@ -33,6 +33,9 @@
 		82E969541B554745004AB846 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 82E969521B554745004AB846 /* LaunchScreen.xib */; };
 		82E969601B554745004AB846 /* CocoamailTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E9695F1B554745004AB846 /* CocoamailTests.m */; };
 		82E969701B555566004AB846 /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E9696F1B555566004AB846 /* FolderViewController.m */; };
+		82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */; };
+		82EA39241B99930600C41A29 /* QuickSwipeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39231B99930600C41A29 /* QuickSwipeViewController.m */; };
+		82EA39271B999D8100C41A29 /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39261B999D8100C41A29 /* NotificationViewController.m */; };
 		82EB85971B6F910F00B1B31A /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EB85961B6F910F00B1B31A /* ConversationViewController.m */; };
 		82F004C61B7CAF9800231C09 /* Persons.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F004C51B7CAF9800231C09 /* Persons.m */; };
 /* End PBXBuildFile section */
@@ -98,6 +101,12 @@
 		82E9695F1B554745004AB846 /* CocoamailTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CocoamailTests.m; sourceTree = "<group>"; };
 		82E9696E1B555566004AB846 /* FolderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FolderViewController.h; sourceTree = "<group>"; };
 		82E9696F1B555566004AB846 /* FolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FolderViewController.m; sourceTree = "<group>"; };
+		82EA391F1B998D8700C41A29 /* DefaultAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultAccountViewController.h; sourceTree = "<group>"; };
+		82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultAccountViewController.m; sourceTree = "<group>"; };
+		82EA39221B99930600C41A29 /* QuickSwipeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickSwipeViewController.h; sourceTree = "<group>"; };
+		82EA39231B99930600C41A29 /* QuickSwipeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuickSwipeViewController.m; sourceTree = "<group>"; };
+		82EA39251B999D8100C41A29 /* NotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationViewController.h; sourceTree = "<group>"; };
+		82EA39261B999D8100C41A29 /* NotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationViewController.m; sourceTree = "<group>"; };
 		82EB85951B6F910F00B1B31A /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
 		82EB85961B6F910F00B1B31A /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewController.m; sourceTree = "<group>"; };
 		82F004C41B7CAF9800231C09 /* Persons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persons.h; sourceTree = "<group>"; };
@@ -151,6 +160,12 @@
 			children = (
 				82DD91461B98BBCC0094823C /* CloudViewController.h */,
 				82DD91471B98BBCC0094823C /* CloudViewController.m */,
+				82EA391F1B998D8700C41A29 /* DefaultAccountViewController.h */,
+				82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */,
+				82EA39221B99930600C41A29 /* QuickSwipeViewController.h */,
+				82EA39231B99930600C41A29 /* QuickSwipeViewController.m */,
+				82EA39251B999D8100C41A29 /* NotificationViewController.h */,
+				82EA39261B999D8100C41A29 /* NotificationViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -400,14 +415,17 @@
 				82E0E4AB1B80C7FD008A2F16 /* ContactsViewController.m in Sources */,
 				82E969701B555566004AB846 /* FolderViewController.m in Sources */,
 				82E935961B873FDF008FD372 /* EditMailViewController.m in Sources */,
+				82EA39271B999D8100C41A29 /* NotificationViewController.m in Sources */,
 				82E62BF31B81E07E00DF71FC /* AttachmentsViewController.m in Sources */,
 				82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */,
 				82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */,
 				82E9694C1B554745004AB846 /* ViewController.m in Sources */,
 				82E30A611B78D6570088AB1D /* UIImage+ImageEffects.m in Sources */,
+				82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */,
 				82E264D91B58003000E76B92 /* ConversationTableViewCell.m in Sources */,
 				82E969491B554745004AB846 /* AppDelegate.m in Sources */,
 				82DD91481B98BBCC0094823C /* CloudViewController.m in Sources */,
+				82EA39241B99930600C41A29 /* QuickSwipeViewController.m in Sources */,
 				82E44C491B79F58800FD9DCC /* CocoaButton.m in Sources */,
 				82DD6FDD1B8D8FBA0026E0FC /* InViewController.m in Sources */,
 				82E62BF91B82377100DF71FC /* SettingsViewController.m in Sources */,

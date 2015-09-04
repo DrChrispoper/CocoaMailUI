@@ -33,7 +33,8 @@
 
     item.leftBarButtonItem = [self backButtonInNavBar];
     
-    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:@"Settings"];
+    NSString* title = NSLocalizedString(@"Settings", @"Settings");
+    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:title];
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
@@ -49,12 +50,31 @@
     
     [self setupNavBarWith:item overMainScrollView:table];
 
-    [self _prepareTable];
+//    [self _prepareTable];
     table.dataSource = self;
     table.delegate = self;    
     self.table = table;
 
 }
+
+-(BOOL) haveCocoaButton
+{
+    return NO;
+}
+
+
+
+#define TITLE @"title"
+#define FOOTER @"footer"
+#define CONTENT @"content"
+
+#define BVIEW @"bv"
+#define TEXT @"t"
+#define ACTION @"a"
+#define OBJECT @"o"
+#define DACTION @"da"
+#define BIMAGE @"bi"
+#define KEY @"k"
 
 -(void)_prepareTable
 {
@@ -71,50 +91,62 @@
             continue;
         }
         
-        [as addObject:@{@"bv": [a.person badgeView], @"t" : a.userMail, @"a" : @"EDIT_ACCOUNT", @"o":a}];
+        [as addObject:@{BVIEW: [a.person badgeView], TEXT : a.userMail, ACTION : @"EDIT_ACCOUNT", OBJECT:a}];
         
         if (idx == [Accounts sharedInstance].defaultAccountIdx) {
-            [da addObject:@{@"bv": [a.person badgeView], @"t" : a.userMail, @"a" : @"DEFAULT_ACCOUNT"}];
+            [da addObject:@{BVIEW: [a.person badgeView], TEXT : a.userMail, ACTION : kSETTINGS_MAIN_ACCOUNT_NOTIFICATION}];
         }
         
     }
-         
-    [as addObject:@{@"bv" : [[UIView alloc] init],@"t": @"Add account",@"a" : @"ADD_ACCOUNT"}];
     
-    NSDictionary* Paccounts = @{@"title":@"ACCOUNTS", @"footer":@"", @"content":as};
+    NSString* addAccount = NSLocalizedString(@"Add account", @"Add account");
     
-    NSDictionary* PdftAccount = @{@"title":@"DEFAULT ACCOUNT", @"footer":@"Default account used to send emails when using unified Inbox", @"content":da};
+    [as addObject:@{BVIEW : [[UIView alloc] init], TEXT : addAccount, ACTION : @"ADD_ACCOUNT"}];
+    
+    NSString* tAccount = NSLocalizedString(@"ACCOUNTS", @"ACCOUNTS");
+    NSDictionary* Paccounts = @{TITLE:tAccount, FOOTER:@"", CONTENT:as};
+    
+    NSString* tDAccount = NSLocalizedString(@"DEFAULT ACCOUNT", @"DEFAULT ACCOUNT");
+    NSString* fDAccount = NSLocalizedString(@"Default account used to send emails when using unified Inbox", @"Default account used to send emails when using unified Inbox");
+    NSDictionary* PdftAccount = @{TITLE:tDAccount, FOOTER:fDAccount, CONTENT:da};
     
     NSArray* clouds = @[
-                        @{@"bi":@"icone_dropbox", @"t": @"Dropbox", @"a" : kSETTINGS_CLOUD_NOTIFICATION, @"o": @"Dropbox", @"k" : kSETTINGS_KEY},
-                        @{@"bi":@"icone_icloud", @"t": @"iCloud", @"a" : kSETTINGS_CLOUD_NOTIFICATION, @"o": @"iCloud", @"k" : kSETTINGS_KEY},
-                        @{@"bi":@"icone_google", @"t": @"Google Drive", @"a" : kSETTINGS_CLOUD_NOTIFICATION, @"o": @"Google Drive", @"k" : kSETTINGS_KEY},
-                        @{@"bi":@"icone_box", @"t": @"Box", @"a" : kSETTINGS_CLOUD_NOTIFICATION, @"o": @"Box", @"k" : kSETTINGS_KEY}
+                        @{BIMAGE:@"icone_dropbox", TEXT: @"Dropbox", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Dropbox", KEY : kSETTINGS_KEY},
+                        @{BIMAGE:@"icone_icloud", TEXT: @"iCloud", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"iCloud", KEY : kSETTINGS_KEY},
+                        @{BIMAGE:@"icone_google", TEXT: @"Google Drive", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Google Drive", KEY : kSETTINGS_KEY},
+                        @{BIMAGE:@"icone_box", TEXT: @"Box", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Box", KEY : kSETTINGS_KEY}
                         ];
     
-    NSDictionary* Pclouds = @{@"title":@"CLOUD SERVICES", @"footer":@"", @"content":clouds};
+    NSString* tCloud = NSLocalizedString(@"CLOUD SERVICES", @"CLOUD SERVICES");
+    NSDictionary* Pclouds = @{TITLE:tCloud, FOOTER:@"", CONTENT:clouds};
     
+    NSString* tNotif = NSLocalizedString(@"Notifications", @"Notifications");
+    NSString* tBadge = NSLocalizedString(@"Display badge count", @"Display badge count");
+    NSString* tSwipe = NSLocalizedString(@"Quick Swipe", @"Quick Swipe");
     
     NSArray* displays = @[
-                          @{@"t": @"Quick Swipe", @"a" : @"CONFIG_SWIPE"},
-                          @{@"t": @"Display badge count", @"da" : @"BADGE_COUNT"},
-                          @{@"t": @"Notifications", @"a" : @"CONFIG_NOTIF"}
+                          @{TEXT: tSwipe, ACTION : kSETTINGS_SWIPE_NOTIFICATION},
+                          @{TEXT: tBadge, DACTION : @"BADGE_COUNT"},
+                          @{TEXT: tNotif, ACTION : kSETTINGS_NOTIF_NOTIFICATION}
                         ];
     
-    NSDictionary* Pdisplay = @{@"title":@"DISPLAY", @"footer":@"", @"content":displays};
+    NSString* tDisplay = NSLocalizedString(@"DISPLAY", @"DISPLAY");
+    NSDictionary* Pdisplay = @{TITLE:tDisplay, FOOTER:@"", CONTENT:displays};
 
-    NSDictionary* Pcredit = @{@"title":@"", @"footer":@"",
-                              @"content":@[@{@"t":@"Credits", @"a":@"CREDITS"}]
+    NSString* tCredit = NSLocalizedString(@"Credits", @"Credits");
+    NSDictionary* Pcredit = @{TITLE:@"", FOOTER:@"",
+                              CONTENT:@[@{TEXT:tCredit, ACTION:@"CREDITS"}]
                               };
     
-
-    NSDictionary* PDelete = @{@"title":@"", @"footer":@"",
-                              @"content":@[@{@"t":@"Delete stored attachments", @"da" : @"CLEAR"}]
+    NSString* tDelete = NSLocalizedString(@"Delete stored attachments", @"Delete stored attachments");
+    NSDictionary* PDelete = @{TITLE:@"", FOOTER:@"",
+                              CONTENT:@[@{TEXT:tDelete, DACTION : @"CLEAR"}]
                               };
     
-    NSDictionary* PNavbar = @{@"title":@"", @"footer":@"",
-                              @"content":@[@{@"t":@"Blurred nav bar", @"da" : @"NAV_BAR_BLUR"},
-                                           @{@"t":@"Opaque nav bar", @"da" : @"NAV_BAR_SOLID"}]
+    // TODO : to remove
+    NSDictionary* PNavbar = @{TITLE:@"", FOOTER:@"",
+                              CONTENT:@[@{TEXT:@"Blurred nav bar", DACTION : @"NAV_BAR_BLUR"},
+                                        @{TEXT:@"Opaque nav bar", DACTION : @"NAV_BAR_SOLID"}]
                               };
     
     self.settings = @[Paccounts, PdftAccount, Pclouds, Pdisplay, Pcredit, PDelete, PNavbar];
@@ -128,6 +160,12 @@
     self.table.dataSource = nil;
 }
 
+-(void) viewWillAppear:(BOOL)animated
+{
+    [self _prepareTable];
+    [self.table reloadData];
+}
+
 #pragma mark - Table Datasource
 
 
@@ -139,7 +177,7 @@
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSDictionary* sectionInfos = self.settings[section];
-    NSArray* content = sectionInfos[@"content"];
+    NSArray* content = sectionInfos[CONTENT];
     
     return content.count;
 }
@@ -154,20 +192,18 @@
 {
     
     NSDictionary* sectionInfos = self.settings[indexPath.section];
-    NSArray* content = sectionInfos[@"content"];
+    NSArray* content = sectionInfos[CONTENT];
     NSDictionary* infoCell = content[indexPath.row];
     
     
     UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"noID"];
     
     
-    cell.textLabel.text = infoCell[@"t"];
-    
-    
+    cell.textLabel.text = infoCell[TEXT];
 
     
-    if ([infoCell objectForKey:@"bv"] != nil) {
-        UIView* v = infoCell[@"bv"];
+    if ([infoCell objectForKey:BVIEW] != nil) {
+        UIView* v = infoCell[BVIEW];
     
         UIGraphicsBeginImageContextWithOptions(CGSizeMake(33.f, 33.f), NO, [UIScreen mainScreen].scale);
         UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
@@ -182,7 +218,7 @@
             [v removeFromSuperview];
         }
         
-        NSString* imgName = infoCell[@"bi"];
+        NSString* imgName = infoCell[BIMAGE];
         
         cell.imageView.image = (imgName.length>0) ? [UIImage imageNamed:imgName] : nil;
     }
@@ -190,9 +226,9 @@
     cell.textLabel.textAlignment = NSTextAlignmentNatural;
     cell.textLabel.textColor = [UIColor blackColor];
     
-    if (infoCell[@"da"]!=nil) {
+    if (infoCell[DACTION]!=nil) {
 
-        NSString* action = infoCell[@"da"];
+        NSString* action = infoCell[DACTION];
         
         cell.accessoryView = nil;
         
@@ -218,12 +254,11 @@
         }
         
     }
-    else if (infoCell[@"a"]!=nil) {
+    else if (infoCell[ACTION]!=nil) {
         cell.accessoryView = nil;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
-//    cell.tintColor = cac.userColor;
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
     return cell;
@@ -232,13 +267,13 @@
 -(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     NSDictionary* sectionInfos = self.settings[section];
-    return sectionInfos[@"title"];
+    return sectionInfos[TITLE];
 }
 
 -(NSString*)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
     NSDictionary* sectionInfos = self.settings[section];
-    return sectionInfos[@"footer"];
+    return sectionInfos[FOOTER];
 }
 
 
@@ -247,7 +282,7 @@
 -(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     NSDictionary* sectionInfos = self.settings[section];
-    NSString* info = sectionInfos[@"footer"];
+    NSString* info = sectionInfos[FOOTER];
     return (info.length>0) ? 46 :CGFLOAT_MIN;
 }
 
@@ -260,10 +295,10 @@
 -(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary* sectionInfos = self.settings[indexPath.section];
-    NSArray* content = sectionInfos[@"content"];
+    NSArray* content = sectionInfos[CONTENT];
     NSDictionary* infoCell = content[indexPath.row];
     
-    NSString* directAction = infoCell[@"da"];
+    NSString* directAction = infoCell[DACTION];
     
 
     if (directAction.length>0) {
@@ -294,15 +329,18 @@
         return nil;
     }
     
-    NSString* action = infoCell[@"a"];
+    NSString* action = infoCell[ACTION];
     
     if (action.length>0) {
         
-        NSString* key = infoCell[@"k"];
-        id object = infoCell[@"o"];
+        NSString* key = infoCell[KEY];
+        id object = infoCell[OBJECT];
         
         if (key.length > 0) {
             [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:@{key:object}];
+        }
+        else {
+            [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:nil];
         }
         
         return nil;
@@ -315,126 +353,13 @@
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    
-    
-    /*
-    if (indexPath.section==0) {
-        [Accounts sharedInstance].quickSwipeType = indexPath.row;
-    }
-    else {
-        [Accounts sharedInstance].navBarBlurred = indexPath.row==0;
-    }
-    
-    [tableView reloadData];
-    */
 }
 
 -(void) _switchBadge:(UISwitch*)sender
 {
-    [Accounts sharedInstance].showBadgeCount = ![Accounts sharedInstance].showBadgeCount;
-    
+    [Accounts sharedInstance].showBadgeCount = ![Accounts sharedInstance].showBadgeCount;    
     // TODO make something with that
 }
-
-
-/*
-#pragma mark - Table Datasource
-
-
--(NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 2;
-}
-
--(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return (section==0) ? 4 : 2;
-}
-
--(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return (indexPath.row==0) ? 44.5f : 44.0f;
-}
-
-
--(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
-    Account* cac = [[Accounts sharedInstance] currentAccount];
-    
-    UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"noID"];
-        
-
-    if (indexPath.section == 0) {
-        
-        NSArray* names = @[NSLocalizedString(@"Archive", @"Archive"),
-                           NSLocalizedString(@"Delete",@"Delete"),
-                           NSLocalizedString(@"Reply",@"Reply"),
-                           NSLocalizedString(@"Mark as read/unread",@"Mark as read/unread")];
-        
-        NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single",@"swipe_unread"];
-        
-        cell.textLabel.text = names[indexPath.row];
-        UIImage* img = [[UIImage imageNamed:imgNames[indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        cell.imageView.image = img;
-        cell.imageView.tintColor = cac.userColor;
-        
-        if ([Accounts sharedInstance].quickSwipeType == indexPath.row) {
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        }
-    }
-    else {
-        NSArray* names = @[@"Blurred nav bar", @"Opaque nav bar"];
-        cell.textLabel.text = names[indexPath.row];
-        
-        NSInteger idx = [Accounts sharedInstance].navBarBlurred ? 0 : 1;
-        
-        if (idx == indexPath.row) {
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        }
-    }
-    
-    cell.tintColor = cac.userColor;
-    cell.selectionStyle = UITableViewCellSelectionStyleGray;
-    
-    
-    return cell;
-}
-
--(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    return nil;
-}
-
-
-#pragma mark Table Delegate
-
--(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    return CGFLOAT_MIN;
-}
-
--(CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 30;
-}
-
--(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    if (indexPath.section==0) {
-        [Accounts sharedInstance].quickSwipeType = indexPath.row;
-    }
-    else {
-        [Accounts sharedInstance].navBarBlurred = indexPath.row==0;
-    }
-    
-    [tableView reloadData];
-    
-}
-*/
 
 
 @end

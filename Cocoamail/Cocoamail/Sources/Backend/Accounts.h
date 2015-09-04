@@ -31,11 +31,12 @@ typedef enum : NSUInteger {
 +(NSArray*) systemFolderIcons;
 +(NSString*) userFolderIcon;
 
+//
 @property (nonatomic) QuickSwipeType quickSwipeType;
 @property (nonatomic) BOOL navBarBlurred;
 @property (nonatomic) NSInteger defaultAccountIdx;
 @property (nonatomic) BOOL showBadgeCount;
-
+// TODO save these config values
 
 @property (nonatomic, strong) NSArray* accounts;
 @property (nonatomic) NSInteger currentAccountIdx;
@@ -96,6 +97,9 @@ static inline FolderType decodeFolderTypeWith(NSInteger code)
 @property (nonatomic, strong) Person* person;
 
 @property (nonatomic) BOOL isAllAccounts;
+//
+@property (nonatomic) BOOL notificationEnabled;
+// TODO save it (config)
 
 -(void) fakeInitContent;
 -(void) releaseContent;

@@ -218,7 +218,7 @@ static NSDateFormatter* s_df_hour = nil;
     
     Accounts* allAccounts = [Accounts sharedInstance];
     if (allAccounts.currentAccountIdx == allAccounts.accounts.count -1) {
-        mail.fromPersonID = -1;
+        mail.fromPersonID = -(1+[Accounts sharedInstance].defaultAccountIdx);
     }
     else {
         mail.fromPersonID = -(1+[Accounts sharedInstance].currentAccountIdx);

@@ -462,21 +462,47 @@ static ViewController* s_self;
         [self _animatePushVC:f];
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
-        if ([self _checkInteractionAndBlock]) {
-            return;
-        }
-        ConversationViewController* f = [[ConversationViewController alloc] init];
-        f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
-        [self _animatePushVC:f];
-    }];
-    
     [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CLOUD_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         if ([self _checkInteractionAndBlock]) {
             return;
         }
         CloudViewController* f = [[CloudViewController alloc] init];
         f.cloudServiceName = [notif.userInfo objectForKey:kSETTINGS_KEY];
+        [self _animatePushVC:f];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_MAIN_ACCOUNT_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        DefaultAccountViewController* f = [[DefaultAccountViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_SWIPE_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        QuickSwipeViewController* f = [[QuickSwipeViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_NOTIF_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        NotificationViewController* f = [[NotificationViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+    
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        ConversationViewController* f = [[ConversationViewController alloc] init];
+        f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
         [self _animatePushVC:f];
     }];
 

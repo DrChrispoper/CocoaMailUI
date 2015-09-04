@@ -9,6 +9,9 @@
 #import "ViewController.h"
 
 #import "CloudViewController.h"
+#import "DefaultAccountViewController.h"
+#import "QuickSwipeViewController.h"
+#import "NotificationViewController.h"
 
 @interface SettingsViewController : InViewController
 

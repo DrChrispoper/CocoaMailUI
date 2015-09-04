@@ -115,7 +115,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
     else {
         Account* ca = [allAccounts currentAccount];
         if (ca.isAllAccounts) {
-            ca = [allAccounts.accounts firstObject];
+            ca = [allAccounts.accounts objectAtIndex:allAccounts.defaultAccountIdx];
         }
     }
     

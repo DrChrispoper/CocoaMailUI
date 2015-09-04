@@ -51,9 +51,13 @@
     UIButton* action = [[UIButton alloc] initWithFrame:CGRectMake(0, 170, screenBounds.size.width, 52)];
     action.backgroundColor = [UIColor whiteColor];
     action.tintColor = [UIGlobal standardBlue];
-    [action setTitle:@"Link account" forState:UIControlStateNormal];
-    [action setTitle:@"Unlink account" forState:UIControlStateSelected];
-    [action setTitle:@"Unlink account" forState:UIControlStateSelected|UIControlStateHighlighted];
+    
+    NSString* link = NSLocalizedString(@"Link account", @"Link account");
+    NSString* unlink = NSLocalizedString(@"Unlink account", @"Link account");
+    
+    [action setTitle:link forState:UIControlStateNormal];
+    [action setTitle:unlink forState:UIControlStateSelected];
+    [action setTitle:unlink forState:UIControlStateSelected|UIControlStateHighlighted];
     [action setTitleColor:[UIGlobal standardBlue] forState:UIControlStateNormal];
     [action setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
     [action setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
@@ -78,6 +82,11 @@
     self.mainImage.highlighted = !self.mainImage.highlighted;
     
     [ViewController presentAlertWIP:@"do the link…"];
+}
+
+-(BOOL) haveCocoaButton
+{
+    return NO;
 }
 
 
