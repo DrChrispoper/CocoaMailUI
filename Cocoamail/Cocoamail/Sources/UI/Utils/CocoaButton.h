@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class CocoaButton;
+@class Account;
 
 @protocol CocoaButtonDatasource
 
@@ -23,6 +24,8 @@
 @interface CocoaButton : UIView
 
 +(instancetype) sharedButton;
+
++(instancetype) fakeCocoaButtonForAccount:(Account*)account;
 
 @property (nonatomic, weak) id<CocoaButtonDatasource> datasource;
 

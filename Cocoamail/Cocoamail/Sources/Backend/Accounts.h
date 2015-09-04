@@ -31,6 +31,8 @@ typedef enum : NSUInteger {
 +(NSArray*) systemFolderIcons;
 +(NSString*) userFolderIcon;
 
+@property (nonatomic, strong) NSArray* accountColors;
+
 //
 @property (nonatomic) QuickSwipeType quickSwipeType;
 @property (nonatomic) BOOL navBarBlurred;
@@ -88,7 +90,7 @@ static inline FolderType decodeFolderTypeWith(NSInteger code)
 
 @interface Account : NSObject
 
-@property (nonatomic, strong) NSString* codeName;
+@property (nonatomic, getter=codeName, setter=setCodeName:) NSString* codeName;
 @property (nonatomic, strong) NSString* userMail;
 @property (nonatomic, strong) UIColor* userColor;
 

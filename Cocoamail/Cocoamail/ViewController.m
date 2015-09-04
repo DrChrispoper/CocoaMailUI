@@ -93,9 +93,9 @@ static ViewController* s_self;
     // Dispose of any resources that can be recreated.
 }
 
--(void) refreshCocoaButton
++(void) refreshCocoaButton
 {
-    [self.cocoaButton updateColor];
+    [[self mainVC].cocoaButton updateColor];
 }
 
 -(void) closeCocoaButtonIfNeeded
@@ -492,6 +492,15 @@ static ViewController* s_self;
             return;
         }
         NotificationViewController* f = [[NotificationViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_ACCOUNT_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        AccountViewController* f = [[AccountViewController alloc] init];
+        f.account = [notif.userInfo objectForKey:kSETTINGS_KEY];
         [self _animatePushVC:f];
     }];
     

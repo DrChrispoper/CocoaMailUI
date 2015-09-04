@@ -39,13 +39,14 @@
 #define kSETTINGS_MAIN_ACCOUNT_NOTIFICATION @"kSETTINGS_MAIN_ACCOUNT_NOTIFICATION"
 #define kSETTINGS_SWIPE_NOTIFICATION @"kSETTINGS_SWIPE_NOTIFICATION"
 #define kSETTINGS_NOTIF_NOTIFICATION @"kSETTINGS_NOTIF_NOTIFICATION"
+#define kSETTINGS_ACCOUNT_NOTIFICATION @"kSETTINGS_ACCOUNT_NOTIFICATION"
 
 
 @interface ViewController : UIViewController
 
 +(ViewController*) mainVC;
 
--(void) refreshCocoaButton;
++(void) refreshCocoaButton;
 
 +(void) presentAlertWIP:(NSString*)message;
 

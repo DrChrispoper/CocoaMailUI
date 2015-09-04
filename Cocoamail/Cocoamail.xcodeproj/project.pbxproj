@@ -36,6 +36,7 @@
 		82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */; };
 		82EA39241B99930600C41A29 /* QuickSwipeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39231B99930600C41A29 /* QuickSwipeViewController.m */; };
 		82EA39271B999D8100C41A29 /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39261B999D8100C41A29 /* NotificationViewController.m */; };
+		82EA392A1B99E86000C41A29 /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39291B99E86000C41A29 /* AccountViewController.m */; };
 		82EB85971B6F910F00B1B31A /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EB85961B6F910F00B1B31A /* ConversationViewController.m */; };
 		82F004C61B7CAF9800231C09 /* Persons.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F004C51B7CAF9800231C09 /* Persons.m */; };
 /* End PBXBuildFile section */
@@ -107,6 +108,8 @@
 		82EA39231B99930600C41A29 /* QuickSwipeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuickSwipeViewController.m; sourceTree = "<group>"; };
 		82EA39251B999D8100C41A29 /* NotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationViewController.h; sourceTree = "<group>"; };
 		82EA39261B999D8100C41A29 /* NotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationViewController.m; sourceTree = "<group>"; };
+		82EA39281B99E86000C41A29 /* AccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountViewController.h; sourceTree = "<group>"; };
+		82EA39291B99E86000C41A29 /* AccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountViewController.m; sourceTree = "<group>"; };
 		82EB85951B6F910F00B1B31A /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
 		82EB85961B6F910F00B1B31A /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewController.m; sourceTree = "<group>"; };
 		82F004C41B7CAF9800231C09 /* Persons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persons.h; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				82EA39231B99930600C41A29 /* QuickSwipeViewController.m */,
 				82EA39251B999D8100C41A29 /* NotificationViewController.h */,
 				82EA39261B999D8100C41A29 /* NotificationViewController.m */,
+				82EA39281B99E86000C41A29 /* AccountViewController.h */,
+				82EA39291B99E86000C41A29 /* AccountViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -432,6 +437,7 @@
 				82E46D241B62729600DBB1C4 /* UIGlobal.m in Sources */,
 				82E44C461B79EB8200FD9DCC /* Accounts.m in Sources */,
 				82E969461B554745004AB846 /* main.m in Sources */,
+				82EA392A1B99E86000C41A29 /* AccountViewController.m in Sources */,
 				82B915E61B56FF5C00C327AD /* Parser.m in Sources */,
 				82F004C61B7CAF9800231C09 /* Persons.m in Sources */,
 				82EB85971B6F910F00B1B31A /* ConversationViewController.m in Sources */,

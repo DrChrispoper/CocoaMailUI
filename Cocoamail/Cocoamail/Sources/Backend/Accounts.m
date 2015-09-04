@@ -34,18 +34,28 @@
     dispatch_once(&once, ^{
         sharedInstance = [[self alloc] init];
         sharedInstance.quickSwipeType = QuickSwipeReply;
+
+        sharedInstance.accountColors = @[[UIColor colorWithRed:0.01f green:0.49f blue:1.f alpha:1.f],
+                                         [UIColor colorWithRed:0.44f green:0.02f blue:1.f alpha:1.f],
+                                         [UIColor colorWithRed:1.f green:0.01f blue:0.87f alpha:1.f],
+                                         [UIColor colorWithRed:1.f green:0.07f blue:0.01f alpha:1.f],
+                                         [UIColor colorWithRed:1.f green:0.49f blue:0.01f alpha:1.f],
+                                         [UIColor colorWithRed:0.96f green:0.72f blue:0.02f alpha:1.f],
+                                         [UIColor colorWithRed:0.07f green:0.71f blue:0.02f alpha:1.f]];
         
-        Account* a1 = [self _createAccountMail:@"jean@lafontaine.com" color:[UIColor colorWithRed:1.f green:0.49f blue:0.01f alpha:1.f] code:@"JF"];
+        
+        Account* a1 = [self _createAccountMail:@"jean@lafontaine.com" color:sharedInstance.accountColors[4] code:@"JF"];
         a1.userFolders = @[@"Bills", @"Mum & Dad"];
-        Account* a2 = [self _createAccountMail:@"jlf@google.com" color:[UIColor colorWithRed:0.07f green:0.71f blue:0.02f alpha:1.f] code:@"JLF"];
+        Account* a2 = [self _createAccountMail:@"jlf@google.com" color:sharedInstance.accountColors[6] code:@"JLF"];
         a2.userFolders = @[@"Bill Murray"];
-        Account* a3 = [self _createAccountMail:@"jeanlf@yahoo.com" color:[UIColor colorWithRed:0.01f green:0.49f blue:1.f alpha:1.f] code:@"DOM"];
+        Account* a3 = [self _createAccountMail:@"jeanlf@yahoo.com" color:sharedInstance.accountColors[0] code:@"DOM"];
         a3.userFolders = @[@"Owen Wilson"];
-        Account* a4 = [self _createAccountMail:@"jean.pro@cocoamail.com" color:[UIColor colorWithRed:1.f green:0.07f blue:0.01f alpha:1.f] code:@"PRO"];
+        Account* a4 = [self _createAccountMail:@"jean.pro@cocoamail.com" color:sharedInstance.accountColors[3] code:@"PRO"];
         a4.userFolders = @[@"Marty McFly", @"Doc Brown", @"Biff Tannen"];
         
         Account* all = [self _createAllAccountsFrom:@[a1, a2, a3, a4]];
         sharedInstance.accounts = @[a1, a2, a3, a4, all];
+        
     });
     return sharedInstance;    
 }
@@ -56,7 +66,6 @@
     Account* ac = [[Account alloc] init];
     ac.userMail = mail;
     ac.userColor = color;
-    ac.codeName = code;
     
     ac.person = [Person createWithName:mail email:ac.userMail icon:nil codeName:code];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
@@ -72,7 +81,6 @@
     Account* ac = [[Account alloc] init];
     ac.userMail = NSLocalizedString(@"All accounts", @"All accounts");
     ac.userColor = [UIColor blackColor];
-    ac.codeName = @"ALL";
     ac.isAllAccounts = YES;
     
     NSMutableArray* userfolders = [NSMutableArray arrayWithCapacity:50];
@@ -81,7 +89,7 @@
     }
     
     ac.userFolders = userfolders;
-    ac.person = [Person createWithName:ac.userMail email:ac.userMail icon:nil codeName:ac.codeName];
+    ac.person = [Person createWithName:ac.userMail email:ac.userMail icon:nil codeName:@"ALL"];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;
@@ -128,13 +136,22 @@
     return @"folder_off";
 }
 
-
 @end
 
 
 
 
 @implementation Account
+
+-(NSString*) codeName
+{
+    return self.person.codeName;
+}
+
+-(void) setCodeName:(NSString *)codeName
+{
+    self.person.codeName = codeName;
+}
 
 -(void) fakeInitContent
 {

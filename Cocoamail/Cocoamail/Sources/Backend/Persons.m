@@ -22,7 +22,6 @@
 
 @interface Person ()
 
-@property (nonatomic, strong) NSString* codeName;
 @property (nonatomic, strong) NSString* imageName;
 @property (nonatomic) NSInteger userAccountID;
 

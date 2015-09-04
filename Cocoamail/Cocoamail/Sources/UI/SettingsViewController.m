@@ -74,7 +74,6 @@
 #define OBJECT @"o"
 #define DACTION @"da"
 #define BIMAGE @"bi"
-#define KEY @"k"
 
 -(void)_prepareTable
 {
@@ -91,7 +90,7 @@
             continue;
         }
         
-        [as addObject:@{BVIEW: [a.person badgeView], TEXT : a.userMail, ACTION : @"EDIT_ACCOUNT", OBJECT:a}];
+        [as addObject:@{BVIEW: [a.person badgeView], TEXT : a.userMail, ACTION : kSETTINGS_ACCOUNT_NOTIFICATION, OBJECT:a}];
         
         if (idx == [Accounts sharedInstance].defaultAccountIdx) {
             [da addObject:@{BVIEW: [a.person badgeView], TEXT : a.userMail, ACTION : kSETTINGS_MAIN_ACCOUNT_NOTIFICATION}];
@@ -111,10 +110,10 @@
     NSDictionary* PdftAccount = @{TITLE:tDAccount, FOOTER:fDAccount, CONTENT:da};
     
     NSArray* clouds = @[
-                        @{BIMAGE:@"icone_dropbox", TEXT: @"Dropbox", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Dropbox", KEY : kSETTINGS_KEY},
-                        @{BIMAGE:@"icone_icloud", TEXT: @"iCloud", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"iCloud", KEY : kSETTINGS_KEY},
-                        @{BIMAGE:@"icone_google", TEXT: @"Google Drive", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Google Drive", KEY : kSETTINGS_KEY},
-                        @{BIMAGE:@"icone_box", TEXT: @"Box", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Box", KEY : kSETTINGS_KEY}
+                        @{BIMAGE:@"icone_dropbox", TEXT: @"Dropbox", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Dropbox"},
+                        @{BIMAGE:@"icone_icloud", TEXT: @"iCloud", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"iCloud"},
+                        @{BIMAGE:@"icone_google", TEXT: @"Google Drive", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Google Drive"},
+                        @{BIMAGE:@"icone_box", TEXT: @"Box", ACTION : kSETTINGS_CLOUD_NOTIFICATION, OBJECT: @"Box"}
                         ];
     
     NSString* tCloud = NSLocalizedString(@"CLOUD SERVICES", @"CLOUD SERVICES");
@@ -333,11 +332,10 @@
     
     if (action.length>0) {
         
-        NSString* key = infoCell[KEY];
         id object = infoCell[OBJECT];
         
-        if (key.length > 0) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:@{key:object}];
+        if (object != nil) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:@{kSETTINGS_KEY:object}];
         }
         else {
             [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:nil];

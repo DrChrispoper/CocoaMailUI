@@ -130,6 +130,7 @@
     CGFloat offsetToUse = 44.f;
     
     if (self.onlyPerson) {
+        // TODO edit content + add edit codeName
         
         UIView* header = [[UIView alloc] initWithFrame:CGRectMake(0, -92, screenBounds.size.width, 92)];
         header.backgroundColor = [UIColor whiteColor];

@@ -54,6 +54,34 @@
     return sharedInstance;
 }
 
++(instancetype) fakeCocoaButtonForAccount:(Account*)account
+{
+    CocoaButton* cb = [[CocoaButton alloc] init];
+    
+    
+    cb.frame = CGRectMake(0, 0, 50.f, 50.f);
+    
+    cb.backView.frame = cb.bounds;
+    cb.nameView.frame = cb.bounds;
+    
+    cb.backView.layer.cornerRadius = 25.f;
+    cb.nameView.font = [UIFont systemFontOfSize:16];
+    
+    cb.backView.backgroundColor = account.userColor;
+    cb.nameView.text = account.codeName;
+
+    NSArray* alls = cb.gestureRecognizers;
+    for (UIGestureRecognizer* gr in alls) {
+        [cb removeGestureRecognizer:gr];
+    }
+    
+    cb.userInteractionEnabled = NO;
+    
+    
+    return cb;
+}
+
+
 
 -(instancetype) init
 {
@@ -191,7 +219,7 @@
 {
     
     [self _boingAnimationForView:button andThen:^{
-        [[ViewController mainVC] refreshCocoaButton];
+        [ViewController refreshCocoaButton];
         self.backView.alpha = 1.0;
         [button removeFromSuperview];
         
