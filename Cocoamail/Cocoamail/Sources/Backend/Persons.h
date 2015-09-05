@@ -11,6 +11,7 @@
 
 
 @class Person;
+@class Account;
 
 @interface Persons : NSObject
 
@@ -39,7 +40,7 @@
 @property (nonatomic, strong) NSString* codeName;
 @property (nonatomic, strong) NSString* email;
 
--(void) updateUserAccountID;
+-(void) linkToAccount:(Account*)account;
 
 -(UIView*) badgeView;
 

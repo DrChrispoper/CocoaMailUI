@@ -320,8 +320,15 @@
         
     }
     else {
-        // really create
+        
         [[Accounts sharedInstance] addAccount:self.account];
+
+        if ([Accounts sharedInstance].accounts.count==2) {
+            // it's the first account
+            [Accounts sharedInstance].currentAccountIdx = 0;
+            [self.account fakeInitContent];
+            [ViewController refreshCocoaButton];
+        }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
     }
@@ -332,7 +339,6 @@
 -(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        
         UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
         NSArray* alls = [cell subviews];
         
@@ -342,51 +348,11 @@
                 break;
             }
         }
-        
-        
     }
     else {
-        // OK
         [self _hideKeyboard];
         [self _nextStep];
     }
-    
-    /*
-    NSDictionary* sectionInfos = self.settings[indexPath.section];
-    NSArray* content = sectionInfos[CONTENT];
-    NSDictionary* infoCell = content[indexPath.row];
-    
-    NSString* directAction = infoCell[DACTION];
-    
-    if (directAction.length>0) {
-        
-        NSArray* reload = nil;
-        
-        if ([directAction isEqualToString:@"BADGE_COUNT"]) {
-        }
-        else if ([directAction isEqualToString:@"NAV_BAR_BLUR"]) {
-        }
-        else if ([directAction isEqualToString:@"EDIT_CODE"]) {
-            [self.editCodeName becomeFirstResponder];
-        }
-        else if ([directAction isEqualToString:@"DELETE"]) {
-            [ViewController presentAlertWIP:@"delete account…"];
-        }
-        
-        if (reload.count > 0) {
-            [tableView reloadRowsAtIndexPaths:reload withRowAnimation:UITableViewRowAnimationNone];
-        }
-        
-        return nil;
-    }
-    
-    NSString* action = infoCell[ACTION];
-    
-    if (action.length>0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:nil];
-        return nil;
-    }
-    */
     
     return nil;
 }

@@ -261,7 +261,7 @@
         
         if ([action isEqualToString:@"EDIT_CODE"]) {
             EditCocoaButtonView* ecbv = [EditCocoaButtonView editCocoaButtonViewForAccount:self.account];
-            
+            ecbv.backgroundColor = [UIColor clearColor];
             ecbv.cocobuttonUpdated = ^(){
                 [self _updateCocoaButton];
             };
@@ -325,8 +325,17 @@
         else if ([directAction isEqualToString:@"EDIT_CODE"]) {
         }
         else if ([directAction isEqualToString:@"DELETE"]) {
-            [[Accounts sharedInstance] deleteAccount:self.account];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+            if ([[Accounts sharedInstance] deleteAccount:self.account]) {
+
+                [ViewController refreshCocoaButton];
+                
+                if ([Accounts sharedInstance].accounts.count>1) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+                }
+                else {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kCREATE_FIRST_ACCOUNT_NOTIFICATION object:nil];
+                }
+            }
         }
         
         if (reload.count > 0) {

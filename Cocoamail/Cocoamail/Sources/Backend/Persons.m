@@ -23,7 +23,7 @@
 @interface Person ()
 
 @property (nonatomic, strong) NSString* imageName;
-@property (nonatomic) NSInteger userAccountID;
+@property (nonatomic, weak) Account* userAccount;
 
 @end
 
@@ -123,7 +123,6 @@
 
 -(void) registerPersonWithNegativeID:(Person*)p
 {
-    p.userAccountID = self.allsNeg.count;
     [self.allsNeg addObject:p];
 }
 
@@ -175,12 +174,10 @@
     return p;
 }
 
--(void) updateUserAccountID
+-(void) linkToAccount:(Account*)account
 {
-    self.userAccountID--;
+    self.userAccount = account;
 }
-
-
 
 
 -(UIView*) badgeView
@@ -190,9 +187,8 @@
         UILabel* perso = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 33, 33)];
         perso.backgroundColor = [UIGlobal noImageBadgeColor];
         
-        if (self.userAccountID>0) {
-            Account* a = [[Accounts sharedInstance] accounts][self.userAccountID-1];
-            perso.backgroundColor = a.userColor;
+        if (self.userAccount != nil) {
+            perso.backgroundColor = self.userAccount.userColor;
         }
         
         perso.text = self.codeName;

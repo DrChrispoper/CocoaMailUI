@@ -419,6 +419,36 @@ static ViewController* s_self;
 
 -(void) setupNavigation
 {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kCREATE_FIRST_ACCOUNT_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        
+        AddAccountViewController* f = [[AddAccountViewController alloc] init];
+        f.firstRunMode = YES;
+        
+        if (self.viewControllers.count==1) {
+            
+            if ([self _checkInteractionAndBlock]) {
+                return;
+            }
+
+            [self _animatePushVC:f];
+            return;
+        }
+        
+        
+        if (self.viewControllers.count>2) {
+            NSRange toRemove;
+            toRemove.location = 1;
+            toRemove.length = self.viewControllers.count - 2;
+            [self.viewControllers removeObjectsInRange:toRemove];
+        }
+
+        [self.viewControllers insertObject:f atIndex:1];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
+        
+    }];
+    
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_FOLDER_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
 
         if ([self _checkInteractionAndBlock]) {
@@ -567,7 +597,6 @@ static ViewController* s_self;
         
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
-             
     }];
     
     

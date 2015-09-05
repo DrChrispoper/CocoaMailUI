@@ -799,7 +799,6 @@
             toFolder.type = (self.folder.type == FolderTypeSpam) ? FolderTypeInbox : FolderTypeSpam;
             break;
         default:
-            [ViewController presentAlertWIP:@"It's a bug!!"];
             NSLog(@"WTF !!!");
             doNothing = YES;
             break;

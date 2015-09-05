@@ -46,7 +46,7 @@ typedef enum : NSUInteger {
 -(Account*) currentAccount;
 
 -(void) addAccount:(Account*)account;
--(void) deleteAccount:(Account*)accoun;
+-(BOOL) deleteAccount:(Account*)accoun;
 
 @end
 

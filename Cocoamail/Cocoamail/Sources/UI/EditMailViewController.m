@@ -1373,8 +1373,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewData
         [self.toTextField resignFirstResponder];
         return;
     }
-    
-    //[ViewController presentAlertWIP:@"go to list view…"];
 }
 
 -(void) _tapTitle:(UITapGestureRecognizer*)tgr

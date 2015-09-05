@@ -68,6 +68,8 @@
     ac.userColor = color;
     
     ac.person = [Person createWithName:mail email:ac.userMail icon:nil codeName:code];
+    [ac.person linkToAccount:ac];
+    
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;
@@ -88,13 +90,12 @@
     
     ac.userFolders = userfolders;
     ac.person = [Person createWithName:nil email:nil icon:nil codeName:@"ALL"];
-    //[[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;
 }
 
 
--(void) deleteAccount:(Account*)account
+-(BOOL) deleteAccount:(Account*)account
 {
     NSMutableArray* tmp = [self.accounts mutableCopy];
     NSInteger removeIdx = [tmp indexOfObject:account];
@@ -102,14 +103,6 @@
     if (removeIdx != NSNotFound) {
         [tmp removeObjectAtIndex:removeIdx];
         self.accounts = tmp;
-        
-        NSInteger idx = 0;
-        for (Account* a in tmp) {
-            if (idx >= removeIdx) {
-                [a.person updateUserAccountID];
-            }
-            idx++;
-        }
         
         if (self.currentAccountIdx >= removeIdx && self.currentAccountIdx>0) {
             self.currentAccountIdx--;
@@ -119,15 +112,17 @@
             self.defaultAccountIdx--;
         }
         
+        return YES;
     }
     
-    
+    return NO;
 }
 
 
 -(void) addAccount:(Account*)account
 {
     [[Persons sharedInstance] registerPersonWithNegativeID:account.person];
+    [account.person linkToAccount:account];
     
     NSInteger currentIdx = self.currentAccountIdx;
     NSMutableArray* tmp = [self.accounts mutableCopy];
