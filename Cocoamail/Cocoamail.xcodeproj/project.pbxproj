@@ -33,6 +33,8 @@
 		82E969541B554745004AB846 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 82E969521B554745004AB846 /* LaunchScreen.xib */; };
 		82E969601B554745004AB846 /* CocoamailTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E9695F1B554745004AB846 /* CocoamailTests.m */; };
 		82E969701B555566004AB846 /* FolderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E9696F1B555566004AB846 /* FolderViewController.m */; };
+		82E981E31B9AEA5800E875E4 /* AddAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */; };
+		82E981E61B9B033B00E875E4 /* EditCocoaButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */; };
 		82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */; };
 		82EA39241B99930600C41A29 /* QuickSwipeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39231B99930600C41A29 /* QuickSwipeViewController.m */; };
 		82EA39271B999D8100C41A29 /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EA39261B999D8100C41A29 /* NotificationViewController.m */; };
@@ -102,6 +104,10 @@
 		82E9695F1B554745004AB846 /* CocoamailTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CocoamailTests.m; sourceTree = "<group>"; };
 		82E9696E1B555566004AB846 /* FolderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FolderViewController.h; sourceTree = "<group>"; };
 		82E9696F1B555566004AB846 /* FolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FolderViewController.m; sourceTree = "<group>"; };
+		82E981E11B9AEA5800E875E4 /* AddAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddAccountViewController.h; sourceTree = "<group>"; };
+		82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddAccountViewController.m; sourceTree = "<group>"; };
+		82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditCocoaButtonView.h; sourceTree = "<group>"; };
+		82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditCocoaButtonView.m; sourceTree = "<group>"; };
 		82EA391F1B998D8700C41A29 /* DefaultAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultAccountViewController.h; sourceTree = "<group>"; };
 		82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultAccountViewController.m; sourceTree = "<group>"; };
 		82EA39221B99930600C41A29 /* QuickSwipeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickSwipeViewController.h; sourceTree = "<group>"; };
@@ -171,6 +177,10 @@
 				82EA39261B999D8100C41A29 /* NotificationViewController.m */,
 				82EA39281B99E86000C41A29 /* AccountViewController.h */,
 				82EA39291B99E86000C41A29 /* AccountViewController.m */,
+				82E981E11B9AEA5800E875E4 /* AddAccountViewController.h */,
+				82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */,
+				82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */,
+				82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -424,6 +434,7 @@
 				82E62BF31B81E07E00DF71FC /* AttachmentsViewController.m in Sources */,
 				82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */,
 				82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */,
+				82E981E61B9B033B00E875E4 /* EditCocoaButtonView.m in Sources */,
 				82E9694C1B554745004AB846 /* ViewController.m in Sources */,
 				82E30A611B78D6570088AB1D /* UIImage+ImageEffects.m in Sources */,
 				82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */,
@@ -437,6 +448,7 @@
 				82E46D241B62729600DBB1C4 /* UIGlobal.m in Sources */,
 				82E44C461B79EB8200FD9DCC /* Accounts.m in Sources */,
 				82E969461B554745004AB846 /* main.m in Sources */,
+				82E981E31B9AEA5800E875E4 /* AddAccountViewController.m in Sources */,
 				82EA392A1B99E86000C41A29 /* AccountViewController.m in Sources */,
 				82B915E61B56FF5C00C327AD /* Parser.m in Sources */,
 				82F004C61B7CAF9800231C09 /* Persons.m in Sources */,

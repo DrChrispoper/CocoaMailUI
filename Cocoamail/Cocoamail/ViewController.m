@@ -503,7 +503,14 @@ static ViewController* s_self;
         f.account = [notif.userInfo objectForKey:kSETTINGS_KEY];
         [self _animatePushVC:f];
     }];
-    
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_ADD_ACCOUNT_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        AddAccountViewController* f = [[AddAccountViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
     
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONVERSATION_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
@@ -804,8 +811,7 @@ static ViewController* s_self;
 
 -(void) _moreAccount
 {
-    [ViewController presentAlertWIP:@"account creation view"];
-    [self.cocoaButton forceCloseButton];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSETTINGS_ADD_ACCOUNT_NOTIFICATION object:nil];
 }
 
 -(void) _applyAccountButton:(UIButton*)button
@@ -854,14 +860,16 @@ static ViewController* s_self;
     }
     
     // more btn
-    UIButton* b = [[UIButton alloc] initWithFrame:baseRect];
-    b.backgroundColor = [UIColor blackColor];
-    [b setImage:[UIImage imageNamed:@"add_accounts"] forState:UIControlStateNormal];
-    [b setImage:[UIImage imageNamed:@"add_accounts"] forState:UIControlStateHighlighted];
-    b.layer.cornerRadius = 22;
-    b.layer.masksToBounds = YES;
-    [b addTarget:self action:@selector(_moreAccount) forControlEvents:UIControlEventTouchUpInside];
-    [buttons addObject:b];
+    if (buttons.count<5) {
+        UIButton* b = [[UIButton alloc] initWithFrame:baseRect];
+        b.backgroundColor = [UIColor blackColor];
+        [b setImage:[UIImage imageNamed:@"add_accounts"] forState:UIControlStateNormal];
+        [b setImage:[UIImage imageNamed:@"add_accounts"] forState:UIControlStateHighlighted];
+        b.layer.cornerRadius = 22;
+        b.layer.masksToBounds = YES;
+        [b addTarget:self action:@selector(_moreAccount) forControlEvents:UIControlEventTouchUpInside];
+        [buttons addObject:b];
+    }
     
     return buttons;
 }

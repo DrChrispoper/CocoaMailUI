@@ -13,7 +13,7 @@
 #import "QuickSwipeViewController.h"
 #import "NotificationViewController.h"
 #import "AccountViewController.h"
-
+#import "AddAccountViewController.h"
 
 @interface SettingsViewController : InViewController
 

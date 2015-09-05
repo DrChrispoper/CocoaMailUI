@@ -98,9 +98,10 @@
         
     }
     
-    NSString* addAccount = NSLocalizedString(@"Add account", @"Add account");
-    
-    [as addObject:@{BVIEW : [[UIView alloc] init], TEXT : addAccount, ACTION : @"ADD_ACCOUNT"}];
+    if (as.count<5) {
+        NSString* addAccount = NSLocalizedString(@"Add account", @"Add account");
+        [as addObject:@{BVIEW : [[UIView alloc] init], TEXT : addAccount, ACTION : kSETTINGS_ADD_ACCOUNT_NOTIFICATION}];
+    }
     
     NSString* tAccount = NSLocalizedString(@"ACCOUNTS", @"ACCOUNTS");
     NSDictionary* Paccounts = @{TITLE:tAccount, FOOTER:@"", CONTENT:as};

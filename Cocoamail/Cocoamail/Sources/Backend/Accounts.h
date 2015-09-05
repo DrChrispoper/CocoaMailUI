@@ -45,6 +45,9 @@ typedef enum : NSUInteger {
 
 -(Account*) currentAccount;
 
+-(void) addAccount:(Account*)account;
+-(void) deleteAccount:(Account*)accoun;
+
 @end
 
 
@@ -102,6 +105,8 @@ static inline FolderType decodeFolderTypeWith(NSInteger code)
 //
 @property (nonatomic) BOOL notificationEnabled;
 // TODO save it (config)
+
++(instancetype) emptyAccount;
 
 -(void) fakeInitContent;
 -(void) releaseContent;

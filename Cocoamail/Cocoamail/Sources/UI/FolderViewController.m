@@ -80,7 +80,9 @@
 
 -(NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    Account* ac = [[Accounts sharedInstance] currentAccount];
+    
+    return (ac.userFolders.count>0) ? 2 : 1;
 }
 
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

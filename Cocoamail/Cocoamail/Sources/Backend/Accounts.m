@@ -63,14 +63,12 @@
 
 +(Account*) _createAccountMail:(NSString*)mail color:(UIColor*)color code:(NSString*)code
 {
-    Account* ac = [[Account alloc] init];
+    Account* ac = [Account emptyAccount];
     ac.userMail = mail;
     ac.userColor = color;
     
     ac.person = [Person createWithName:mail email:ac.userMail icon:nil codeName:code];
     [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
-    
-    ac.drafts = [NSMutableArray arrayWithCapacity:10];
     
     return ac;
 }
@@ -89,11 +87,60 @@
     }
     
     ac.userFolders = userfolders;
-    ac.person = [Person createWithName:ac.userMail email:ac.userMail icon:nil codeName:@"ALL"];
-    [[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
+    ac.person = [Person createWithName:nil email:nil icon:nil codeName:@"ALL"];
+    //[[Persons sharedInstance] registerPersonWithNegativeID:ac.person];
     
     return ac;
 }
+
+
+-(void) deleteAccount:(Account*)account
+{
+    NSMutableArray* tmp = [self.accounts mutableCopy];
+    NSInteger removeIdx = [tmp indexOfObject:account];
+    
+    if (removeIdx != NSNotFound) {
+        [tmp removeObjectAtIndex:removeIdx];
+        self.accounts = tmp;
+        
+        NSInteger idx = 0;
+        for (Account* a in tmp) {
+            if (idx >= removeIdx) {
+                [a.person updateUserAccountID];
+            }
+            idx++;
+        }
+        
+        if (self.currentAccountIdx >= removeIdx && self.currentAccountIdx>0) {
+            self.currentAccountIdx--;
+        }
+        
+        if (self.defaultAccountIdx >= removeIdx && self.defaultAccountIdx>0) {
+            self.defaultAccountIdx--;
+        }
+        
+    }
+    
+    
+}
+
+
+-(void) addAccount:(Account*)account
+{
+    [[Persons sharedInstance] registerPersonWithNegativeID:account.person];
+    
+    NSInteger currentIdx = self.currentAccountIdx;
+    NSMutableArray* tmp = [self.accounts mutableCopy];
+    NSInteger putIdx = tmp.count - 1;
+    
+    [tmp insertObject:account atIndex:putIdx];
+    self.accounts = tmp;
+    
+    if (putIdx>=currentIdx) {
+        self.currentAccountIdx++;
+    }
+}
+
 
 -(Account*) currentAccount
 {
@@ -142,6 +189,14 @@
 
 
 @implementation Account
+
++(instancetype) emptyAccount
+{
+    Account* a = [[Account alloc] init];
+    a.drafts = [NSMutableArray arrayWithCapacity:10];
+    return a;
+}
+
 
 -(NSString*) codeName
 {
@@ -224,8 +279,16 @@
         else if (hasard<35) {
             // user
             
-            FolderType Fuser = FolderTypeWith(FolderTypeUser, rand()%self.userFoldersContent.count);
-            [self _addIdx:idx inArray:Fuser];
+            if (self.userFoldersContent.count>1) {
+                FolderType Fuser = FolderTypeWith(FolderTypeUser, rand()%self.userFoldersContent.count);
+                [self _addIdx:idx inArray:Fuser];
+            }
+            else if (self.userFoldersContent.count == 1) {
+                [self _addIdx:idx inArray:FolderTypeWith(FolderTypeUser, 0)];
+            }
+            else {
+                [self _addIdx:idx inArray:Finbox];
+            }
             
         }
         else if (hasard < 95) {

@@ -175,6 +175,13 @@
     return p;
 }
 
+-(void) updateUserAccountID
+{
+    self.userAccountID--;
+}
+
+
+
 
 -(UIView*) badgeView
 {

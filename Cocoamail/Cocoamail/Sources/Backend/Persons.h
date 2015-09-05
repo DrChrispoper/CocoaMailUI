@@ -39,6 +39,8 @@
 @property (nonatomic, strong) NSString* codeName;
 @property (nonatomic, strong) NSString* email;
 
+-(void) updateUserAccountID;
+
 -(UIView*) badgeView;
 
 +(Person*) createWithName:(NSString*)name email:(NSString*)mail icon:(NSString*)icon codeName:(NSString*)codeName;

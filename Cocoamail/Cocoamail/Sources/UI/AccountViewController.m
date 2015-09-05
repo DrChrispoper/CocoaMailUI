@@ -8,7 +8,7 @@
 
 #import "AccountViewController.h"
 
-
+#import "EditCocoaButtonView.h"
 #import "Accounts.h"
 #import "CocoaButton.h"
 
@@ -18,18 +18,6 @@
 @property (nonatomic, strong) NSArray* settings;
 
 @property (nonatomic, strong) id keyboardNotificationId;
-@property (nonatomic, weak) UIView* fakeCocoaButton;
-@property (nonatomic, weak) UITextField* editCodeName;
-
-@end
-
-
-
-@interface ChooseColorView : UIView
-
--(instancetype) initWithFrame:(CGRect)frame forAccountColor:(UIColor*)color;
-
-@property (nonatomic, copy) void (^tapColor)(UIColor*);
 
 @end
 
@@ -140,13 +128,7 @@
     NSDictionary* Paccounts = @{TITLE:tAccount, CONTENT:infos};
     
     NSString* tButton = NSLocalizedString(@"COCOA BUTTON", @"COCOA BUTTON");
-    
-    NSArray* infosB = @[
-                       @{DACTION : @"EDIT_CODE"},
-                       @{DACTION : @"EDIT_COLOR"}
-                       ];
-    
-    NSDictionary* Pbutton = @{TITLE:tButton, CONTENT:infosB};
+    NSDictionary* Pbutton = @{TITLE:tButton, CONTENT:@[@{DACTION : @"EDIT_CODE"}]};
     
     NSString* tDelete = NSLocalizedString(@"Delete account", @"Delete account");
     NSDictionary* PDelete = @{TITLE:@"", CONTENT:@[@{TEXT:tDelete, DACTION : @"DELETE"}]};
@@ -215,38 +197,18 @@
     if (indexPath.row==0) {
         base += .5;
         if (indexPath.section == 1) {
-            base += 60;
+            base += 73;
         }
     }
     
     return base;
 }
 
-
-#define kTAG_CODE 1358
-
 -(void) _updateCocoaButton
 {
-    // TODO if editing current account update real cocoa button
-    
     if (self.account == [[Accounts sharedInstance] currentAccount]) {
         [ViewController refreshCocoaButton];
     }
-    
-    if (self.fakeCocoaButton==nil) {
-        return;
-    }
-    
-    
-    UIView* superview = self.fakeCocoaButton.superview;
-    
-    CocoaButton* cb = [CocoaButton fakeCocoaButtonForAccount:self.account];
-    cb.center = self.fakeCocoaButton.center;
-    cb.userInteractionEnabled = NO;
-    [superview addSubview:cb];
-    [self.fakeCocoaButton removeFromSuperview];
-    self.fakeCocoaButton = cb;
-    
 }
 
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -297,33 +259,14 @@
         
         NSString* action = infoCell[DACTION];
         
-        if ([action isEqualToString:@"EDIT_COLOR"]) {
+        if ([action isEqualToString:@"EDIT_CODE"]) {
+            EditCocoaButtonView* ecbv = [EditCocoaButtonView editCocoaButtonViewForAccount:self.account];
             
-            ChooseColorView* v = [[ChooseColorView alloc] initWithFrame:CGRectMake(0, 0, bounds.width, bounds.height) forAccountColor:self.account.userColor];
-            v.tapColor = ^(UIColor* color){
-                self.account.userColor = color;
+            ecbv.cocobuttonUpdated = ^(){
                 [self _updateCocoaButton];
             };
-            [cell addSubview:v];
             
-        }
-        else if ([action isEqualToString:@"EDIT_CODE"]) {
-            
-            CocoaButton* cb = [CocoaButton fakeCocoaButtonForAccount:self.account];
-            cb.center = CGPointMake(bounds.width / 2.f, 35.f);
-            cb.userInteractionEnabled = NO;
-            [cell addSubview:cb];
-            self.fakeCocoaButton = cb;
-            
-            UITextField* tf = [[UITextField alloc] initWithFrame:CGRectMake(50, 60, bounds.width - 100, bounds.height)];
-            tf.tag = kTAG_CODE;
-            tf.textAlignment = NSTextAlignmentCenter;
-            tf.text = self.account.codeName;
-            tf.delegate = self;
-            [cell addSubview:tf];
-            
-            self.editCodeName = tf;
-            
+            [cell addSubview:ecbv];
         }
         else if ([action isEqualToString:@"NAV_BAR_SOLID"]) {
         }
@@ -380,10 +323,10 @@
         else if ([directAction isEqualToString:@"NAV_BAR_BLUR"]) {
         }
         else if ([directAction isEqualToString:@"EDIT_CODE"]) {
-            [self.editCodeName becomeFirstResponder];
         }
         else if ([directAction isEqualToString:@"DELETE"]) {
-            [ViewController presentAlertWIP:@"delete account…"];
+            [[Accounts sharedInstance] deleteAccount:self.account];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kBACK_NOTIFICATION object:nil];
         }
         
         if (reload.count > 0) {
@@ -396,7 +339,7 @@
     NSString* action = infoCell[ACTION];
     
     if (action.length>0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:action object:nil];
         return nil;
     }
     
@@ -416,140 +359,6 @@
     [textField resignFirstResponder];
     return YES;
 }
-
--(BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    if (textField.tag == kTAG_CODE) {
-        
-        NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
-
-        if (newText.length<4) {
-            textField.text = [newText uppercaseString];
-            
-            self.account.codeName = textField.text;
-            [self _updateCocoaButton];
-            
-        }
-        
-        return NO;
-    }
-    
-    return YES;
-}
-
-@end
-
-
-
-
-
-@interface ChooseColorView ()
-
-@property (nonatomic, strong) NSArray* colors;
-
-@end
-
-
-
-
-
-@implementation ChooseColorView
-
--(instancetype) initWithFrame:(CGRect)frame forAccountColor:(UIColor*)accColor
-{
-    self = [super initWithFrame:frame];
-    
-    self.backgroundColor = [UIColor whiteColor];
-    
-    const CGFloat BIG = 44.f;
-    const CGFloat halfBIG = BIG / 2.f;
-    
-    
-    CGFloat posX = 8.f + halfBIG;
-    const CGFloat step = (frame.size.width - (2.f*posX))/6.f;
-    
-    NSArray* allColors = [Accounts sharedInstance].accountColors;
-    
-    NSMutableArray* c = [NSMutableArray arrayWithCapacity:allColors.count];
-    
-    NSInteger wantedIdx = 0;
-    
-    for (UIColor* color in allColors) {
-        
-        if (color == accColor) {
-            wantedIdx = [allColors indexOfObject:color];
-        }
-        
-        UIView* v = [[UIView alloc] initWithFrame:CGRectMake(posX-halfBIG, 4, BIG, BIG)];
-        v.layer.cornerRadius = halfBIG;
-        v.layer.masksToBounds = YES;
-        v.backgroundColor = color;
-        [self addSubview:v];
-     
-        [c addObject:v];
-        
-        posX = floorf(posX + step);
-    }
-    
-    self.colors = c;
-    
-    [self selectColorIdx:wantedIdx];
-    
-    UITapGestureRecognizer* tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_tap:)];
-    [self addGestureRecognizer:tgr];
-    
-    self.userInteractionEnabled = YES;
-    
-    return self;
-}
-
--(void) selectColorIdx:(NSInteger)idx
-{
-    CGFloat scale = 26.f / 44.f;
-
-    UIView* selected = self.colors[idx];
-    
-    [UIView animateWithDuration:0.3
-                     animations:^{
-                         
-                         for (UIView* v in self.colors) {
-                             if (v==selected) {
-                                 v.transform = CGAffineTransformIdentity;
-                             }
-                             else {
-                                 v.transform = CGAffineTransformMakeScale(scale, scale);
-                             }
-                         }
-                     }];
-}
-
--(void)_tap:(UITapGestureRecognizer*)tgr
-{
-    if (tgr.state != UIGestureRecognizerStateEnded || !tgr.enabled) {
-        return;
-    }
-    
-    CGPoint pos = [tgr locationInView:tgr.view];
-    
-    CGFloat step = self.bounds.size.width / 7.f;
-    
-    NSInteger posX = (NSInteger)(pos.x / step);
-    
-    if (posX<0) {
-        posX = 0;
-    }
-    else if (posX>6) {
-        posX = 6;
-    }
-    [self selectColorIdx:posX];
-    
-    UIColor* c = [Accounts sharedInstance].accountColors[posX];
-    self.tapColor(c);
-    
-}
-
-
-
 
 
 @end
