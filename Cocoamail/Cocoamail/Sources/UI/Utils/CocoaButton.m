@@ -24,6 +24,10 @@
 
 @property (nonatomic, weak) UIView* tempMainButton;
 
+@property (nonatomic, strong) CADisplayLink* displayLink;
+@property (nonatomic, weak) UIView* backViewAnim;
+@property (nonatomic) double backViewAnimAngle;
+
 @end
 
 
@@ -128,6 +132,77 @@
     self.backView.backgroundColor = cac.userColor;
     self.nameView.text = cac.codeName;
 }
+
+
+
+-(void) refreshAnimation:(BOOL)anim
+{
+    if (anim) {
+        
+        if (self.backViewAnim==nil) {
+            UIView* background = [[UIView alloc] initWithFrame:self.bounds];
+            background.backgroundColor = self.backView.backgroundColor;
+            background.layer.cornerRadius = 22;
+            background.layer.masksToBounds = YES;
+            [self insertSubview:background belowSubview:self.backView];
+            self.backViewAnim = background;
+        }
+        
+        if (self.displayLink==nil) {
+            
+            
+            [UIView animateWithDuration:0.1
+                             animations:^{
+                                 [self _displayLink:nil];
+                             }
+                             completion:^(BOOL fini){
+                                 CADisplayLink* dl = [CADisplayLink displayLinkWithTarget:self selector:@selector(_displayLink:)];
+                                 [dl addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+                                 self.displayLink = dl;
+                             }];
+        }
+        
+    }
+    else {
+        
+        [UIView animateWithDuration:0.1
+                         animations:^{
+                             CGPoint center = self.backView.center;
+                             self.backViewAnim.center = center;
+                             
+                         }
+                         completion:^(BOOL fini){
+                             [self.backViewAnim removeFromSuperview];
+                             self.backViewAnim = nil;
+                         }];
+        
+        [self.displayLink invalidate];
+        self.displayLink = nil;
+    }
+    
+}
+
+-(void) _displayLink:(CADisplayLink*)dl
+{
+//    double value = [dl timestamp] * M_PI * 4;
+    const double step = M_PI / 15.;
+  
+    self.backViewAnimAngle += step;
+    double value = self.backViewAnimAngle;
+    
+    const CGFloat deltamax = 1.5f;
+    const CGFloat deltaX = deltamax * cos(value);
+    const CGFloat deltaY = deltamax * sin(value);
+    
+    CGPoint center = self.backView.center;
+    center.x += deltaX;
+    center.y += deltaY;
+    self.backViewAnim.center = center;    
+}
+
+
+
+
 
 -(void) _forceCloseButtonSkipDatasource
 {

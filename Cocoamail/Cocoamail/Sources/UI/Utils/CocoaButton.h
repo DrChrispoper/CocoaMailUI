@@ -42,4 +42,7 @@
 
 +(void) animateHorizontalButtonCancelTouch:(UIButton*)button;
 
+
+-(void) refreshAnimation:(BOOL)anim;
+
 @end

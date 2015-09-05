@@ -98,6 +98,12 @@ static ViewController* s_self;
     [[self mainVC].cocoaButton updateColor];
 }
 
++(void) animateCocoaButtonRefresh:(BOOL)anim
+{
+    [[self mainVC].cocoaButton refreshAnimation:anim];
+}
+
+
 -(void) closeCocoaButtonIfNeeded
 {
     [self.cocoaButton forceCloseButton];

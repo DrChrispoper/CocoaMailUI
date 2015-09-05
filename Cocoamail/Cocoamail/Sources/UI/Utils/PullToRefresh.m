@@ -8,6 +8,8 @@
 
 #import "PullToRefresh.h"
 
+#import "ViewController.h"
+
 
 @interface PullToRefresh ()
 
@@ -60,6 +62,7 @@
     if (scrollView.contentOffset.y < (-scrollView.contentInset.top-60)) {
         
         [self.pullToRefresh startAnimating];
+        [ViewController animateCocoaButtonRefresh:YES];
         
         //[scrollView setContentOffset:scrollView.contentOffset animated:NO];
         
@@ -74,6 +77,7 @@
         
         // fake async
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [ViewController animateCocoaButtonRefresh:NO];
             [self.pullToRefresh stopAnimating];
             scrollView.contentInset = lastInset;
             

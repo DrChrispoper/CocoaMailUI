@@ -55,6 +55,8 @@
 
 -(void) closeCocoaButtonIfNeeded;
 
++(void) animateCocoaButtonRefresh:(BOOL)anim;
+
 
 @end
 
