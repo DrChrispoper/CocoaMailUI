@@ -15,6 +15,7 @@
 #import "AttachmentsViewController.h"
 #import "SettingsViewController.h"
 #import "EditMailViewController.h"
+#import "SearchViewController.h"
 
 #import "Parser.h"
 #import "Accounts.h"
@@ -497,6 +498,15 @@ static ViewController* s_self;
         SettingsViewController* f = [[SettingsViewController alloc] init];
         [self _animatePushVC:f];
     }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CREDIT_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        CreditViewController* f = [[CreditViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+    
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CLOUD_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         if ([self _checkInteractionAndBlock]) {
@@ -565,7 +575,6 @@ static ViewController* s_self;
         AttachmentsViewController* f = [[AttachmentsViewController alloc] init];
         f.conversation = [notif.userInfo objectForKey:kPRESENT_CONVERSATION_KEY];
         [self _animatePushVC:f];
-        
     }];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_CONTACTS_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
@@ -575,9 +584,16 @@ static ViewController* s_self;
         ContactsViewController* f = [[ContactsViewController alloc] init];
         f.mail = [notif.userInfo objectForKey:kPRESENT_MAIL_KEY];
         [self _animatePushVC:f];
-        
     }];
 
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_SEARCH_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        SearchViewController* f = [[SearchViewController alloc] init];
+        [self _animatePushVC:f];
+    }];
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:kPRESENT_EDITMAIL_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         if ([self _checkInteractionAndBlock]) {
             return;
@@ -807,7 +823,13 @@ static ViewController* s_self;
 
 -(void) _search
 {
-    [ViewController presentAlertWIP:@"open search view"];
+    InViewController* ivc = [self.viewControllers lastObject];
+    
+    if ([ivc isKindOfClass:[SearchViewController class]]) {
+        return;
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPRESENT_SEARCH_NOTIFICATION object:nil];
 }
 
 

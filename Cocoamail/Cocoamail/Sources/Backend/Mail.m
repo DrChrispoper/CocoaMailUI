@@ -29,7 +29,7 @@ static NSDateFormatter* s_df_hour = nil;
     s_df_hour.dateStyle = NSDateFormatterNoStyle;
     s_df_hour.timeStyle = NSDateFormatterShortStyle;
     
-    // to init attahcments
+    // to init attachments
     [Attachments sharedInstance];
 }
 

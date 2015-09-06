@@ -65,7 +65,6 @@
     [navBar pushNavigationItem:item animated:NO];
     
     UIView* navBarSupport = [[UIView alloc] initWithFrame:navBar.bounds];
-    navBarSupport.backgroundColor = [UIColor clearColor];
     navBarSupport.clipsToBounds = YES;
     [navBarSupport addSubview:navBar];
     
@@ -74,13 +73,18 @@
     
     self.navBar.frame = CGRectInset(self.navBar.frame, -3, 0);
     
+    navBarSupport.backgroundColor = [UIColor whiteColor];
+    
 }
 
 
 -(void) setupNavBarWith:(UINavigationItem*)item overMainScrollView:(UIScrollView*)mainScrollView
 {
     [self setupSimpleNavBarWith:item andWidth:mainScrollView.frame.size.width];
-
+    
+    UIView* navBarSupport = self.navBar.superview;
+    navBarSupport.backgroundColor = [UIColor clearColor];
+    
     [self.navBar createWhiteMaskOverView:mainScrollView withOffset:mainScrollView.contentInset.top];
 }
 

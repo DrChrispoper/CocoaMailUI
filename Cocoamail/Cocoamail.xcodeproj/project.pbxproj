@@ -12,6 +12,9 @@
 		82DD6FDD1B8D8FBA0026E0FC /* InViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82DD6FDC1B8D8FBA0026E0FC /* InViewController.m */; };
 		82DD91481B98BBCC0094823C /* CloudViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82DD91471B98BBCC0094823C /* CloudViewController.m */; };
 		82E0E4AB1B80C7FD008A2F16 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */; };
+		82E137C91B9C3ED000819646 /* CreditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137C81B9C3ED000819646 /* CreditViewController.m */; };
+		82E137CC1B9C40B000819646 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137CB1B9C40B000819646 /* SearchViewController.m */; };
+		82E137CF1B9C599400819646 /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137CE1B9C599400819646 /* SearchTableViewCell.m */; };
 		82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D11B57E53E00E76B92 /* MailListViewController.m */; };
 		82E264D51B57E76A00E76B92 /* Mail.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D41B57E76A00E76B92 /* Mail.m */; };
 		82E264D91B58003000E76B92 /* ConversationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D81B58003000E76B92 /* ConversationTableViewCell.m */; };
@@ -63,6 +66,12 @@
 		82DD91471B98BBCC0094823C /* CloudViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudViewController.m; sourceTree = "<group>"; };
 		82E0E4A91B80C7FD008A2F16 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
+		82E137C71B9C3ED000819646 /* CreditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditViewController.h; sourceTree = "<group>"; };
+		82E137C81B9C3ED000819646 /* CreditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditViewController.m; sourceTree = "<group>"; };
+		82E137CA1B9C40B000819646 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
+		82E137CB1B9C40B000819646 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
+		82E137CD1B9C599400819646 /* SearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchTableViewCell.h; sourceTree = "<group>"; };
+		82E137CE1B9C599400819646 /* SearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchTableViewCell.m; sourceTree = "<group>"; };
 		82E264D01B57E53E00E76B92 /* MailListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailListViewController.h; sourceTree = "<group>"; };
 		82E264D11B57E53E00E76B92 /* MailListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailListViewController.m; sourceTree = "<group>"; };
 		82E264D31B57E76A00E76B92 /* Mail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mail.h; sourceTree = "<group>"; };
@@ -106,8 +115,8 @@
 		82E9696F1B555566004AB846 /* FolderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FolderViewController.m; sourceTree = "<group>"; };
 		82E981E11B9AEA5800E875E4 /* AddAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddAccountViewController.h; sourceTree = "<group>"; };
 		82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddAccountViewController.m; sourceTree = "<group>"; };
-		82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditCocoaButtonView.h; sourceTree = "<group>"; };
-		82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditCocoaButtonView.m; sourceTree = "<group>"; };
+		82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditCocoaButtonView.h; path = ../EditCocoaButtonView.h; sourceTree = "<group>"; };
+		82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EditCocoaButtonView.m; path = ../EditCocoaButtonView.m; sourceTree = "<group>"; };
 		82EA391F1B998D8700C41A29 /* DefaultAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultAccountViewController.h; sourceTree = "<group>"; };
 		82EA39201B998D8700C41A29 /* DefaultAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultAccountViewController.m; sourceTree = "<group>"; };
 		82EA39221B99930600C41A29 /* QuickSwipeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickSwipeViewController.h; sourceTree = "<group>"; };
@@ -143,12 +152,12 @@
 		82DD6FDA1B8D8F8D0026E0FC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				82EB85951B6F910F00B1B31A /* ConversationViewController.h */,
 				82DD91451B98B82B0094823C /* Settings */,
 				82E9696E1B555566004AB846 /* FolderViewController.h */,
 				82E9696F1B555566004AB846 /* FolderViewController.m */,
 				82E264D01B57E53E00E76B92 /* MailListViewController.h */,
 				82E264D11B57E53E00E76B92 /* MailListViewController.m */,
-				82EB85951B6F910F00B1B31A /* ConversationViewController.h */,
 				82EB85961B6F910F00B1B31A /* ConversationViewController.m */,
 				82E0E4A91B80C7FD008A2F16 /* ContactsViewController.h */,
 				82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */,
@@ -158,6 +167,8 @@
 				82E62BF81B82377100DF71FC /* SettingsViewController.m */,
 				82E935941B873FDF008FD372 /* EditMailViewController.h */,
 				82E935951B873FDF008FD372 /* EditMailViewController.m */,
+				82E137CA1B9C40B000819646 /* SearchViewController.h */,
+				82E137CB1B9C40B000819646 /* SearchViewController.m */,
 				82DD6FDB1B8D8FBA0026E0FC /* InViewController.h */,
 				82DD6FDC1B8D8FBA0026E0FC /* InViewController.m */,
 			);
@@ -179,8 +190,8 @@
 				82EA39291B99E86000C41A29 /* AccountViewController.m */,
 				82E981E11B9AEA5800E875E4 /* AddAccountViewController.h */,
 				82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */,
-				82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */,
-				82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */,
+				82E137C71B9C3ED000819646 /* CreditViewController.h */,
+				82E137C81B9C3ED000819646 /* CreditViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -190,6 +201,8 @@
 			children = (
 				82E264D71B58003000E76B92 /* ConversationTableViewCell.h */,
 				82E264D81B58003000E76B92 /* ConversationTableViewCell.m */,
+				82E137CD1B9C599400819646 /* SearchTableViewCell.h */,
+				82E137CE1B9C599400819646 /* SearchTableViewCell.m */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -197,6 +210,8 @@
 		82E30A5E1B78D6570088AB1D /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				82E981E41B9B033B00E875E4 /* EditCocoaButtonView.h */,
+				82E981E51B9B033B00E875E4 /* EditCocoaButtonView.m */,
 				82E30A5F1B78D6570088AB1D /* UIImage+ImageEffects.h */,
 				82E30A601B78D6570088AB1D /* UIImage+ImageEffects.m */,
 				82E30A621B78E7A00088AB1D /* WhiteBlurNavBar.h */,
@@ -430,11 +445,14 @@
 				82E0E4AB1B80C7FD008A2F16 /* ContactsViewController.m in Sources */,
 				82E969701B555566004AB846 /* FolderViewController.m in Sources */,
 				82E935961B873FDF008FD372 /* EditMailViewController.m in Sources */,
+				82E137C91B9C3ED000819646 /* CreditViewController.m in Sources */,
 				82EA39271B999D8100C41A29 /* NotificationViewController.m in Sources */,
 				82E62BF31B81E07E00DF71FC /* AttachmentsViewController.m in Sources */,
 				82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */,
+				82E137CF1B9C599400819646 /* SearchTableViewCell.m in Sources */,
 				82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */,
 				82E981E61B9B033B00E875E4 /* EditCocoaButtonView.m in Sources */,
+				82E137CC1B9C40B000819646 /* SearchViewController.m in Sources */,
 				82E9694C1B554745004AB846 /* ViewController.m in Sources */,
 				82E30A611B78D6570088AB1D /* UIImage+ImageEffects.m in Sources */,
 				82EA39211B998D8700C41A29 /* DefaultAccountViewController.m in Sources */,

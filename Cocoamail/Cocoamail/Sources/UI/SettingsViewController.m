@@ -135,7 +135,7 @@
 
     NSString* tCredit = NSLocalizedString(@"Credits", @"Credits");
     NSDictionary* Pcredit = @{TITLE:@"", FOOTER:@"",
-                              CONTENT:@[@{TEXT:tCredit, ACTION:@"CREDITS"}]
+                              CONTENT:@[@{TEXT:tCredit, ACTION:kSETTINGS_CREDIT_NOTIFICATION}]
                               };
     
     NSString* tDelete = NSLocalizedString(@"Delete stored attachments", @"Delete stored attachments");

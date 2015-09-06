@@ -54,7 +54,7 @@
 {
 
     self.backgroundColor = [UIColor clearColor];
-    self.selectionStyle = UITableViewCellSelectionStyleGray;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.delegate = delegate;
 
     CGRect screenBounds = [UIScreen mainScreen].bounds;

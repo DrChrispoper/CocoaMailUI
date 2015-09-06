@@ -14,6 +14,7 @@
 #import "NotificationViewController.h"
 #import "AccountViewController.h"
 #import "AddAccountViewController.h"
+#import "CreditViewController.h"
 
 @interface SettingsViewController : InViewController
 

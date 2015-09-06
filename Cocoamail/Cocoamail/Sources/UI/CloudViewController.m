@@ -70,9 +70,6 @@
     
     [self setupSimpleNavBarWith:item andWidth:screenBounds.size.width];
     
-    self.navBar.backgroundColor = [UIColor redColor];
-    
-    
 }
 
 

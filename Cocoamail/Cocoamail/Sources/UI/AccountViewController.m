@@ -151,7 +151,13 @@
     [self _keyboardNotification:NO];
 }
 
-#pragma mark - Scroll View Delegate
+-(void) cleanBeforeGoingBack
+{
+    [self _keyboardNotification:NO];
+    
+    self.table.delegate = nil;
+    self.table.dataSource = nil;
+}
 
 -(void) scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -160,16 +166,6 @@
     if (scrollView.isDragging) {
         [self _hideKeyboard];
     }
-}
-
-
-
--(void) cleanBeforeGoingBack
-{
-    [self _keyboardNotification:NO];
-    
-    self.table.delegate = nil;
-    self.table.dataSource = nil;
 }
 
 
