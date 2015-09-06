@@ -10,6 +10,8 @@
 
 #import "UIImage+ImageEffects.h"
 #import "Accounts.h"
+#import "UIGlobal.h"
+
 
 @interface WhiteBlurNavBar ()
 
@@ -76,9 +78,9 @@
 {
     self = [super initWithFrame:CGRectMake(0, 0, width, [WhiteBlurNavBar navBarHeight])];
     
-    self.opaque = false;
     
     if ([Accounts sharedInstance].navBarBlurred) {
+        self.opaque = false;
         [self setBackgroundImage:[UIImage imageNamed:@"emptyPixel"] forBarMetrics:UIBarMetricsDefault];
         [self setBackgroundImage:[UIImage imageNamed:@"emptyPixel"] forBarMetrics:UIBarMetricsCompact];
         self.shadowImage = [UIImage imageNamed:@"emptyPixel"];
@@ -86,9 +88,16 @@
         self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.6];
     }
     else {
+        self.opaque = true;
         self.translucent = NO;
         self.backgroundColor = [UIColor whiteColor];
+        
+        UIView* border = [[UIView alloc] initWithFrame:CGRectMake(0, 43.5, width+50, 0.5)];
+        border.backgroundColor = [UIGlobal standardTableLineColor];
+        [self addSubview:border];
+        
     }
+    
     self.tintColor = [UIColor blackColor];
     
     return self;

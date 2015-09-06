@@ -152,12 +152,12 @@
 		82DD6FDA1B8D8F8D0026E0FC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				82EB85951B6F910F00B1B31A /* ConversationViewController.h */,
 				82DD91451B98B82B0094823C /* Settings */,
 				82E9696E1B555566004AB846 /* FolderViewController.h */,
 				82E9696F1B555566004AB846 /* FolderViewController.m */,
 				82E264D01B57E53E00E76B92 /* MailListViewController.h */,
 				82E264D11B57E53E00E76B92 /* MailListViewController.m */,
+				82EB85951B6F910F00B1B31A /* ConversationViewController.h */,
 				82EB85961B6F910F00B1B31A /* ConversationViewController.m */,
 				82E0E4A91B80C7FD008A2F16 /* ContactsViewController.h */,
 				82E0E4AA1B80C7FD008A2F16 /* ContactsViewController.m */,
