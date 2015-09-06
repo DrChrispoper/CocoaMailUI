@@ -58,29 +58,25 @@
     return sharedInstance;
 }
 
-+(instancetype) fakeCocoaButtonForAccount:(Account*)account
++(instancetype) fakeCocoaButtonForCredits
 {
     CocoaButton* cb = [[CocoaButton alloc] init];
     
-    
-    cb.frame = CGRectMake(0, 0, 50.f, 50.f);
-    
-    cb.backView.frame = cb.bounds;
-    cb.nameView.frame = cb.bounds;
-    
-    cb.backView.layer.cornerRadius = 25.f;
-    cb.nameView.font = [UIFont systemFontOfSize:16];
-    
-    cb.backView.backgroundColor = account.userColor;
-    cb.nameView.text = account.codeName;
+    cb.backView.backgroundColor = [UIColor colorWithRed:0.63 green:0.33 blue:0.18 alpha:0.9];
 
+    cb.nameView.text = @"";
+
+    UIImageView* iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"credits_cocoabutton"]];
+    iv.contentMode = UIViewContentModeCenter;
+    iv.frame = cb.nameView.bounds;
+    [cb.nameView addSubview:iv];
+    
     NSArray* alls = cb.gestureRecognizers;
     for (UIGestureRecognizer* gr in alls) {
-        [cb removeGestureRecognizer:gr];
+        if ([gr isKindOfClass:[UILongPressGestureRecognizer class]]) {
+            [cb removeGestureRecognizer:gr];
+        }
     }
-    
-    cb.userInteractionEnabled = NO;
-    
     
     return cb;
 }
@@ -125,6 +121,14 @@
     
     return self;
 }
+
+-(void) openWide
+{
+    if (self.openState == 0) {
+        [self _openWide];
+    }
+}
+
 
 -(void) updateColor
 {

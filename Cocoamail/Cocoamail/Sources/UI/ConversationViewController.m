@@ -178,6 +178,8 @@
     sv.contentSize = contentView.frame.size;
     [sv addSubview:contentView];
     sv.backgroundColor = self.view.backgroundColor;
+    sv.scrollIndicatorInsets = UIEdgeInsetsMake(44, 0, 0, 0);
+    
     self.contentView = contentView;
     
     [self.view addSubview:sv];

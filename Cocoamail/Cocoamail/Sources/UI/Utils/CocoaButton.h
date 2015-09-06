@@ -25,7 +25,7 @@
 
 +(instancetype) sharedButton;
 
-+(instancetype) fakeCocoaButtonForAccount:(Account*)account;
++(instancetype) fakeCocoaButtonForCredits;
 
 @property (nonatomic, weak) id<CocoaButtonDatasource> datasource;
 
@@ -44,5 +44,7 @@
 
 
 -(void) refreshAnimation:(BOOL)anim;
+
+-(void) openWide;
 
 @end

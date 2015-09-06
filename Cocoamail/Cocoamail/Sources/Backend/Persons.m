@@ -94,7 +94,7 @@
     const NSInteger max = self.alls.count;
     while (true) {
         NSInteger idx = rand() % max;
-        if (![self.alls[idx] isFakeDotPerson]) {
+        if (![self.alls[idx] isFakePerson]) {
             return idx;
         }
     }
@@ -204,9 +204,23 @@
         
         UIImageView* iv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 33, 33)];
         
-        if ([self isFakeDotPerson]) {
-            iv.image = [[UIImage imageNamed:self.imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            iv.tintColor = [UIGlobal noImageBadgeColor];
+        if ([self isFakePerson]) {
+            if (self.email == nil) {
+                // fake dot person
+                iv.image = [[UIImage imageNamed:self.imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                iv.tintColor = [UIGlobal noImageBadgeColor];
+            }
+            else {
+                // cocoamail person
+                iv.image = [UIImage imageNamed:self.imageName];
+                iv.contentMode = UIViewContentModeScaleAspectFit;
+
+                iv.backgroundColor = [UIColor colorWithRed:1. green:.69 blue:.0 alpha:1.];
+                iv.layer.cornerRadius = 16.5;
+                iv.layer.masksToBounds = YES;
+                
+                return iv;
+            }
         }
         else {
             iv.image = [UIImage imageNamed:self.imageName];
@@ -222,9 +236,9 @@
     
 }
 
--(BOOL) isFakeDotPerson
+-(BOOL) isFakePerson
 {
-    return (self.codeName==nil && self.email==nil && self.name==nil);
+    return (self.codeName==nil /*&& self.email==nil*/ && self.name==nil);
 }
 
 

@@ -26,6 +26,7 @@
 -(NSInteger) addPerson:(Person*)person;
 
 @property (nonatomic) NSInteger idxMorePerson;
+@property (nonatomic) NSInteger idxCocoaPerson;
 
 -(NSArray*) allPersons;
 -(NSInteger) indexForPerson:(Person*)p;
@@ -46,6 +47,6 @@
 
 +(Person*) createWithName:(NSString*)name email:(NSString*)mail icon:(NSString*)icon codeName:(NSString*)codeName;
 
--(BOOL) isFakeDotPerson;
+-(BOOL) isFakePerson;
 
 @end

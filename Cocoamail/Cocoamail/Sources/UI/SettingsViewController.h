@@ -15,6 +15,8 @@
 #import "AccountViewController.h"
 #import "AddAccountViewController.h"
 #import "CreditViewController.h"
+#import "CreditContentViewController.h"
+
 
 @interface SettingsViewController : InViewController
 

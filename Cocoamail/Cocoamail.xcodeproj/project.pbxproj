@@ -15,6 +15,7 @@
 		82E137C91B9C3ED000819646 /* CreditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137C81B9C3ED000819646 /* CreditViewController.m */; };
 		82E137CC1B9C40B000819646 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137CB1B9C40B000819646 /* SearchViewController.m */; };
 		82E137CF1B9C599400819646 /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137CE1B9C599400819646 /* SearchTableViewCell.m */; };
+		82E137D21B9C9B1100819646 /* CreditContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E137D11B9C9B1100819646 /* CreditContentViewController.m */; };
 		82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D11B57E53E00E76B92 /* MailListViewController.m */; };
 		82E264D51B57E76A00E76B92 /* Mail.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D41B57E76A00E76B92 /* Mail.m */; };
 		82E264D91B58003000E76B92 /* ConversationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E264D81B58003000E76B92 /* ConversationTableViewCell.m */; };
@@ -72,6 +73,8 @@
 		82E137CB1B9C40B000819646 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
 		82E137CD1B9C599400819646 /* SearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchTableViewCell.h; sourceTree = "<group>"; };
 		82E137CE1B9C599400819646 /* SearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchTableViewCell.m; sourceTree = "<group>"; };
+		82E137D01B9C9B1100819646 /* CreditContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditContentViewController.h; sourceTree = "<group>"; };
+		82E137D11B9C9B1100819646 /* CreditContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditContentViewController.m; sourceTree = "<group>"; };
 		82E264D01B57E53E00E76B92 /* MailListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailListViewController.h; sourceTree = "<group>"; };
 		82E264D11B57E53E00E76B92 /* MailListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailListViewController.m; sourceTree = "<group>"; };
 		82E264D31B57E76A00E76B92 /* Mail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mail.h; sourceTree = "<group>"; };
@@ -192,6 +195,8 @@
 				82E981E21B9AEA5800E875E4 /* AddAccountViewController.m */,
 				82E137C71B9C3ED000819646 /* CreditViewController.h */,
 				82E137C81B9C3ED000819646 /* CreditViewController.m */,
+				82E137D01B9C9B1100819646 /* CreditContentViewController.h */,
+				82E137D11B9C9B1100819646 /* CreditContentViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -451,6 +456,7 @@
 				82E862581B84AC4600DD5C74 /* PullToRefresh.m in Sources */,
 				82E137CF1B9C599400819646 /* SearchTableViewCell.m in Sources */,
 				82E264D21B57E53E00E76B92 /* MailListViewController.m in Sources */,
+				82E137D21B9C9B1100819646 /* CreditContentViewController.m in Sources */,
 				82E981E61B9B033B00E875E4 /* EditCocoaButtonView.m in Sources */,
 				82E137CC1B9C40B000819646 /* SearchViewController.m in Sources */,
 				82E9694C1B554745004AB846 /* ViewController.m in Sources */,

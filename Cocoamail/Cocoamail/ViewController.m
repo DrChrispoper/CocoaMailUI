@@ -30,7 +30,7 @@
 
 @property (nonatomic, strong) NSMutableArray *viewControllers;
 
-@property (nonatomic, weak) CocoaButton* cocoaButton;
+@property (nonatomic, strong) CocoaButton* cocoaButton;
 @property (nonatomic) BOOL askAccountsButton;
 
 
@@ -214,7 +214,7 @@ static ViewController* s_self;
         {
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
-            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            self.cocoaButton.userInteractionEnabled = YES;
             
             CGPoint v = [pgr velocityInView:pgr.view];
             
@@ -248,7 +248,7 @@ static ViewController* s_self;
         {
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
-            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            self.cocoaButton.userInteractionEnabled = YES;
             
             break;
         }
@@ -342,7 +342,7 @@ static ViewController* s_self;
             
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
-            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            self.cocoaButton.userInteractionEnabled = YES;
             
             CGPoint v = [pgr velocityInView:pgr.view];
             
@@ -372,6 +372,9 @@ static ViewController* s_self;
             }
             else {
                 // validate
+
+                [self _manageCocoaButton:[self.nextVC haveCocoaButton]];
+                
                 [self.viewControllers addObject:self.nextVC];
                 self.nextVC = nil;
                 
@@ -385,6 +388,7 @@ static ViewController* s_self;
                                      self.animShadowView.alpha = 0.;
                                  }
                                  completion:^(BOOL fini) {
+                                     
                                      [self.animCurrentView removeFromSuperview];
                                      self.animNextView = nil;
                                      self.animCurrentView = nil;
@@ -402,7 +406,7 @@ static ViewController* s_self;
             self.nextVC = nil;
             self.animNextView.userInteractionEnabled = YES;
             self.animCurrentView.userInteractionEnabled = YES;
-            self.cocoaButton.userInteractionEnabled = self.cocoaButton.alpha > 0.;
+            self.cocoaButton.userInteractionEnabled = YES;
             
             break;
         }
@@ -507,6 +511,14 @@ static ViewController* s_self;
         [self _animatePushVC:f];
     }];
     
+    [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CREDIT2_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
+        if ([self _checkInteractionAndBlock]) {
+            return;
+        }
+        CreditContentViewController* f = [[CreditContentViewController alloc] init];
+        f.type = [notif.userInfo objectForKey:kSETTINGS_KEY];
+        [self _animatePushVC:f];
+    }];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kSETTINGS_CLOUD_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue]  usingBlock: ^(NSNotification* notif){
         if ([self _checkInteractionAndBlock]) {
@@ -692,7 +704,6 @@ static ViewController* s_self;
                              [[UIApplication sharedApplication] endIgnoringInteractionEvents];
                              
                              [self _manageCocoaButton:[f haveCocoaButton]];
-                             
                          }];
         
     }];
@@ -782,20 +793,25 @@ static ViewController* s_self;
 {
     if (appear) {
         if (self.cocoaButton.alpha == 0.) {
-            self.cocoaButton.userInteractionEnabled = YES;
+            [self.view addSubview:self.cocoaButton];
             [UIView animateWithDuration:0.25
                              animations:^{
                                  self.cocoaButton.alpha = 1.;
-                             }];
+                             }
+                             completion:nil
+             ];
         }
     }
     else {
         if (self.cocoaButton.alpha == 1.) {
-            self.cocoaButton.userInteractionEnabled = NO;
             [UIView animateWithDuration:0.25
                              animations:^{
                                  self.cocoaButton.alpha = 0.;
-                             }];
+                             }
+                             completion:^(BOOL fini) {
+                                 [self.cocoaButton removeFromSuperview];
+                             }
+             ];
         }
     }
     
