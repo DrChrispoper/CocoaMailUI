@@ -18,8 +18,8 @@
 
 @property (nonatomic, weak) UITableView* table;
 @property (nonatomic, strong) id keyboardNotificationId;
-@property (nonatomic, weak) UISearchBar* searchBar;
-@property (nonatomic, strong) NSDate* dateFocus;
+@property (nonatomic, strong) UISearchBar* searchBar;
+@property (nonatomic, strong) UIView* searchBarSupport;
 
 @property (nonatomic, strong) NSArray* searchResult;
 @property (nonatomic) NSInteger lastSearchLength;
@@ -45,19 +45,15 @@
                                                                        screenBounds.size.width,
                                                                        screenBounds.size.height-20)
                                                       style:UITableViewStyleGrouped];
-    table.contentInset = UIEdgeInsetsMake(44 + 44 + 2, 0, 60, 0);
-    table.scrollIndicatorInsets = UIEdgeInsetsMake(44 + 44 + 2, 0, 0, 0);
+    table.contentInset = UIEdgeInsetsMake(44, 0, 60, 0);
+    table.scrollIndicatorInsets = UIEdgeInsetsMake(44 + 46, 0, 0, 0);
     
     table.backgroundColor = [UIGlobal standardLightGrey];
     
     [self.view addSubview:table];
 
+    self.view.backgroundColor = table.backgroundColor;
     
-    UISearchBar* bar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 44, screenBounds.size.width, 44)];
-    bar.delegate = self;
-    [self.view addSubview:bar];
-    self.searchBar = bar;
-
     
     [self setupNavBarWith:item overMainScrollView:table];
     
@@ -140,19 +136,6 @@
 {
     [super scrollViewDidScroll:scrollView];
     
-    
-    if (scrollView.contentOffset.y>-90) {
-        self.searchBar.transform = CGAffineTransformMakeTranslation(0, -(90+scrollView.contentOffset.y));
-    }
-    else {
-        self.searchBar.transform = CGAffineTransformMakeTranslation(0, 0);
-    }
-    /*
-    if ([self.dateFocus timeIntervalSinceNow]>-1) {
-        [self.table setContentOffset:CGPointMake(0, -88) animated:NO];
-    }
-    */
-    
     if (scrollView.isDragging) {
         [self _hideKeyboard];
     }
@@ -167,13 +150,6 @@
 {
     return self.searchResult.count;
 }
-
-/*
--(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return (indexPath.row==0) ? 90.5f : 90.0f;
-}
-*/
 
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -205,7 +181,31 @@
 
 -(CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return CGFLOAT_MIN;
+    return (section==0) ? 46 : CGFLOAT_MIN;
+}
+
+-(UIView*) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        
+        if (self.searchBar ==nil) {
+            
+            UISearchBar* bar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 44)];
+            bar.delegate = self;
+            bar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+            self.searchBar = bar;
+            
+            UIView* support = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 46)];
+            [support addSubview:bar];
+            support.autoresizingMask = UIViewAutoresizingNone;
+            
+            self.searchBarSupport = support;
+        }
+        
+        return self.searchBarSupport;
+    }
+    
+    return nil;
 }
 
 -(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -278,8 +278,6 @@
         }
         else {
             
-            // TODO search in attachs first
-
             BOOL found = NO;
             
             for (NSString* att in attachs) {
@@ -330,26 +328,12 @@
 
 -(void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    
-    /*
-    NSLog(@"%@", searchText);
-    
-    NSArray* alls = [[[Accounts sharedInstance] currentAccount] getConversationsForFolder:FolderTypeWith(FolderTypeAll, 0)];
-
-    NSRange r;
-    r.location = 0;
-    r.length = 20 - searchText.length;
-    self.searchResult = [alls subarrayWithRange:r];
-    */
-    
     [self _updateSearchResultWith:searchText];
     
     [self.table reloadData];
-}
-
--(void) searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    self.dateFocus = [NSDate date];
+    
+    [self.searchBar becomeFirstResponder];
+    
 }
 
 -(void) searchBarSearchButtonClicked:(UISearchBar *)searchBar
