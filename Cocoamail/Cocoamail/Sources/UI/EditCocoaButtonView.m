@@ -168,6 +168,8 @@
     l.textColor = [UIColor whiteColor];
     l.backgroundColor = [UIColor clearColor];
     l.alpha = 0.f;
+    l.font = [UIFont systemFontOfSize:13];
+    
     [self addSubview:l];
     self.codenameLbl = l;
     
