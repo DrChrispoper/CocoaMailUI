@@ -142,14 +142,13 @@
     NSDictionary* PDelete = @{TITLE:@"", FOOTER:@"",
                               CONTENT:@[@{TEXT:tDelete, DACTION : @"CLEAR"}]
                               };
-    
-    // TODO : to remove
+    /*
     NSDictionary* PNavbar = @{TITLE:@"", FOOTER:@"",
                               CONTENT:@[@{TEXT:@"Blurred nav bar", DACTION : @"NAV_BAR_BLUR"},
                                         @{TEXT:@"Opaque nav bar", DACTION : @"NAV_BAR_SOLID"}]
                               };
-    
-    self.settings = @[Paccounts, PdftAccount, Pclouds, Pdisplay, Pcredit, PDelete, PNavbar];
+    */
+    self.settings = @[Paccounts, PdftAccount, Pclouds, Pdisplay, Pcredit, PDelete/*, PNavbar*/];
     
 }
 
