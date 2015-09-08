@@ -152,9 +152,11 @@
     CGRect f = supportTV.frame;
     f.origin.x = 0;
     f.origin.y = posY;
+    f.size.width = WIDTH;
     supportTV.frame = f;
     
     f = tv.frame;
+    f.size.width = WIDTH - 32;
     f.origin.x = 16;
     f.origin.y = 25;
     tv.frame = f;
