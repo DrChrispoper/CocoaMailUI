@@ -31,6 +31,8 @@
     if (scrollView.contentOffset.y < (-scrollView.contentInset.top- 0 - self.delta)) {
         
         if (self.pullToRefresh == nil ) {
+            
+            /*
             UIView* support = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
             support.layer.cornerRadius = 22.;
             support.layer.masksToBounds = YES;
@@ -48,7 +50,15 @@
             [scrollView addSubview:support];
             
             self.pullToRefreshSupport = support;
+             */
+
+            UIActivityIndicatorView* av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [av stopAnimating];
+            av.center = CGPointMake(scrollView.frame.size.width / 2, -35 + self.delta);
+            [scrollView addSubview:av];
+            
             self.pullToRefresh = av;
+             
         }
         
         self.pullToRefresh.hidden = NO;
