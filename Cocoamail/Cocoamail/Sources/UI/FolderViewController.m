@@ -13,7 +13,6 @@
 @interface FolderViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UITableView* table;
-@property (nonatomic, weak) UIButton* settingsButton;
 
 @end
 
@@ -32,7 +31,6 @@
     UIButton* settingsBtn = [WhiteBlurNavBar navBarButtonWithImage:@"settings_off" andHighlighted:@"settings_on"];
     [settingsBtn addTarget:self action:@selector(_settings) forControlEvents:UIControlEventTouchUpInside];
     item.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:settingsBtn];
-    self.settingsButton = settingsBtn;
     
     item.titleView = [WhiteBlurNavBar titleViewForItemTitle:currentAccount.userMail];
 
@@ -42,7 +40,7 @@
                                                                        screenBounds.size.width,
                                                                        screenBounds.size.height-20)
                                                       style:UITableViewStyleGrouped];
-    table.contentInset = UIEdgeInsetsMake(44-30, 0, 0, 0);
+    table.contentInset = UIEdgeInsetsMake(44-30, 0, 60, 0);
     table.scrollIndicatorInsets = UIEdgeInsetsMake(44, 0, 0, 0);
     
     table.backgroundColor = [UIGlobal standardLightGrey];
@@ -170,7 +168,11 @@
     else {
 
         imageName = [Accounts userFolderIcon];
-        text = [cac userFolders][indexPath.row];
+        
+        NSArray* subfolder = [cac userFolders][indexPath.row];
+        
+        text = subfolder[0];
+        NSInteger indentation = [subfolder[1] integerValue];
         
         NSString* reuseID = @"kCellAccountPerso";
         
@@ -179,7 +181,8 @@
         if (cell==nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID];
         }
-        
+
+        cell.separatorInset = UIEdgeInsetsMake(0, 53 + 27 * indentation, 0, 0);
     }
 
     cell.textLabel.text = text;

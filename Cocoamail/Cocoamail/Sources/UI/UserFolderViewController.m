@@ -1,43 +1,43 @@
 //
-//  DefaultAccountViewController.m
+//  UserFolderViewController.m
 //  Cocoamail
 //
-//  Created by Pascal Costa-Cunha on 04/09/2015.
+//  Created by Pascal Costa-Cunha on 08/09/2015.
 //  Copyright (c) 2015 cocoasoft. All rights reserved.
 //
 
-#import "DefaultAccountViewController.h"
+#import "UserFolderViewController.h"
 
-#import "Accounts.h"
 
-@interface DefaultAccountViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface UserFolderViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) UITableView* table;
 
 @end
 
-
-@implementation DefaultAccountViewController
+@implementation UserFolderViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    // Do any additional setup after loading the view.
     
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:nil];
     
-    item.leftBarButtonItem = [self backButtonInNavBar];
+    UIButton* back = [WhiteBlurNavBar navBarButtonWithImage:@"editmail_cancel_off" andHighlighted:@"editmail_cancel_on"];
+    [back addTarget:self action:@selector(_back) forControlEvents:UIControlEventTouchUpInside];
+    item.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
     
-    NSString* title = NSLocalizedString(@"Default account", @"Default account");
-    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:title];
+    item.titleView = [WhiteBlurNavBar titleViewForItemTitle:NSLocalizedString(@"My Folders", @"My Folders")];
+    
     
     UITableView* table = [[UITableView alloc] initWithFrame:CGRectMake(0,
                                                                        0,
                                                                        screenBounds.size.width,
                                                                        screenBounds.size.height-20)
                                                       style:UITableViewStyleGrouped];
-    table.contentInset = UIEdgeInsetsMake(44, 0, 0, 0);
+    table.contentInset = UIEdgeInsetsMake(44-30, 0, 60, 0);
     table.scrollIndicatorInsets = UIEdgeInsetsMake(44, 0, 0, 0);
     
     table.backgroundColor = [UIGlobal standardLightGrey];
@@ -49,20 +49,13 @@
     table.dataSource = self;
     table.delegate = self;
     self.table = table;
-
+    
 }
 
 
-
--(void) cleanBeforeGoingBack
+-(void) _back
 {
-    self.table.delegate = nil;
-    self.table.dataSource = nil;
-}
-
--(BOOL) haveCocoaButton
-{
-    return NO;
+    [self.delegate chooseUserFolderCancel];
 }
 
 
@@ -76,45 +69,43 @@
 
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [Accounts sharedInstance].accounts.count - 1;
+    Account* ac = [[Accounts sharedInstance] currentAccount];
+    
+    return ac.userFolders.count;
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return (indexPath.row==0) ? 52.5f : 52.0f;
+    return (indexPath.row==0) ? 44.5f : 44.0f;
 }
 
 
 -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Account* a = [Accounts sharedInstance].accounts[indexPath.row];
     
-    UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"noID"];
+    NSString* imageName = [Accounts userFolderIcon];
     
+    Account* cac = [[Accounts sharedInstance] currentAccount];
     
-    cell.textLabel.text = a.userMail;
+    NSArray* subfolder = [cac userFolders][indexPath.row];
     
+    NSString* text = subfolder[0];
+    NSInteger indentation = [subfolder[1] integerValue];
     
-    UIView* v = [a.person badgeView];
+    NSString* reuseID = @"kCellAccountPerso";
     
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(33.f, 33.f), NO, [UIScreen mainScreen].scale);
-    UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:reuseID];
     
+    if (cell==nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID];
+    }
+    
+    cell.separatorInset = UIEdgeInsetsMake(0, 53 + 27 * indentation, 0, 0);
+    
+    cell.textLabel.text = text;
+    UIImage* img = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     cell.imageView.image = img;
-    [cell.imageView addSubview:v];
-    
-    
-    cell.textLabel.textAlignment = NSTextAlignmentNatural;
-    cell.textLabel.textColor = [UIColor blackColor];
-    
-
-    if ([Accounts sharedInstance].defaultAccountIdx == indexPath.row) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
-    else {
-        cell.accessoryType = UITableViewCellAccessoryNone;
-    }
+    cell.imageView.tintColor = cac.userColor;
     
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
@@ -126,28 +117,20 @@
 
 -(CGFloat) tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 20;
+    return CGFLOAT_MIN;
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 52;
-}
-
-
--(NSIndexPath*) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [Accounts sharedInstance].defaultAccountIdx = indexPath.row;
-    [tableView reloadData];
-    
-    return nil;
+    return 50;
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    FolderType type = FolderTypeWith(FolderTypeUser, indexPath.row);
+    [self.delegate chooseUserFolder:type];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
-
 @end
+

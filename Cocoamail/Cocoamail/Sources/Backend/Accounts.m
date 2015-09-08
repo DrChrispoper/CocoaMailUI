@@ -45,13 +45,13 @@
         
         
         Account* a1 = [self _createAccountMail:@"jean@lafontaine.com" color:sharedInstance.accountColors[4] code:@"JF"];
-        a1.userFolders = @[@"Bills", @"Mum & Dad"];
+        a1.userFolders = @[@[@"Bills", @(0)], @[@"Paid", @(1)], @[@"To pay", @(1)], @[@"Mum & Dad", @(0)]];
         Account* a2 = [self _createAccountMail:@"jlf@google.com" color:sharedInstance.accountColors[6] code:@"JLF"];
-        a2.userFolders = @[@"Bill Murray"];
+        a2.userFolders = @[@[@"Bill Murray", @(0)]];
         Account* a3 = [self _createAccountMail:@"jeanlf@yahoo.com" color:sharedInstance.accountColors[0] code:@"DOM"];
-        a3.userFolders = @[@"Owen Wilson"];
+        a3.userFolders = @[@[@"Owen Wilson", @(0)]];
         Account* a4 = [self _createAccountMail:@"jean.pro@cocoamail.com" color:sharedInstance.accountColors[3] code:@"PRO"];
-        a4.userFolders = @[@"Marty McFly", @"Doc Brown", @"Biff Tannen"];
+        a4.userFolders = @[@[@"Back to the futur", @(0)], @[@"Marty McFly", @(1)], @[@"Doc Brown", @(1)],@[@"Jules Brown", @(2)], @[@"Verne Brown", @(2)], @[@"Biff Tannen", @(1)]];
         
         Account* all = [self _createAllAccountsFrom:@[a1, a2, a3, a4]];
         sharedInstance.accounts = @[a1, a2, a3, a4, all];

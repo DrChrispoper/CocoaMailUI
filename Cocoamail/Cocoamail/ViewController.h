@@ -62,6 +62,7 @@
 
 +(void) animateCocoaButtonRefresh:(BOOL)anim;
 
++(void) temporaryHideCocoaButton:(BOOL) hide;
 
 @end
 

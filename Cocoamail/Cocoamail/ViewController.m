@@ -94,6 +94,12 @@ static ViewController* s_self;
     // Dispose of any resources that can be recreated.
 }
 
++(void) temporaryHideCocoaButton:(BOOL) hide
+{
+    [[self mainVC] _manageCocoaButton:!hide];
+}
+
+
 +(void) refreshCocoaButton
 {
     [[self mainVC].cocoaButton updateColor];

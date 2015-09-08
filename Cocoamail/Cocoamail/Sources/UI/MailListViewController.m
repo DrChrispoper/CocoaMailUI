@@ -12,8 +12,9 @@
 #import "Parser.h"
 #import "Mail.h"
 #import "Accounts.h"
+#import "UserFolderViewController.h"
 
-@interface MailListViewController () <UITableViewDataSource, UITableViewDelegate, ConversationCellDelegate>
+@interface MailListViewController () <UITableViewDataSource, UITableViewDelegate, ConversationCellDelegate, UserFolderViewControllerDelegate>
 
 @property (nonatomic, strong) NSMutableArray* convByDay;
 @property (nonatomic, weak) UITableView* table;
@@ -29,6 +30,8 @@
 @property (nonatomic) FolderType folder;
 
 @property (nonatomic) BOOL longPressOnCocoabutton;
+
+@property (nonatomic, strong) UserFolderViewController* chooseUserFolder;
 
 @end
 
@@ -48,7 +51,7 @@
 {
     NSString* name = nil;
     if (folder.type == FolderTypeUser) {
-        name = [[Accounts sharedInstance] currentAccount].userFolders[folder.idx];
+        name = [[Accounts sharedInstance] currentAccount].userFolders[folder.idx][0];
     }
     else {
         name = [Accounts systemFolderNames][folder.type];
@@ -763,16 +766,38 @@
         {
             doNothing = YES;
             
+            UserFolderViewController* ufvc = [[UserFolderViewController alloc] init];
+            ufvc.delegate = self;
+            
+            ufvc.view.frame = self.view.bounds;
+
+            [self.view addSubview:ufvc.view];
+            
+            self.chooseUserFolder = ufvc;
+            
+            
+            [ViewController temporaryHideCocoaButton:YES];
+            
+            ufvc.view.transform = CGAffineTransformMakeTranslation(0, self.view.frame.size.height);
+            
+            [UIView animateWithDuration:0.3
+                             animations:^{
+                                 ufvc.view.transform = CGAffineTransformIdentity;
+                             }];
+            
+            /*
             UIAlertController* ac = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             
             NSInteger idx = 0;
-            for (NSString* folder in [[Accounts sharedInstance] currentAccount].userFolders) {
+            for (NSArray* folder in [[Accounts sharedInstance] currentAccount].userFolders) {
                 
                 if (self.folder.type == FolderTypeUser && idx == self.folder.idx) {
                     continue;
                 }
                 
-                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:folder style:UIAlertActionStyleDefault
+                NSString* folderName = folder[0];
+                
+                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:folderName style:UIAlertActionStyleDefault
                                                                       handler:^(UIAlertAction* aa) {
                                                                           [self _executeMoveOnSelectedCellsTo:FolderTypeWith(FolderTypeUser, idx)];
                                                                       }];
@@ -795,6 +820,7 @@
             
             ViewController* vc = [ViewController mainVC];
             [vc presentViewController:ac animated:YES completion:nil];
+            */
             
             break;
         }
@@ -810,6 +836,30 @@
     if (!doNothing) {
         [self _executeMoveOnSelectedCellsTo:toFolder];
     }
+}
+
+-(void) chooseUserFolder:(FolderType)folder
+{
+    [self _executeMoveOnSelectedCellsTo:folder];
+    [self chooseUserFolderCancel];
+}
+
+-(void) chooseUserFolderCancel
+{
+    UserFolderViewController* ufvc = self.chooseUserFolder;
+    
+    [ViewController temporaryHideCocoaButton:NO];
+    
+    [UIView animateWithDuration:0.3
+                     animations:^{
+                         ufvc.view.transform = CGAffineTransformMakeTranslation(0, self.view.frame.size.height);
+                     }
+                     completion:^(BOOL fini){
+                         [ufvc.view removeFromSuperview];
+                         self.chooseUserFolder = nil;
+                     }];
+    
+    
 }
 
 

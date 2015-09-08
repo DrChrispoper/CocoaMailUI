@@ -58,7 +58,7 @@
                                                                        screenBounds.size.width,
                                                                        242/*screenBounds.size.height-20*/)
                                                       style:UITableViewStyleGrouped];
-    table.contentInset = UIEdgeInsetsMake(44, 0, 0, 0);
+    table.contentInset = UIEdgeInsetsMake(44, 0, 60, 0);
     table.scrollIndicatorInsets = UIEdgeInsetsMake(44, 0, 0, 0);
     
     table.backgroundColor = [UIGlobal standardLightGrey];
