@@ -568,7 +568,7 @@
 
 -(void) _lgpress:(UILongPressGestureRecognizer*)lpgr
 {
-    if (lpgr.enabled==NO) {
+    if (lpgr.enabled==NO || self.openState != 0) {
         return;
     }
     
