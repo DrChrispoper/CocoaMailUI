@@ -189,7 +189,7 @@
 -(void) _displayLink:(CADisplayLink*)dl
 {
 //    double value = [dl timestamp] * M_PI * 4;
-    const double step = M_PI / 15.;
+    const double step = M_PI / 10.;
   
     self.backViewAnimAngle += step;
     double value = self.backViewAnimAngle;
