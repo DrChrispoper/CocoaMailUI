@@ -132,8 +132,11 @@
     lbl.text = [self.conversation firstMail].title;
     lbl.numberOfLines = 0;
     lbl.textColor = [UIColor whiteColor];
-    lbl.font = [UIFont boldSystemFontOfSize:16];
-    lbl.textAlignment = NSTextAlignmentCenter;
+    //lbl.font = [UIFont boldSystemFontOfSize:16];
+    //lbl.textAlignment = NSTextAlignmentCenter;
+    lbl.font = [UIFont systemFontOfSize:16];
+    lbl.textAlignment = NSTextAlignmentNatural;
+    
     [lbl sizeToFit];
     
     CGRect tf = lbl.frame;
@@ -141,11 +144,22 @@
     tf.origin = CGPointMake(8, -tf.size.height + 30);
     lbl.frame = tf;
     
-    lbl.backgroundColor = [UIColor colorWithWhite:180./255. alpha:1.0];
-    lbl.layer.cornerRadius = 20;
-    lbl.layer.masksToBounds = YES;
     
-    [contentView addSubview:lbl];
+    UIView* supportTitle = [[UIView alloc] initWithFrame:tf];
+    
+    supportTitle.backgroundColor = [UIColor colorWithWhite:180./255. alpha:1.0];
+    supportTitle.layer.cornerRadius = 20;
+    supportTitle.layer.masksToBounds = YES;
+    
+    tf.origin = CGPointMake(8, 15);
+    tf.size.width -= 16;
+    tf.size.height -= 30;
+    lbl.frame = tf;
+    lbl.backgroundColor = supportTitle.backgroundColor;
+    
+    [supportTitle addSubview:lbl];
+    
+    [contentView addSubview:supportTitle];
     //
     
     self.allMailViews = [NSMutableArray arrayWithCapacity:self.conversation.mails.count];
