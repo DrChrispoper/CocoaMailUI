@@ -95,7 +95,7 @@
                        NSLocalizedString(@"Reply",@"Reply"),
                        NSLocalizedString(@"Mark as read/unread",@"Mark as read/unread")];
     
-    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single",@"swipe_unread"];
+    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single",@"swipe_read"];
     
     cell.textLabel.text = names[indexPath.row];
     UIImage* img = [[UIImage imageNamed:imgNames[indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

@@ -544,6 +544,12 @@
     
     self.favori.highlighted = mail.isFav;
     
+    QuickSwipeType idxQuickSwipe = [self quickSwipeType];
+    if (idxQuickSwipe == QuickSwipeReply) {
+        BOOL toMany = mail.toPersonID.count>1;
+        self.leftAction.highlighted = toMany;
+    }
+    
     if (mail.isRead) {
         
         if (self.readMask == nil) {
@@ -555,18 +561,19 @@
             [self.baseView addSubview:overView];
             self.readMask = overView;
         }
+
+        if (idxQuickSwipe == QuickSwipeMark) {
+            self.leftAction.highlighted = YES;
+        }
         
     }
     else {
         [self.readMask removeFromSuperview];
         self.readMask = nil;
-    }
-    
-    
-    QuickSwipeType idxQuickSwipe = [self quickSwipeType];
-    if (idxQuickSwipe == QuickSwipeReply) {
-        BOOL toMany = mail.toPersonID.count>1;
-        self.leftAction.highlighted = toMany;
+        
+        if (idxQuickSwipe == QuickSwipeMark) {
+            self.leftAction.highlighted = NO;
+        }
     }
     
     

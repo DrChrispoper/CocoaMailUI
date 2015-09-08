@@ -304,7 +304,7 @@
 
 -(UIImageView*) imageViewForQuickSwipeAction
 {
-    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single", @"swipe_unread", @"swipe_inbox"];
+    NSArray* imgNames = @[@"swipe_archive", @"swipe_delete", @"swipe_reply_single", @"swipe_read", @"swipe_inbox"];
     NSInteger swipetype = [Accounts sharedInstance].quickSwipeType;
     
     FolderType type;
@@ -327,6 +327,9 @@
     UIImageView* arch = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imgNames[swipetype]]];
     if (swipetype==QuickSwipeReply) {
         arch.highlightedImage = [UIImage imageNamed:@"swipe_reply_all"];
+    }
+    else if (swipetype == QuickSwipeMark) {
+        arch.highlightedImage = [UIImage imageNamed:@"swipe_unread"];
     }
     return arch;
 }
