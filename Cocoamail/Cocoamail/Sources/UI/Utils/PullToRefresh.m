@@ -9,11 +9,12 @@
 #import "PullToRefresh.h"
 
 #import "ViewController.h"
-
+#import "Accounts.h"
 
 @interface PullToRefresh ()
 
 @property (nonatomic, weak) UIActivityIndicatorView* pullToRefresh;
+@property (nonatomic, weak) UIView* pullToRefreshSupport;
 
 @end
 
@@ -30,11 +31,23 @@
     if (scrollView.contentOffset.y < (-scrollView.contentInset.top- 0 - self.delta)) {
         
         if (self.pullToRefresh == nil ) {
-            UIActivityIndicatorView* av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            [av stopAnimating];
-            av.center = CGPointMake(scrollView.frame.size.width / 2, -35 + self.delta);
-            [scrollView addSubview:av];
+            UIView* support = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+            support.layer.cornerRadius = 22.;
+            support.layer.masksToBounds = YES;
+            support.backgroundColor = [[Accounts sharedInstance] currentAccount].userColor;
             
+            
+            UIActivityIndicatorView* av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            [av stopAnimating];
+            av.center = CGPointMake(22, 22);
+
+            support.center = CGPointMake(scrollView.frame.size.width / 2, -35 + self.delta);
+            
+            [support addSubview:av];
+            
+            [scrollView addSubview:support];
+            
+            self.pullToRefreshSupport = support;
             self.pullToRefresh = av;
         }
         
